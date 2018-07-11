@@ -1,0 +1,37 @@
+# Compiled source #
+###################
+*.amx
+*.exe
+
+# Other files #
+###################
+*.atom-build.json
+*mysql_log.txt
+*server_log.txt
+*log.txt
+*.log
+*mysql.cfg
+*libmysql.dll
+*msvcp100.dll
+*msvcr100.dll
+*pawncc.exe
+*pawnc.pdb
+*pawnc.dll
+*pawnc.lib
+*pawncc.pdb
+*pawndisasm.pdb
+*samp03svr
+*samp-npc
+*announce
+*crashinfo.txt
+samp-license.txt
+server_log.txt
+server-readme.txt
+
+# Folders #
+###################
+compiler
+/npcmodes
+/scriptfiles
+
+*.vscode
