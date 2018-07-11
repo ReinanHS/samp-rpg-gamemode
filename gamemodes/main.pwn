@@ -37,6 +37,7 @@
 #define     DialogPostoEtanol       	(18)	// Posto Table de Etanol 
 #define     DialogPostoGNV       		(19)	// Posto Table de GNV 
 #define     DialogPostoDiesel       	(20)	// Posto Table de Diesel 
+#define 	DialogAdmins				(21)	// Administrador Online
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -459,7 +460,7 @@ public OnGameModeInit()
 	VeiculoPublico[35] = AddStaticVehicle(533,1536.0165,-1677.9349,13.0919,180.9664,166,166); //
 	VeiculoPublico[36] = AddStaticVehicle(562,2746.4739,-2459.2637,13.3080,271.7818,166,166); //
 
-    SetTimer("ServerInit", 10000, false);
+    SetTimer("ServerInit", 1000, false);
 
     return 1;
 }
@@ -1406,7 +1407,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
                         PlayerDados[playerid][Profissao] = Petroleiro;
 
-                        SetPlayerCheckpoint(playerid, 312.1143,1477.8135,8.8824,8.0); // COLOQUE SUA CORDENADA.. || 8.0 = Distancia da Identificação
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
                         SendClientMessage(playerid, 0xFFFFFFAA, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         new Float:X,Float:Y,Float:Z;
@@ -1756,24 +1758,140 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O limite de combustível é 100 litros");
 					}
 				}
+
+				return 1;
     		}
         }
         case DialogPostoEtanol:{
             if(response)
     	    {
-    			return 1;        
+    			if(strlen(inputtext) < 0 || strlen(inputtext) > 3 || !IsNumeric(inputtext))
+	            {
+                    SendClientMessage(playerid, COR_ERRO, "| ERROR | Informe um valor válido!");
+                    return 1;
+				}else{
+                    new iValue = strval(inputtext);
+                    new fValue = (iValue * 4);
+					if(iValue > 0 && iValue <= 100){
+						if(GetPlayerMoney(playerid) >= fValue)
+	    	            {
+	    	            	if(PlayerDados[playerid][etanol] < 100){
+
+	    	            		new bValue = ( (PlayerDados[playerid][etanol] + iValue) - 100);
+	    	            		if(bValue > 0){
+	    	            			iValue -= bValue;
+	    	            			fValue = (iValue * 4);
+	    	            		}
+
+	    	            		new str[256];
+								format(str, sizeof(str), "| INFO | Você Pagou R$ %d por %d litros", fValue, iValue);
+								SendClientMessage(playerid, COR_WARNING, str);
+
+								PlayerDados[playerid][etanol] += iValue;
+						        GivePlayerMoney(playerid, fValue*-1);
+
+		    			    }else{
+		    			        SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O tanque do veiculo já está cheio!");
+		    				}
+	    			    }
+		    			else
+		    			{
+		    				SendClientMessage(playerid, 0xFF0000AA, "| ERRO | Você não tem dinheiro suficiente!");
+		    			}
+					}else{
+						SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O limite de combustível é 100 litros");
+					}
+				}
+
+				return 1;        
     		}
         }
         case DialogPostoGNV:{
             if(response)
     	    {
-   				return 1; 	        
+   				if(strlen(inputtext) < 0 || strlen(inputtext) > 3 || !IsNumeric(inputtext))
+	            {
+                    SendClientMessage(playerid, COR_ERRO, "| ERROR | Informe um valor válido!");
+                    return 1;
+				}else{
+                    new iValue = strval(inputtext);
+                    new fValue = (iValue * 25);
+					if(iValue > 0 && iValue <= 100){
+						if(GetPlayerMoney(playerid) >= fValue)
+	    	            {
+	    	            	if(PlayerDados[playerid][gnv] < 100){
+
+	    	            		new bValue = ( (PlayerDados[playerid][gnv] + iValue) - 100);
+	    	            		if(bValue > 0){
+	    	            			iValue -= bValue;
+	    	            			fValue = (iValue * 25);
+	    	            		}
+
+	    	            		new str[256];
+								format(str, sizeof(str), "| INFO | Você Pagou R$ %d por %d litros", fValue, iValue);
+								SendClientMessage(playerid, COR_WARNING, str);
+
+								PlayerDados[playerid][gnv] += iValue;
+						        GivePlayerMoney(playerid, fValue*-1);
+
+		    			    }else{
+		    			        SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O tanque do veiculo já está cheio!");
+		    				}
+	    			    }
+		    			else
+		    			{
+		    				SendClientMessage(playerid, 0xFF0000AA, "| ERRO | Você não tem dinheiro suficiente!");
+		    			}
+					}else{
+						SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O limite de combustível é 100 litros");
+					}
+				}
+
+				return 1;	        
     		}
         }
         case DialogPostoDiesel:{
             if(response)
     	    {
-    			return 1;	        
+    			if(strlen(inputtext) < 0 || strlen(inputtext) > 3 || !IsNumeric(inputtext))
+	            {
+                    SendClientMessage(playerid, COR_ERRO, "| ERROR | Informe um valor válido!");
+                    return 1;
+				}else{
+                    new iValue = strval(inputtext);
+                    new fValue = (iValue * 3);
+					if(iValue > 0 && iValue <= 300){
+						if(GetPlayerMoney(playerid) >= fValue)
+	    	            {
+	    	            	if(PlayerDados[playerid][diesel] < 300){
+
+	    	            		new bValue = ( (PlayerDados[playerid][diesel] + iValue) - 300);
+	    	            		if(bValue > 0){
+	    	            			iValue -= bValue;
+	    	            			fValue = (iValue * 3);
+	    	            		}
+
+	    	            		new str[256];
+								format(str, sizeof(str), "| INFO | Você Pagou R$ %d por %d litros", fValue, iValue);
+								SendClientMessage(playerid, COR_WARNING, str);
+
+								PlayerDados[playerid][diesel] += iValue;
+						        GivePlayerMoney(playerid, fValue*-1);
+
+		    			    }else{
+		    			        SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O tanque do veiculo já está cheio!");
+		    				}
+	    			    }
+		    			else
+		    			{
+		    				SendClientMessage(playerid, 0xFF0000AA, "| ERRO | Você não tem dinheiro suficiente!");
+		    			}
+					}else{
+						SendClientMessage(playerid, 0xFF0000AA, "| ERRO | O limite de combustível é 100 litros");
+					}
+				}
+
+				return 1;        
     		}
         }
     }
@@ -2004,27 +2122,26 @@ stock motorcarro(playerid)
     	if( GetPlayerState(playerid) == PLAYER_STATE_DRIVER )
 		{
 		
-		new mot, lu, alar, por, cap, porma, ob;
-		new carro = GetPlayerVehicleID(playerid);
-		new Float:vidacarro;
-		GetVehicleHealth(carro, vidacarro);
-		GetVehicleParamsEx(carro, mot, lu, alar, por, cap, porma, ob);
-		
+			new mot, lu, alar, por, cap, porma, ob;
+			new carro = GetPlayerVehicleID(playerid);
+			new Float:vidacarro;
+			GetVehicleHealth(carro, vidacarro);
+			GetVehicleParamsEx(carro, mot, lu, alar, por, cap, porma, ob);
+			
 
-		if(Motor[carro] == 0 && PlayerDados[playerid][gasolina] > 0)
-		{
-		SetVehicleParamsEx(carro, VEHICLE_PARAMS_ON, VEHICLE_PARAMS_ON, alar, por, cap, porma, ob);
-		Motor[carro] = 1;
-		SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Ligado!");
-		}
-		else
-		if(Motor[carro] == 1)
-		{
-		SetVehicleParamsEx(carro, VEHICLE_PARAMS_OFF, VEHICLE_PARAMS_OFF, alar, por, cap, porma, ob);
-		Motor[carro] = 0;
-		SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Desligado!");
-		}
-		return 1;
+			if(Motor[carro] == 0 && PlayerDados[playerid][gasolina] > 0)
+			{
+				SetVehicleParamsEx(carro, VEHICLE_PARAMS_ON, VEHICLE_PARAMS_ON, alar, por, cap, porma, ob);
+				Motor[carro] = 1;
+				SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Ligado!");
+			}
+			else if(Motor[carro] == 1)
+			{
+				SetVehicleParamsEx(carro, VEHICLE_PARAMS_OFF, VEHICLE_PARAMS_OFF, alar, por, cap, porma, ob);
+				Motor[carro] = 0;
+				SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Desligado!");
+			}
+			return 1;
 		}
      	return 1;
 }
@@ -2193,7 +2310,7 @@ CMD:ajuda (playerid, params[])
 	format(ajuda, sizeof(ajuda), "| AJUDA | %s[ID:%d]:  %s", getName(playerid), playerid,  msg);
 	for(new i,a = GetMaxPlayers(); i < a; i++)
 	{
-	if(IsPlayerConnected(i))
+		if(IsPlayerConnected(i))
 	    {
 	        if(PlayerDados[i][Admin] > 0)
 	        {
@@ -2221,11 +2338,12 @@ CMD:respawnv (playerid)
 CMD:gps (playerid, params[])
 {
 	new Gps[500];
-	format(Gps, sizeof(Gps), "{FFFFFF}Agencia LS\nDepartamento De Policia Los Santos\nHospital De Los Santos\nLoja De Armas De Los Santos\nLoja De Roupas Groove S. LS\nHospital Groove Street LS\nBanco Los Santos\nArena DM/X1\nPier 69\nDocas Los Santos\nBanco San Fierro\nBanco Las Venturas\nAgencia Las Venturas\nAgencia San Fierro\nDepartamento de Policia SF\nDepartamento de Policia LV");
+	format(Gps, sizeof(Gps), "{FFFFFF}Agencia LS\nDepartamento De Policia Los Santos\nHospital De Los Santos\nLoja De Armas De Los Santos\nLoja De Roupas Groove S. LS\nHospital Groove Street LS\nBanco Los Santos\nArena DM/X1\nPier 69\nDocas Los Santos\nBanco San Fierro\nBanco Las Venturas\nAgencia Las Venturas\nAgencia San Fierro\nDepartamento de Policia SF\nDepartamento de Policia LV\n{FF4500}Desativar GPS{FFFFFF}");
 	ShowPlayerDialog(playerid, DialogGPS, DIALOG_STYLE_LIST, "{FFFFFF}GPS", Gps, "Selecionar", "Cancelar");
 	return 1;
 }
 //------------------------------------------------------------------------------
+/*===============[ Abastecer ]==============*/
 CMD:abastecer(playerid)
 {
 	for (new a = 0; a < sizeof(PostosDeGasolina); a++)
@@ -2248,4 +2366,63 @@ CMD:abastecer(playerid)
 	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está em um posto de gasolina!");
     return 1;
 }
+/*===================[ Admins ]================*/
+
+CMD:admins (playerid)
+{
+
+    new Adms[650],ADMsDialog[810],admscount;
+
+	for(new i,a = GetMaxPlayers(); i < a; i++)
+	{
+		if(IsPlayerConnected(i))
+		    {
+		    	if(PlayerDados[i][Admin] > 0)
+		        {
+		            if(PlayerDados[i][Admin] == 1)
+		            {
+		            if(admscount < 15)
+		            format(Adms, sizeof(Adms), "%s\n{FFFFFF}%s {FFFFFF} ID: %i - [ {4169E1}Ajudante {FFFFFF}]", Adms,getName(i),i);
+		            admscount++;
+		            }
+		            //
+		            if(PlayerDados[i][Admin] == 2)
+		            {
+		            if(admscount < 15)
+		            format(Adms, sizeof(Adms), "%s\n{FFFFFF}%s {FFFFFF} ID %i - [ {32CD32}Moderador {FFFFFF}]", Adms,getName(i),i);
+		            admscount++;
+		            }
+		            //
+		            if(PlayerDados[i][Admin] == 3)
+		            {
+		            if(admscount < 15)
+		            format(Adms, sizeof(Adms), "%s\n{FFFFFF}%s {FFFFFF} ID %i - [ {FFD700}Administrador {FFFFFF}]", Adms,getName(i),i);
+		            admscount++;
+		            }
+		            // 
+		            if(PlayerDados[i][Admin] > 3)
+		            {
+		            if(admscount < 15)
+		            format(Adms, sizeof(Adms), "%s\n{FFFFFF}%s {FFFFFF} ID %i - [ {FF4500}Diretoria {FFFFFF}]", Adms,getName(i),i);
+		            admscount++;
+		            }
+		        }
+		    }
+	}
+	
+	if(admscount > 0){
+		new str[100];
+		format(str, sizeof(str), "{FFFFFF}Administradores Online: {FFFF00}%i", admscount);
+		format(ADMsDialog, sizeof(ADMsDialog), "%s\n", Adms);
+		ShowPlayerDialog(playerid, DialogAdmins, DIALOG_STYLE_MSGBOX, str,ADMsDialog,"Ok","");		
+	} 
+	else{
+		format(ADMsDialog, sizeof(ADMsDialog), "{FF0000}Nenhum Administrador Online!\n", admscount,Adms);
+		ShowPlayerDialog(playerid, DialogAdmins, DIALOG_STYLE_MSGBOX,"{FFAE00}Administradores Online:",ADMsDialog,"Ok","");
+	}
+
+    return 1;
+
+}
+
 //------------------------------------------------------------------------------
