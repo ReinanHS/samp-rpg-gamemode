@@ -27,11 +27,11 @@
 samp-license.txt
 server_log.txt
 server-readme.txt
+*.ini
 
 # Folders #
 ###################
 compiler
 /npcmodes
-/scriptfiles
 
 *.vscode

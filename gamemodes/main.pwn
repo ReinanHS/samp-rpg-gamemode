@@ -338,6 +338,7 @@ public OnGameModeInit()
     DisableInteriorEnterExits(); // desativar entradas em lojas/casas ( pikcups amarelos ) do jogo normal
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
     UsePlayerPedAnims();
+    ManualVehicleEngineAndLights();
     SetTimer("ProcessGameTime", 1000, 1);
 
     //Texto da tela de login e registro
@@ -424,8 +425,6 @@ public OnGameModeInit()
 
 	VeiculoPublico[0] = AddStaticVehicle(533,1177.2534,-1339.2512,13.6410,270.2252,166,166); // veiculo publico hosp LS
  	VeiculoPublico[1] = AddStaticVehicle(533,1176.2803,-1308.2930,13.6276,268.5153,166,166); // veiculo publico 2 hops LS
-	VeiculoPublico[2] = AddStaticVehicle(533,1114.3944,-1672.6782,13.2601,270.7781,166,166); // CarroP Agencia LS
-	VeiculoPublico[3] = AddStaticVehicle(533,1114.1595,-1678.7393,13.2601,269.1599,166,166); // CarroP Agencia LS2
 	VeiculoPublico[4] = AddStaticVehicle(533,2001.0774,-1413.2158,16.7013,178.6218,166,166); // veiculo puclico hosp groove LS
 	VeiculoPublico[5] = AddStaticVehicle(533,2033.3418,-1447.0807,16.9472,87.6349,166,166); // veiculo publico hosp groove LS
 	VeiculoPublico[6] = AddStaticVehicle(533,1316.0635,-1372.9760,13.3378,129.7551,166,166); // veiculo publico banco LS
@@ -467,11 +466,32 @@ public OnGameModeInit()
 
 public OnGameModeExit()
 {
+
+	for(new i,a = GetMaxPlayers(); i < a; i++)
+	{
+		if(IsPlayerConnected(i))
+		{
+			if(Logado{i} == true) {
+				printf("A conta do player %s salva!", getName(i));
+
+		    	GetPlayerPos(i, pPosX[i], pPosY[i], pPosZ[i]);
+		    	SalvarDados(i);
+		    	Logado{i} = false;
+		    }
+		    else{
+		    	printf("A conta do player %s não pode ser salva!", getName(i));
+		    }
+		    Kick(i);  	
+		}
+	}
+
+
     DOF2_Exit();
     TextDrawDestroy(Logo);
     TextDrawDestroy(Versao);
     TextDrawDestroy(site);
     TextDrawDestroy(Rodape);
+
 	return 1;
 }
 
@@ -585,11 +605,15 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-    if(Logado{playerid} == true) SalvarDados(playerid);
-    else printf("A conta do player %s não pode ser salva!", getName(playerid));
-    Logado{playerid} = false;
-    GetPlayerPos(playerid, pPosX[playerid], pPosY[playerid], pPosZ[playerid]);
-    SalvarDados(playerid);
+    if(Logado{playerid} == true) {
+    	GetPlayerPos(playerid, pPosX[playerid], pPosY[playerid], pPosZ[playerid]);
+    	SalvarDados(playerid);
+    	Logado{playerid} = false;
+    }
+    else{
+    	printf("A conta do player %s não pode ser salva!", getName(playerid));
+    }
+    
     if (PlayerVelocimetro[playerid]) {
         KillTimer(PlayerVelocimetroTimer[playerid]);
     }
@@ -1309,6 +1333,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 1.6 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
 	                return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
 				}
+
 				if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha"), inputtext))
 				{
 				    CarregarDados(playerid);
@@ -1321,17 +1346,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				else
 				{
-				    if(SenhaErrada[playerid] == 1)
+				    if(SenhaErrada[playerid] >= 3)
 				    {
-				        SendClientMessage(playerid,-1,"Você foi kickado por errar a senha 2 vezes!");
+				        SendClientMessage(playerid,COR_ERRO,"Você foi kickado por errar a senha 3 vezes!");
+				        SenhaErrada[playerid] = 0;
 				        Kick(playerid);
 					}
-					else if(SenhaErrada[playerid] < 1)
+					else
 					{
-					    SenhaErrada[playerid] ++;
-                        SendClientMessage(playerid, 0xFF0000AA, "Senha Incorreta: por favor digite uma senha para acessar");
-					    format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 1.6 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
-					    ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
+						SenhaErrada[playerid] ++;
+						new str[50];
+						format(str, sizeof(str), "Senha Incorreta [%d/3]: por favor digite uma senha para acessar", SenhaErrada[playerid]);
+                        SendClientMessage(playerid, 0xFF0000AA, str);
+            			ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
 					}
 				}
 			}
