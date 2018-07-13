@@ -139,6 +139,7 @@ new carroauto[MAX_PLAYERS];
 new CPAutoEscola;
 new carregado[MAX_PLAYERS] = 0;
 new Aviso[MAX_PLAYERS];
+new Log[256];
 
 new point[MAX_PLAYERS];
 new Float:AutoPoints[16][3] = //Cordenadas dos Race Checkpoints
@@ -2254,6 +2255,19 @@ stock IsNumeric(const string[])
 	}
     return 1;
 }
+stock fileLog(file[], string[]) // Creditos "im" do forum samp.
+{
+    new time[6], timestr[32], data[256], File:hFile, thefile[32];
+    gettime(time[0], time[1], time[2]);
+    getdate(time[3], time[4], time[5]);
+    format(timestr,32,"[%02d/%02d/%02d - %02d:%02d:%02d] ", time[5],time[4], time[3], time[0], time[1], time[2]);
+    format(data, sizeof(data), "%s%s\r\n",timestr, string);
+    format(thefile, sizeof(thefile), "Logs/%s.log", file);
+    hFile = fopen(thefile, io_append);
+    fwrite(hFile, data);
+    fclose(hFile);
+    return 1;
+}
 //Comandos é outros
 COMMAND:givecar(playerid, params[])
 {
@@ -2499,6 +2513,9 @@ CMD:ajuda (playerid, params[])
 		}
 	}
 	SendClientMessage(playerid, COR_SUCCESS, "| OK | Seu Pedido De Ajuda Foi Enviado Com Sucesso Para Os Administradores!");
+	
+	format(Log, sizeof(Log), "O %s Pede Ajuda: %s", getName(playerid), msg);
+	fileLog("Ajuda", Log);
 	return 1;
 }
 /*===========================[ RespawnV ]====================*/
