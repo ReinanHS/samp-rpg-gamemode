@@ -294,6 +294,7 @@ forward MapIcon(playerid);
 new CheckAgencia;
 new
     petroleiroCar[18],
+    taxiCar[7],
     VeiculoPublico[37];
 
 new bool:HQ[MAX_PLAYERS] = false;
@@ -397,34 +398,52 @@ public OnGameModeInit()
     Create3DTextLabel("{FFFFFF}Menu do Mercado 24/7\nAperte {00FFFF}'F' Ou Use /mercado\n{FFFFFF}Para Comprar",50,-22.1867,-55.6953,1003.5469,15,0);// Menu do Mercado 24/7
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.325195,1304.942871,1093.289062,15,0);//Saida Mercado 24/7 (ID: All)
+    // Petroleiro
+    Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
+    Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
+    Create3DTextLabel("{FF0000}Entrada",50,293.1352,1416.2681,10.6482,30,0);//Entrada - Petroleiro
+    Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
+
+
     //Checks
 	CheckAgencia = CPS_AddCheckpoint(363.0818,173.8653,1008.3828, 1.0, 50);// Local de pegar Profissão
     CPAutoEscola = CPS_AddCheckpoint(1490.9628,1305.9032,1093.2964,1.0,50);// Auto Escola
 
     // Veiculos de petoleiro
-    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[1] = AddStaticVehicleEx(514,296.1000100,1370.5000000,10.6000000,270.0000000,37,37,15); //Tanker
-    petroleiroCar[2] = AddStaticVehicleEx(514,295.5996100,1364.7998000,10.6000000,270.0000000,37,37,15); //Tanker
-    petroleiroCar[3] = AddStaticVehicleEx(514,296.3999900,1355.2000000,10.8000000,270.0000000,37,37,15); //Tanker
-    petroleiroCar[4] = AddStaticVehicleEx(514,296.6000100,1349.4000000,10.8000000,270.0000000,37,37,15); //Tanker
-    petroleiroCar[5] = AddStaticVehicleEx(514,297.5000000,1344.2998000,10.8000000,270.0000000,37,37,15); //Tanker
-    petroleiroCar[6] = AddStaticVehicleEx(514,341.4003900,1457.2002000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[7] = AddStaticVehicleEx(514,340.1000100,1451.7000000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[8] = AddStaticVehicleEx(514,341.5000000,1463.6000000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[9] = AddStaticVehicleEx(514,342.2000100,1469.0000000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[10] = AddStaticVehicleEx(514,343.7999900,1475.4000000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[11] = AddStaticVehicleEx(514,345.3999900,1481.2000000,8.4000000,81.7490000,242,249,15); //Tanker
-    petroleiroCar[12] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[13] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[14] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[15] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[16] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,37,37,15); //Tanker
-    petroleiroCar[17] = AddStaticVehicleEx(514,308.7999900,1355.2000000,9.9000000,73.9980000,37,37,15); //Tanker
+    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,37,37,15); //Tanker
+	petroleiroCar[1] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,37,37,15); //Tanker
+	petroleiroCar[2] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,37,37,15); //Tanker
+	petroleiroCar[3] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,37,37,15); //Tanker
+	petroleiroCar[4] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,37,37,15); //Tanker
+	petroleiroCar[5] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,37,37,15); //Tanker
+	petroleiroCar[6] = AddStaticVehicleEx(514,308.7998000,1355.2002000,9.9000000,73.9930000,37,37,15); //Tanker
+	petroleiroCar[7] = AddStaticVehicleEx(514,307.3999900,1349.9000000,9.9000000,73.9930000,37,37,15); //Tanker
+	petroleiroCar[8] = AddStaticVehicleEx(514,305.3999900,1343.9000000,9.9000000,73.9930000,37,37,15); //Tanker
+	petroleiroCar[9] = AddStaticVehicleEx(514,331.5000000,1470.6000000,8.2000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[10] = AddStaticVehicleEx(514,334.0000000,1483.2002000,8.5000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[11] = AddStaticVehicleEx(514,333.2000100,1476.7000000,8.3000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[12] = AddStaticVehicleEx(514,330.6000100,1464.4000000,8.1000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[13] = AddStaticVehicleEx(514,329.7000100,1458.7000000,8.1000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[14] = AddStaticVehicleEx(514,327.9003900,1452.0000000,8.1000000,79.9910000,37,37,15); //Tanker
+	petroleiroCar[15] = AddStaticVehicleEx(514,304.3999900,1471.0000000,10.2000000,267.9900000,37,37,15); //Tanker
+	petroleiroCar[16] = AddStaticVehicleEx(514,306.2999900,1464.4000000,10.2000000,267.9900000,37,37,15); //Tanker
+
+	// Veiculos De Taxi
+
+	taxiCar[0] = AddStaticVehicleEx(420,1802.4000000,-1908.1000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[1] = AddStaticVehicleEx(420,1802.3000000,-1912.2000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[2] = AddStaticVehicleEx(420,1802.6000000,-1903.9000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[3] = AddStaticVehicleEx(420,1802.2000000,-1917.0000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[5] = AddStaticVehicleEx(420,1802.0000000,-1927.3000000,13.3000000,87.9950000,215,142,15); //Taxi
+	taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.3000000,13.3000000,87.9950000,215,142,15); //Taxi
 
     /*=========================[  VEICULO PUBLICOS ]============================*/
 
 	VeiculoPublico[0] = AddStaticVehicle(533,1177.2534,-1339.2512,13.6410,270.2252,166,166); // veiculo publico hosp LS
  	VeiculoPublico[1] = AddStaticVehicle(533,1176.2803,-1308.2930,13.6276,268.5153,166,166); // veiculo publico 2 hops LS
+ 	VeiculoPublico[2] = AddStaticVehicleEx(400,1836.5000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
+ 	VeiculoPublico[3] = AddStaticVehicleEx(400,1840.0000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
 	VeiculoPublico[4] = AddStaticVehicle(533,2001.0774,-1413.2158,16.7013,178.6218,166,166); // veiculo puclico hosp groove LS
 	VeiculoPublico[5] = AddStaticVehicle(533,2033.3418,-1447.0807,16.9472,87.6349,166,166); // veiculo publico hosp groove LS
 	VeiculoPublico[6] = AddStaticVehicle(533,1316.0635,-1372.9760,13.3378,129.7551,166,166); // veiculo publico banco LS
@@ -659,13 +678,12 @@ public MapIcon(playerid)
 {
     SetPlayerMapIcon(playerid, 50, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
     SetPlayerMapIcon(playerid, 51, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
-    SetPlayerMapIcon(playerid, 51, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
-    //SetPlayerMapIcon(playerid, 52, 1942.4498,-1772.7539,13.3906, 55, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
-
+    SetPlayerMapIcon(playerid, 52, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
+    SetPlayerMapIcon(playerid, 53, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
     //PostosDeGasolina
     for (new a = 0; a < sizeof(PostosDeGasolina); a++)
 	{
-		SetPlayerMapIcon(playerid, (52+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL); //Auto Escola (id: 0)		
+		SetPlayerMapIcon(playerid, (54+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL); //Auto Escola (id: 0)		
 	}
 
 }
@@ -1577,23 +1595,79 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     	        if(listitem == 0)
     	        {
                     SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
-                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint vermelho, siga-o para descarregar!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Spinybed!");
                     RemovePlayerMapIcon(playerid, 41);
                     carregado[playerid] = 1;
-                    SetPlayerMapIcon(playerid, 41, 70.5201,1218.4004,18.8127, 0, 0, MAPICON_GLOBAL);
+                    SetPlayerMapIcon(playerid, 41, 2147.2913,2748.4233,10.5247, 0, 0, MAPICON_GLOBAL);
                 }
-    			if(listitem == 1)
+    			else if(listitem == 1)
     			{
                     SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
-                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint vermelho, siga-o para descarregar!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Las Venturas!");
                     RemovePlayerMapIcon(playerid, 41);
                     carregado[playerid] = 2;
-                    SetPlayerMapIcon(playerid, 41, 70.5201,1218.4004,18.8127, 0, 0, MAPICON_GLOBAL);
+                    SetPlayerMapIcon(playerid, 41, 2639.6121,1106.8522,10.3771, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 2)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Temple!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 3;
+                    SetPlayerMapIcon(playerid, 41, 1004.0529,-938.4166,41.7306, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 3)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Whetstone!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 4;
+                    SetPlayerMapIcon(playerid, 41, -1607.2217,-2714.9656,48.1127, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 4)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Doherty!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 5;
+                    SetPlayerMapIcon(playerid, 41, -2028.1998,156.6336,28.3998, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 5)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Easter Basin!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 6;
+                    SetPlayerMapIcon(playerid, 41, -1676.0660,413.3091,6.7472, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 6)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Juniper Hollow!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 7;
+                    SetPlayerMapIcon(playerid, 41, -2409.0630,976.4838,44.8595, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 7)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Tirra Robada!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 8;
+                    SetPlayerMapIcon(playerid, 41, -1329.1506,2677.6660,49.6365, 0, 0, MAPICON_GLOBAL);
+                }
+                else if(listitem == 8)
+    			{
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Sua carreta foi carregada!");
+                    SendClientMessage(playerid, COR_WARNING, "INFO | Foi marcado no seu Radar um Checkpoint, siga-o para descarregar no Posto de Fort Carson!");
+                    RemovePlayerMapIcon(playerid, 41);
+                    carregado[playerid] = 9;
+                    SetPlayerMapIcon(playerid, 41, 70.7164,1219.1143,18.3873, 0, 0, MAPICON_GLOBAL);
                 }
     		}
     		else
     		{
-                SendClientMessage(playerid, 0xFF0000AA, "| ERRO | Você não cancelou o carregamento!");
+                SendClientMessage(playerid, COR_ERRO, "| ERRO | Você cancelou o carregamento!");
     		}
         }
         case DialogGPS:{
@@ -2238,11 +2312,11 @@ CMD:carregar(playerid)
     {
         if(PlayerToPoint(playerid, 30.0, 234.8112,1411.8942,11.1719))
         {
-            if(GetVehicleModel(GetPlayerVehicleID(playerid) == 514))
+            if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 514)
             {
                 if(IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
                 {
-                    ShowPlayerDialog(playerid, DialogCarregarPetroleiro, DIALOG_STYLE_TABLIST_HEADERS, "Cargas » Disponiveis", "Local\t{008000}Valor\nFort Carson\t{008000}$70,50\nBone County\t{008000}$90,00", "Selecionar", "Voltar");
+                    ShowPlayerDialog(playerid, DialogCarregarPetroleiro, DIALOG_STYLE_TABLIST_HEADERS, "Cargas » Disponiveis", "Local\t{008000}Valor\nPosto de Spinybed\t{008000}$900\nPosto de Las Venturas\t{008000}$800\nPosto de Temple\t{008000}$1000\nPosto de Whetstone\t{008000}$1800\nPosto de Doherty\t{008000}$1400\nPosto de Easter Basin\t{008000}$1450\nPosto de Juniper Hollow\t{008000}$1600\nPosto de Tirra Robada\t{008000}$1300\nPosto de Fort Carson\t{008000}$70", "Selecionar", "Voltar");
                 }
                 else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está com um 'Trailer de petroleo'");
             }
@@ -2260,26 +2334,104 @@ CMD:descarregar(playerid)
         {
             SendClientMessage(playerid, COR_ERRO, "ERRO | O seu caminhão não está carregado!");
         }
-        else if(carregado[playerid] == 1)
+        else
         {
-            if(PlayerToPoint(playerid, 20.0, 70.5201,1218.4004,18.8127))
+        	if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 514)
             {
-                if(GetVehicleModel(GetPlayerVehicleID(playerid) == 514))
+                if(IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
                 {
-                    if(IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
-                    {
-                        SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$70");
-                        GivePlayerMoney(playerid, 70);
-                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
-                        SetVehicleToRespawn(respawntrailer);
-                        RemovePlayerMapIcon(playerid, 41);
-                        carregado[playerid] = 0;
-                    }
-                    else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está com um 'Trailer de petroleo'");
+                	if(Motor[GetPlayerVehicleID(playerid)] == 0)
+                	{
+                		// Posto de Spinybed
+                		if(PlayerToPoint(playerid, 20.0, 2147.2913,2748.4233,10.5247) && carregado[playerid] == 1)
+			            {
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$900");
+	                        GivePlayerMoney(playerid, 900);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Las Venturas
+			            else if(PlayerToPoint(playerid, 20.0, 2639.6121,1106.8522,10.3771) && carregado[playerid] == 2){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$800");
+	                        GivePlayerMoney(playerid, 800);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Temple
+			            else if(PlayerToPoint(playerid, 20.0, 1004.0529,-938.4166,41.7306) && carregado[playerid] == 3){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1000");
+	                        GivePlayerMoney(playerid, 1000);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Whetstone
+			            else if(PlayerToPoint(playerid, 20.0, -1607.2217,-2714.9656,48.1127) && carregado[playerid] == 4){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1800");
+	                        GivePlayerMoney(playerid, 1800);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Doherty
+			            else if(PlayerToPoint(playerid, 20.0, -2028.1998,156.6336,28.3998) && carregado[playerid] == 5){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1400");
+	                        GivePlayerMoney(playerid, 1400);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Easter Basin
+			            else if(PlayerToPoint(playerid, 20.0, -1676.0660,413.3091,6.7472) && carregado[playerid] == 6){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1450");
+	                        GivePlayerMoney(playerid, 1450);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Juniper Hollow
+			            else if(PlayerToPoint(playerid, 20.0, -2409.0630,976.4838,44.8595) && carregado[playerid] == 7){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1600");
+	                        GivePlayerMoney(playerid, 1600);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Tirra Robada
+			            else if(PlayerToPoint(playerid, 20.0, -1329.1506,2677.6660,49.6365) && carregado[playerid] == 8){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1300");
+	                        GivePlayerMoney(playerid, 1300);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            // Posto de Fort Carson
+			            else if(PlayerToPoint(playerid, 20.0, 70.7164,1219.1143,18.3873) && carregado[playerid] == 9){
+			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$70");
+	                        GivePlayerMoney(playerid, 70);
+	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
+	                        SetVehicleToRespawn(respawntrailer);
+	                        RemovePlayerMapIcon(playerid, 41);
+	                        carregado[playerid] = 0;
+			            }
+			            else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
+                	}else{
+                		SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que desligar o veiculo!");
+                	}
                 }
-                else SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo uma carreta de petroleo!");
-             }
-             else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
+                else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está com um 'Trailer de petroleo'");
+            }
+            else SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo uma carreta de petroleo!");
         }
     }
     return 1;
