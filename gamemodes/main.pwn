@@ -202,11 +202,17 @@ enum pDados
 		bool:TaPreso,
 		MinPreso,
 		SegPreso,
+		segundoUP,
+        minutoUP,
+        saude,
+        sono,
+        sede,
+        fome, 
         gasolina,
         etanol,
         gnv,
         diesel,
-        bool: vip
+        bool: vip 
 
 }
 enum mInfo
@@ -233,6 +239,12 @@ new Text:site;
 new Text:Rodape;
 
 new Text:textVelocimetro[5];
+// Status
+new Text:textStatus[14];
+new PlayerText:textStatusBar[MAX_PLAYERS][8];
+
+// Status Update
+new timer_StatusFome[MAX_PLAYERS];
 
 // (Vendo o velocimetro ou não}
 new bool:PlayerVelocimetro[MAX_PLAYERS];
@@ -383,6 +395,199 @@ public OnGameModeInit()
     TextDrawTextSize(Rodape, 637.000000, -129.000000);
     TextDrawSetSelectable(Rodape, 0);
 
+
+    // Status
+
+	textStatus[0] = TextDrawCreate(543.938537, 242.499938, "box");
+	TextDrawLetterSize(textStatus[0], 0.000000, 16.659065);
+	TextDrawTextSize(textStatus[0], 633.000000, 0.000000);
+	TextDrawAlignment(textStatus[0], 1);
+	TextDrawColor(textStatus[0], -1);
+	TextDrawUseBox(textStatus[0], 1);
+	TextDrawBoxColor(textStatus[0], 319555162);
+	TextDrawSetShadow(textStatus[0], 0);
+	TextDrawSetOutline(textStatus[0], 0);
+	TextDrawBackgroundColor(textStatus[0], -1378294017);
+	TextDrawFont(textStatus[0], 1);
+	TextDrawSetProportional(textStatus[0], 1);
+	TextDrawSetShadow(textStatus[0], 0);
+
+	textStatus[1] = TextDrawCreate(544.950195, 244.233551, "box");
+	TextDrawLetterSize(textStatus[1], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[1], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[1], 1);
+	TextDrawColor(textStatus[1], -1);
+	TextDrawUseBox(textStatus[1], 1);
+	TextDrawBoxColor(textStatus[1], 1246118721);
+	TextDrawSetShadow(textStatus[1], 0);
+	TextDrawSetOutline(textStatus[1], 0);
+	TextDrawBackgroundColor(textStatus[1], 255);
+	TextDrawFont(textStatus[1], 1);
+	TextDrawSetProportional(textStatus[1], 0);
+	TextDrawSetShadow(textStatus[1], 0);
+
+	textStatus[2] = TextDrawCreate(559.354797, 244.533126, "Status");
+	TextDrawLetterSize(textStatus[2], 0.400000, 1.600000);
+	TextDrawAlignment(textStatus[2], 1);
+	TextDrawColor(textStatus[2], -1);
+	TextDrawSetShadow(textStatus[2], 0);
+	TextDrawSetOutline(textStatus[2], 0);
+	TextDrawBackgroundColor(textStatus[2], 255);
+	TextDrawFont(textStatus[2], 2);
+	TextDrawSetProportional(textStatus[2], 1);
+	TextDrawSetShadow(textStatus[2], 0);
+
+	textStatus[3] = TextDrawCreate(544.950195, 269.835113, "box");
+	TextDrawLetterSize(textStatus[3], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[3], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[3], 1);
+	TextDrawColor(textStatus[3], -1);
+	TextDrawUseBox(textStatus[3], 1);
+	TextDrawBoxColor(textStatus[3], 1246118721);
+	TextDrawSetShadow(textStatus[3], 0);
+	TextDrawSetOutline(textStatus[3], 0);
+	TextDrawBackgroundColor(textStatus[3], 255);
+	TextDrawFont(textStatus[3], 1);
+	TextDrawSetProportional(textStatus[3], 0);
+	TextDrawSetShadow(textStatus[3], 0);
+
+	textStatus[4] = TextDrawCreate(544.950195, 293.336547, "box");
+	TextDrawLetterSize(textStatus[4], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[4], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[4], 1);
+	TextDrawColor(textStatus[4], -1);
+	TextDrawUseBox(textStatus[4], 1);
+	TextDrawBoxColor(textStatus[4], 1246118721);
+	TextDrawSetShadow(textStatus[4], 0);
+	TextDrawSetOutline(textStatus[4], 0);
+	TextDrawBackgroundColor(textStatus[4], 255);
+	TextDrawFont(textStatus[4], 1);
+	TextDrawSetProportional(textStatus[4], 0);
+	TextDrawSetShadow(textStatus[4], 0);
+
+	textStatus[5] = TextDrawCreate(544.950195, 317.138000, "box");
+	TextDrawLetterSize(textStatus[5], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[5], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[5], 1);
+	TextDrawColor(textStatus[5], -1);
+	TextDrawUseBox(textStatus[5], 1);
+	TextDrawBoxColor(textStatus[5], 1246118721);
+	TextDrawSetShadow(textStatus[5], 0);
+	TextDrawSetOutline(textStatus[5], 0);
+	TextDrawBackgroundColor(textStatus[5], 255);
+	TextDrawFont(textStatus[5], 1);
+	TextDrawSetProportional(textStatus[5], 0);
+	TextDrawSetShadow(textStatus[5], 0);
+
+	textStatus[6] = TextDrawCreate(544.950195, 341.139465, "box");
+	TextDrawLetterSize(textStatus[6], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[6], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[6], 1);
+	TextDrawColor(textStatus[6], -1);
+	TextDrawUseBox(textStatus[6], 1);
+	TextDrawBoxColor(textStatus[6], 1246118721);
+	TextDrawSetShadow(textStatus[6], 0);
+	TextDrawSetOutline(textStatus[6], 0);
+	TextDrawBackgroundColor(textStatus[6], 255);
+	TextDrawFont(textStatus[6], 1);
+	TextDrawSetProportional(textStatus[6], 0);
+	TextDrawSetShadow(textStatus[6], 0);
+
+	textStatus[7] = TextDrawCreate(544.950195, 364.840911, "box");
+	TextDrawLetterSize(textStatus[7], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[7], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[7], 1);
+	TextDrawColor(textStatus[7], -1);
+	TextDrawUseBox(textStatus[7], 1);
+	TextDrawBoxColor(textStatus[7], 1246118721);
+	TextDrawSetShadow(textStatus[7], 0);
+	TextDrawSetOutline(textStatus[7], 0);
+	TextDrawBackgroundColor(textStatus[7], 255);
+	TextDrawFont(textStatus[7], 1);
+	TextDrawSetProportional(textStatus[7], 0);
+	TextDrawSetShadow(textStatus[7], 0);
+
+	textStatus[8] = TextDrawCreate(593.058959, 384.866729, "Skylandia");
+	TextDrawLetterSize(textStatus[8], 0.259000, 0.899999);
+	TextDrawAlignment(textStatus[8], 2);
+	TextDrawColor(textStatus[8], -1);
+	TextDrawSetShadow(textStatus[8], 0);
+	TextDrawSetOutline(textStatus[8], 0);
+	TextDrawBackgroundColor(textStatus[8], 255);
+	TextDrawFont(textStatus[8], 2);
+	TextDrawSetProportional(textStatus[8], 1);
+	TextDrawSetShadow(textStatus[8], 0);
+
+	textStatus[9] = TextDrawCreate(533.472961, 256.816284, "");
+	TextDrawLetterSize(textStatus[9], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[9], 40.000000, 44.000000);
+	TextDrawAlignment(textStatus[9], 1);
+	TextDrawColor(textStatus[9], -1);
+	TextDrawSetShadow(textStatus[9], 0);
+	TextDrawSetOutline(textStatus[9], 0);
+	TextDrawBackgroundColor(textStatus[9], 0);
+	TextDrawFont(textStatus[9], 5);
+	TextDrawSetProportional(textStatus[9], 0);
+	TextDrawSetShadow(textStatus[9], 0);
+	TextDrawSetPreviewModel(textStatus[9], 19576);
+	TextDrawSetPreviewRot(textStatus[9], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[10] = TextDrawCreate(535.772399, 288.718231, "");
+	TextDrawLetterSize(textStatus[10], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[10], 37.000000, 27.000000);
+	TextDrawAlignment(textStatus[10], 1);
+	TextDrawColor(textStatus[10], -1);
+	TextDrawSetShadow(textStatus[10], 0);
+	TextDrawSetOutline(textStatus[10], 0);
+	TextDrawBackgroundColor(textStatus[10], 0);
+	TextDrawFont(textStatus[10], 5);
+	TextDrawSetProportional(textStatus[10], 0);
+	TextDrawSetShadow(textStatus[10], 0);
+	TextDrawSetPreviewModel(textStatus[10], 19570);
+	TextDrawSetPreviewRot(textStatus[10], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[11] = TextDrawCreate(539.671447, 306.319305, "");
+	TextDrawLetterSize(textStatus[11], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[11], 31.000000, 37.000000);
+	TextDrawAlignment(textStatus[11], 1);
+	TextDrawColor(textStatus[11], -1);
+	TextDrawSetShadow(textStatus[11], 0);
+	TextDrawSetOutline(textStatus[11], 0);
+	TextDrawBackgroundColor(textStatus[11], 0);
+	TextDrawFont(textStatus[11], 5);
+	TextDrawSetProportional(textStatus[11], 0);
+	TextDrawSetShadow(textStatus[11], 0);
+	TextDrawSetPreviewModel(textStatus[11], 11738);
+	TextDrawSetPreviewRot(textStatus[11], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[12] = TextDrawCreate(544.170349, 338.321258, "");
+	TextDrawLetterSize(textStatus[12], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[12], 24.000000, 23.000000);
+	TextDrawAlignment(textStatus[12], 1);
+	TextDrawColor(textStatus[12], -1);
+	TextDrawSetShadow(textStatus[12], 0);
+	TextDrawSetOutline(textStatus[12], 0);
+	TextDrawBackgroundColor(textStatus[12], 0);
+	TextDrawFont(textStatus[12], 5);
+	TextDrawSetProportional(textStatus[12], 0);
+	TextDrawSetShadow(textStatus[12], 0);
+	TextDrawSetPreviewModel(textStatus[12], 1247);
+	TextDrawSetPreviewRot(textStatus[12], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[13] = TextDrawCreate(545.470031, 363.222778, "");
+	TextDrawLetterSize(textStatus[13], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[13], 24.000000, 23.000000);
+	TextDrawAlignment(textStatus[13], 1);
+	TextDrawColor(textStatus[13], -1);
+	TextDrawSetShadow(textStatus[13], 0);
+	TextDrawSetOutline(textStatus[13], 0);
+	TextDrawBackgroundColor(textStatus[13], 0);
+	TextDrawFont(textStatus[13], 5);
+	TextDrawSetProportional(textStatus[13], 0);
+	TextDrawSetShadow(textStatus[13], 0);
+	TextDrawSetPreviewModel(textStatus[13], 1277);
+	TextDrawSetPreviewRot(textStatus[13], 0.000000, 0.000000, 30.000000, 1.000000);
+
     /*              PICKUPS De lugares Publicos             */
     AddStaticPickup(1318,23,1733.5103,-1912.0349,13.5620);// Entrada Da Agência de Empregos
     AddStaticPickup(1318,23,390.7674,173.7650,1008.3828);// Saida Da Agência de Empregos
@@ -511,6 +716,11 @@ public OnGameModeExit()
     TextDrawDestroy(Versao);
     TextDrawDestroy(site);
     TextDrawDestroy(Rodape);
+    // Status
+    for (new a = 0; a < sizeof(textStatus); a++)
+    {
+    	TextDrawDestroy(textStatus[a]);
+    }
 
 	return 1;
 }
@@ -618,6 +828,67 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawSetSelectable(playerid,textPlayerVelocimetro[5][playerid], 0);
 
 	// Fim Do Velocimetro
+	// Status 
+	textStatusBar[playerid][0] = CreatePlayerTextDraw(playerid, 598.535827, 365.366546, "10:00");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][0], 0.400000, 1.600000);
+	PlayerTextDrawAlignment(playerid, textStatusBar[playerid][0], 2);
+	PlayerTextDrawColor(playerid, textStatusBar[playerid][0], -1);
+	PlayerTextDrawSetShadow(playerid, textStatusBar[playerid][0], 0);
+	PlayerTextDrawSetOutline(playerid, textStatusBar[playerid][0], 0);
+	PlayerTextDrawBackgroundColor(playerid, textStatusBar[playerid][0], 255);
+	PlayerTextDrawFont(playerid, textStatusBar[playerid][0], 2);
+	PlayerTextDrawSetProportional(playerid, textStatusBar[playerid][0], 1);
+	PlayerTextDrawSetShadow(playerid, textStatusBar[playerid][0], 0);
+
+	textStatusBar[playerid][1] = CreatePlayerTextDraw(playerid, 598.535827, 342.465148, "0");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][1], 0.400000, 1.600000);
+	PlayerTextDrawAlignment(playerid, textStatusBar[playerid][1], 2);
+	PlayerTextDrawColor(playerid, textStatusBar[playerid][1], -1);
+	PlayerTextDrawSetShadow(playerid, textStatusBar[playerid][1], 0);
+	PlayerTextDrawSetOutline(playerid, textStatusBar[playerid][1], 0);
+	PlayerTextDrawBackgroundColor(playerid, textStatusBar[playerid][1], 255);
+	PlayerTextDrawFont(playerid, textStatusBar[playerid][1], 2);
+	PlayerTextDrawSetProportional(playerid, textStatusBar[playerid][1], 1);
+	PlayerTextDrawSetShadow(playerid, textStatusBar[playerid][1], 0);
+
+	textStatusBar[playerid][2] = CreatePlayerTextDraw(playerid, 570.607299, 318.169464, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][2], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][2], 630.562377, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][2], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][2], -1499159553);
+
+	// Saude
+	textStatusBar[playerid][3] = CreatePlayerTextDraw(playerid, 570.607299, 318.169464, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][3], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], 566.607299, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][3], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][3], -1);
+
+	textStatusBar[playerid][4] = CreatePlayerTextDraw(playerid, 570.607299, 294.268005, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][4], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][4], 630.562377, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][4], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][4], -1499159553);
+
+	// Sede
+	textStatusBar[playerid][5] = CreatePlayerTextDraw(playerid, 570.607299, 294.468017, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][5], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], 566.607299, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][5], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][5], -1);
+
+	textStatusBar[playerid][6] = CreatePlayerTextDraw(playerid, 570.607299, 271.066589, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][6], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][6], 630.562377, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][6], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][6], -1499159553);
+
+	// Fome
+	textStatusBar[playerid][7] = CreatePlayerTextDraw(playerid, 570.607299, 271.166595, "box");
+	PlayerTextDrawLetterSize(playerid, textStatusBar[playerid][7], 0.000000, 1.591375);
+	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], 566.607299, 0.000000);
+	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][7], 1);
+	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][7], -1);
 
     MapIcon(playerid);
 	return 1;
@@ -637,6 +908,8 @@ public OnPlayerDisconnect(playerid, reason)
     if (PlayerVelocimetro[playerid]) {
         KillTimer(PlayerVelocimetroTimer[playerid]);
     }
+
+    KillTimer(timer_StatusFome[playerid]);
 	return 1;
 }
 
@@ -647,6 +920,13 @@ public OnPlayerSpawn(playerid)
     TextDrawHideForPlayer(playerid,Versao);
     TextDrawHideForPlayer(playerid,site);
     TextDrawHideForPlayer(playerid,Rodape);
+
+    // Status
+    for (new a = 0; a < sizeof(textStatus); a++){ TextDrawShowForPlayer(playerid, textStatus[a]); }
+    for( new a = 0; a < 8; a++) PlayerTextDrawShow(playerid, textStatusBar[playerid][a]);
+
+    UpdatePlayerFome(playerid);
+
 	return 1;
 }
 
@@ -1282,25 +1562,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     			SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
     	  		SpawnPlayer(playerid);
     			TogglePlayerSpectating(playerid, false);
+
     			Logado{playerid} = true;
-                MercadoInfo[playerid][Celular] = false;
-                MercadoInfo[playerid][PedagioSemPagar] = false;
-                MercadoInfo[playerid][GPS] = false;
-                MercadoInfo[playerid][Capacete] = false;
-                MercadoInfo[playerid][Oculos] = false;
-                MercadoInfo[playerid][Bone] = false;
-                MercadoInfo[playerid][Gorro] = false;
-                MercadoInfo[playerid][Arara] = false;
-
-                PlayerDados[playerid][vip] = false;
-            	PlayerDados[playerid][exp] = 0;
-
-            	PlayerDados[playerid][gasolina] = 14;
-            	PlayerDados[playerid][etanol] = 14;
-            	PlayerDados[playerid][gnv] = 14;
-            	PlayerDados[playerid][diesel] = 14;
-
-            	PlayerDados[playerid][Admin] = 0;
+    			setBasicInfoPlayer(playerid);
 
     			SendClientMessage(playerid,0xFFA500AA,"Registrado e Logado com sucesso!");
     			GivePlayerMoney(playerid,1000);
@@ -1318,24 +1582,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     	  		SpawnPlayer(playerid);
     			TogglePlayerSpectating(playerid, false);
     			Logado{playerid} = true;
-                MercadoInfo[playerid][Celular] = false;
-                MercadoInfo[playerid][PedagioSemPagar] = false;
-                MercadoInfo[playerid][GPS] = false;
-                MercadoInfo[playerid][Capacete] = false;
-                MercadoInfo[playerid][Oculos] = false;
-                MercadoInfo[playerid][Bone] = false;
-                MercadoInfo[playerid][Gorro] = false;
-                MercadoInfo[playerid][Arara] = false;
-
-                PlayerDados[playerid][vip] = false;
-            	PlayerDados[playerid][exp] = 0;
-
-            	PlayerDados[playerid][gasolina] = 14;
-            	PlayerDados[playerid][etanol] = 14;
-            	PlayerDados[playerid][gnv] = 14;
-            	PlayerDados[playerid][diesel] = 14;
-
-            	PlayerDados[playerid][Admin] = 0;
+    			setBasicInfoPlayer(playerid);
 
     			SendClientMessage(playerid,0xFFA500AA,"Registrado e Logado com sucesso!");
     			GivePlayerMoney(playerid,1000);
@@ -2057,6 +2304,14 @@ stock SalvarDados(playerid)
     DOF2_SetInt(PegarConta(playerid), "MinPreso", PlayerDados[playerid][MinPreso]);
     DOF2_SetInt(PegarConta(playerid), "SegPreso", PlayerDados[playerid][SegPreso]);
 
+    DOF2_SetInt(PegarConta(playerid), "SegundoUP", PlayerDados[playerid][segundoUP]);
+    DOF2_SetInt(PegarConta(playerid), "MinutoUP", PlayerDados[playerid][minutoUP]);
+
+    DOF2_SetInt(PegarConta(playerid), "Saude", PlayerDados[playerid][saude]);
+    DOF2_SetInt(PegarConta(playerid), "Sono", PlayerDados[playerid][sono]);
+    DOF2_SetInt(PegarConta(playerid), "Sede", PlayerDados[playerid][sede]);
+    DOF2_SetInt(PegarConta(playerid), "Fome", PlayerDados[playerid][fome]);
+
     DOF2_SetInt(PegarConta(playerid), "Gasolina", PlayerDados[playerid][gasolina]);
     DOF2_SetInt(PegarConta(playerid), "Etanol", PlayerDados[playerid][etanol]);
     DOF2_SetInt(PegarConta(playerid), "GNV", PlayerDados[playerid][gnv]);
@@ -2103,10 +2358,17 @@ stock CarregarDados(playerid)
 			PlayerDados[playerid][HabT_1] = DOF2_GetBool(PegarConta(playerid), "HabT_1");
 			PlayerDados[playerid][HabT_2] = DOF2_GetBool(PegarConta(playerid), "HabT_2");
 			PlayerDados[playerid][HabT_3] = DOF2_GetBool(PegarConta(playerid), "HabT_3");
+
 			PlayerDados[playerid][TaPreso] = DOF2_GetBool(PegarConta(playerid), "TaPreso");
 			PlayerDados[playerid][MinPreso] = DOF2_GetInt(PegarConta(playerid), "MinPreso");
 			PlayerDados[playerid][SegPreso] = DOF2_GetInt(PegarConta(playerid), "SegPreso");
 
+			PlayerDados[playerid][segundoUP] = DOF2_GetInt(PegarConta(playerid), "SegundoUP");
+			PlayerDados[playerid][minutoUP] = DOF2_GetInt(PegarConta(playerid), "MinutoUP");
+			PlayerDados[playerid][saude] = DOF2_GetInt(PegarConta(playerid), "Saude");
+			PlayerDados[playerid][sono] = DOF2_GetInt(PegarConta(playerid), "Sono");
+			PlayerDados[playerid][sede] = DOF2_GetInt(PegarConta(playerid), "Sede");
+			PlayerDados[playerid][fome] = DOF2_GetInt(PegarConta(playerid), "Fome");
 
             PlayerDados[playerid][gasolina] = DOF2_GetInt(PegarConta(playerid), "Gasolina");
             PlayerDados[playerid][etanol] = DOF2_GetInt(PegarConta(playerid), "Etanol");
@@ -2138,6 +2400,56 @@ public ServerInit()
 	SendRconCommand("password 0");
 	SendRconCommand(str);
 	print("* Servidor Iniciado, Senha Removida.");
+}
+stock setBasicInfoPlayer(playerid){
+	MercadoInfo[playerid][Celular] = false;
+    MercadoInfo[playerid][PedagioSemPagar] = false;
+    MercadoInfo[playerid][GPS] = false;
+    MercadoInfo[playerid][Capacete] = false;
+    MercadoInfo[playerid][Oculos] = false;
+    MercadoInfo[playerid][Bone] = false;
+    MercadoInfo[playerid][Gorro] = false;
+    MercadoInfo[playerid][Arara] = false;
+
+    PlayerDados[playerid][vip] = false;
+	PlayerDados[playerid][exp] = 0;
+
+	PlayerDados[playerid][segundoUP] = 10;
+	PlayerDados[playerid][minutoUP] = 0;
+
+	PlayerDados[playerid][saude] = 100;
+	PlayerDados[playerid][sono] = 100;
+	PlayerDados[playerid][sede] = 100;
+	PlayerDados[playerid][fome] = 100;
+
+	PlayerDados[playerid][gasolina] = 14;
+	PlayerDados[playerid][etanol] = 14;
+	PlayerDados[playerid][gnv] = 14;
+	PlayerDados[playerid][diesel] = 14;
+
+	PlayerDados[playerid][Admin] = 0;
+}
+forward UpdatePlayerFome(playerid);
+public UpdatePlayerFome(playerid) {
+	if(IsPlayerConnected(playerid)){
+
+		if(PlayerDados[playerid][fome] > 0){
+			PlayerDados[playerid][fome] = PlayerDados[playerid][fome] -1;
+
+			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(playerid, 7);
+		}
+
+		timer_StatusFome[playerid] = SetTimerEx("UpdatePlayerFome", 30000, false, "i", playerid);
+		//print(getName(playerid));
+	}
+	return 1;
+}
+forward UpdateTextDraw(playerid, textid);
+public UpdateTextDraw(playerid, textid) {
+	PlayerTextDrawHide(playerid, textStatusBar[playerid][textid]);
+	PlayerTextDrawShow(playerid, textStatusBar[playerid][textid]);
+    return 1;
 }
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
