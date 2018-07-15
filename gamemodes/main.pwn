@@ -47,49 +47,107 @@
 
 //Profissões
 
-#define Desempregado              0
+#define Desempregado 			0
 
 // - Honestas
 
-#define Fotografo                 1
-#define Paramedico                2
+#define Gari 					1
+#define PizzaBoy 				2
+#define MotoBoy 				3
+#define Pescador 				4
+#define Mecanico 				5
+#define Correios 				6
+#define Fazendeiro 				7
+#define AgenteFunerario 		8
+#define Fotografo               9
+#define Jornalista 				10
+#define Meteorologista			11
+#define Advogador 				12
+#define Paramedico              13
 
 // - Transportes
 
-#define Petroleiro                3
-#define Concreteiro               4
+#define MotoTaxi 				14
+#define Entregador 				15
+#define Taxistas				16
+#define MotoristaOnibus         17
+#define Transportador 			18
+#define Maquinista         		19
+#define Petroleiro              20
+#define Concreteiro             21
+#define TaxiAereo             	22
+#define Piloto         			23
+#define MotoristacarroForte 	24
 
 // - Policias
 
-#define PMilitar                  5
-#define Interpol                  6
+#define PMilitar                25
+#define PFederal               	26
+#define PRodoviaria             27
+#define Delegado                28
+#define FBI                		29
+#define CIA                		30
+#define SWAT                	31
+#define Interpol                32
 
-// - Forças Armadas
+// - Governo
 
-#define Exercito                  7
-#define Aeronautica               8
+#define Bombeiro                33
+#define Corregedoria            34
+#define Marinha                	35
+#define Exercito                36
+#define Aeronautica             37
 
 //Cores Profissão
 
 // Cores - Honestas
 
-#define C_Fotografo                0x808080AA
-#define C_Paramedico               0xFF1493AA
+#define C_Gari 					0x008000AA
+#define C_PizzaBoy              0xFF8040AA
+#define C_MotoBoy               0x808000AA
+#define C_Pescador              0x408080AA
+#define C_Mecanico              0x008040AA
+#define C_Correios              0xF3D70CAA
+#define C_Fazendeiro            0xCECE00AA
+#define C_AgenteFunerario       0x333333AA
+#define C_Fotografo             0xA518DAAA
+#define C_Jornalista            0x00C4C4AA
+#define C_Meteorologista        0x009B9BAA
+#define C_Advogador             0x0000A0AA
+#define C_Paramedico            0x00DEEAAA
 
 // Cores - Tranportes
 
-#define C_Petroleiro               0x1E90FFAA
-#define C_Concreteiro              0x778899AA
+#define C_MotoTaxi              0xF3BF0CAA
+#define C_Entregador            0x84B4C6AA
+#define C_Taxistas              0xF3BF0CAA
+#define C_MotoristaOnibus       0xBFC486AA
+#define C_Transportador         0x00D200AA
+#define C_Maquinista            0xF99B46AA
+#define C_Petroleiro            0x009EEAAA
+#define C_Concreteiro           0xFFA346AA
+#define C_TaxiAereo             0xF3BF0CAA
+#define C_Piloto                0xA6D9ADAA
+#define C_MotoristacarroForte   0x9A9A9AAA
 
 // Cores - Policias
 
-#define C_PMilitar                 0x6495EDAA
-#define C_Interpol                 0x00FFFFAA
+#define C_PMilitar              0x0080FFAA
+#define C_PFederal              0x0067CEAA
+#define C_PRodoviaria           0x005CB9AA
+#define C_Delegado              0x022BB5AA
+#define C_FBI                   0x02249BAA
+#define C_CIA                   0x011A6BAA
+#define C_SWAT                  0x3C0C8BAA
+#define C_Interpol              0x0F2E68AA
 
-// Cores - Forças Armadas
+// Cores - Governo
 
-#define C_Exercito                 0x6B8E23AA
-#define C_Aeronautica              0x7FFFD4AA
+#define C_Bombeiro               0xEF7829AA
+#define C_Corregedoria           0x9B0000AA
+#define C_Marinha                0x8CC6FFAA
+#define C_Exercito               0x006400AA
+#define C_Aeronautica            0xD8C01BAA
 
 // Salários
 
@@ -97,23 +155,52 @@
 
 // Salário - Honestas
 
-#define Salario_Fotografo          600
-#define Salario_Paramedico         700
+#define Salario_Gari 				580
+#define Salario_PizzaBoy 			600
+#define Salario_MotoBoy 			620
+#define Salario_Pescador 			680
+#define Salario_Mecanico 			780
+#define Salario_Correios 			900
+#define Salario_Fazendeiro 			1800
+#define Salario_AgenteFunerario 	1480
+#define Salario_Fotografo           1480
+#define Salario_Jornalista 			1580
+#define Salario_Meteorologista		1600
+#define Salario_Advogador 			1800
+#define Salario_Paramedico          2000
 
 // Salário - Transportes
 
-#define Salario_Petroleiro          1100
-#define Salario_Concreteiro         1200
+#define Salario_MotoTaxi 			700
+#define Salario_Entregador 			750
+#define Salario_Taxistas			800
+#define Salario_MotoristaOnibus     820
+#define Salario_Transportador 		840
+#define Salario_Maquinista         	860
+#define Salario_Petroleiro          880
+#define Salario_Concreteiro         890
+#define Salario_TaxiAereo           900
+#define Salario_Piloto         		980
+#define Salario_MotoristacarroForte 1000
 
 // Salário - Policias
 
-#define Salario_PMilitar            2100
+#define Salario_PMilitar            1800
+#define Salario_PFederal            1900
+#define Salario_PRodoviaria         2000
+#define Salario_Delegado            2100
+#define Salario_FBI                	2200
+#define Salario_CIA                	2300
+#define Salario_SWAT               	2400
 #define Salario_Interpol            2500
 
-// Salário - Forças Armadas
+// Salário - Governo
 
-#define Salario_Exercito            3000
-#define Salario_Aeronautica         3500
+#define Salario_Bombeiro            3000
+#define Salario_Corregedoria        4000
+#define Salario_Marinha             5000
+#define Salario_Exercito            5100
+#define Salario_Aeronautica         5200
 
 //Cores
 
@@ -310,7 +397,15 @@ forward MapIcon(playerid);
 new CheckAgencia;
 new
     petroleiroCar[18],
-    taxiCar[7],
+    taxiCar[10],
+    mecanicoCar[10],
+	carroForteCar[13],
+	gariCar[11],
+	pescaCar[8],
+	transportadorCar[7],
+	pizzaBoyCar[10],
+	entregadorCar[8],
+	motoTaxiCar[11],
     VeiculoPublico[37];
 
 new bool:HQ[MAX_PLAYERS] = false;
@@ -619,33 +714,154 @@ public OnGameModeInit()
     CPAutoEscola = CPS_AddCheckpoint(1490.9628,1305.9032,1093.2964,1.0,50);// Auto Escola
 
     // Veiculos de petoleiro
-    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,37,37,15); //Tanker
-	petroleiroCar[1] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,37,37,15); //Tanker
-	petroleiroCar[2] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,37,37,15); //Tanker
-	petroleiroCar[3] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,37,37,15); //Tanker
-	petroleiroCar[4] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,37,37,15); //Tanker
-	petroleiroCar[5] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,37,37,15); //Tanker
-	petroleiroCar[6] = AddStaticVehicleEx(514,308.7998000,1355.2002000,9.9000000,73.9930000,37,37,15); //Tanker
-	petroleiroCar[7] = AddStaticVehicleEx(514,307.3999900,1349.9000000,9.9000000,73.9930000,37,37,15); //Tanker
-	petroleiroCar[8] = AddStaticVehicleEx(514,305.3999900,1343.9000000,9.9000000,73.9930000,37,37,15); //Tanker
-	petroleiroCar[9] = AddStaticVehicleEx(514,331.5000000,1470.6000000,8.2000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[10] = AddStaticVehicleEx(514,334.0000000,1483.2002000,8.5000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[11] = AddStaticVehicleEx(514,333.2000100,1476.7000000,8.3000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[12] = AddStaticVehicleEx(514,330.6000100,1464.4000000,8.1000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[13] = AddStaticVehicleEx(514,329.7000100,1458.7000000,8.1000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[14] = AddStaticVehicleEx(514,327.9003900,1452.0000000,8.1000000,79.9910000,37,37,15); //Tanker
-	petroleiroCar[15] = AddStaticVehicleEx(514,304.3999900,1471.0000000,10.2000000,267.9900000,37,37,15); //Tanker
-	petroleiroCar[16] = AddStaticVehicleEx(514,306.2999900,1464.4000000,10.2000000,267.9900000,37,37,15); //Tanker
+    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[1] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[2] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[3] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[4] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[5] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[6] = AddStaticVehicleEx(514,308.7998000,1355.2002000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[7] = AddStaticVehicleEx(514,307.3999900,1349.9000000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[8] = AddStaticVehicleEx(514,305.3999900,1343.9000000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[9] = AddStaticVehicleEx(514,331.5000000,1470.6000000,8.2000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[10] = AddStaticVehicleEx(514,334.0000000,1483.2002000,8.5000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[11] = AddStaticVehicleEx(514,333.2000100,1476.7000000,8.3000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[12] = AddStaticVehicleEx(514,330.6000100,1464.4000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[13] = AddStaticVehicleEx(514,329.7000100,1458.7000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[14] = AddStaticVehicleEx(514,327.9003900,1452.0000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[15] = AddStaticVehicleEx(514,304.3999900,1471.0000000,10.2000000,267.9900000,108,125,60); //Tanker
+	petroleiroCar[16] = AddStaticVehicleEx(514,306.2999900,1464.4000000,10.2000000,267.9900000,108,125,60); //Tanker
 
-	// Veiculos De Taxi
+    AddStaticVehicleEx(584,295.5000000,1440.4004000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,296.0996100,1446.0996000,11.6000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,296.0000000,1452.3000000,11.6000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,295.2000100,1458.6000000,10.8000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,295.7998000,1464.7002000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,294.7999900,1471.3000000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,330.5000000,1392.8000000,9.0000000,74.0000000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,329.0000000,1387.3000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,327.6000100,1382.1000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,324.8999900,1372.9000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,323.3999900,1367.8000000,9.6000000,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,321.5680500,1362.7539000,9.7997200,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,318.9580100,1352.2363000,10.4462500,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,317.3999900,1346.9000000,10.5000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,314.2999900,1341.4000000,11.3000000,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,344.2027900,1481.3641000,8.9986500,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,343.2000100,1475.0000000,9.0000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,341.7999900,1469.3000000,8.7000000,81.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,340.2999900,1462.7000000,8.7000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,339.5996100,1456.7002000,8.7000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,338.0000000,1450.4004000,8.7000000,79.9910000,245,245,60); //Trailer 3
 
-	taxiCar[0] = AddStaticVehicleEx(420,1802.4000000,-1908.1000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[1] = AddStaticVehicleEx(420,1802.3000000,-1912.2000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[2] = AddStaticVehicleEx(420,1802.6000000,-1903.9000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[3] = AddStaticVehicleEx(420,1802.2000000,-1917.0000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[5] = AddStaticVehicleEx(420,1802.0000000,-1927.3000000,13.3000000,87.9950000,215,142,15); //Taxi
-	taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.3000000,13.3000000,87.9950000,215,142,15); //Taxi
+    // Taxi
+    taxiCar[0] = AddStaticVehicleEx(438,1802.4004000,-1908.0996000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[1] = AddStaticVehicleEx(420,1802.3000000,-1912.2000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[2] = AddStaticVehicleEx(420,1802.6000000,-1903.9000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[3] = AddStaticVehicleEx(438,1802.2002000,-1917.0000000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[5] = AddStaticVehicleEx(438,1802.0000000,-1927.2998000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.2998000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[7] = AddStaticVehicleEx(438,1779.2002000,-1932.2998000,13.7169400,267.9950000,215,142,120); //Cabbie
+    taxiCar[8] = AddStaticVehicleEx(420,1779.2000000,-1927.2000000,13.3000000,267.9950000,215,142,120); //Taxi
+    taxiCar[9] = AddStaticVehicleEx(438,1779.4004000,-1922.0996000,13.7169400,267.9950000,215,142,120); //Cabbie
+
+    // Moto Taxi
+    motoTaxiCar[0] = AddStaticVehicleEx(586,1775.9000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[1] = AddStaticVehicleEx(586,1777.5000000,-1886.4000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[2] = AddStaticVehicleEx(586,1779.4000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[3] = AddStaticVehicleEx(586,1781.5000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[4] = AddStaticVehicleEx(586,1783.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[5] = AddStaticVehicleEx(586,1785.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[6] = AddStaticVehicleEx(586,1787.6000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[7] = AddStaticVehicleEx(586,1789.9000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[8] = AddStaticVehicleEx(586,1792.1000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[9] = AddStaticVehicleEx(586,1794.3000000,-1886.1000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[10] = AddStaticVehicleEx(586,1796.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    
+    // Entregador de mercadorias
+    entregadorCar[0] = AddStaticVehicleEx(414,1766.4000000,-1691.5000000,13.6000000,180.0000000,241,243,120); //Mule
+    entregadorCar[1] = AddStaticVehicleEx(414,1771.1000000,-1691.5000000,13.6000000,180.0000000,200,052,120); //Mule
+    entregadorCar[2] = AddStaticVehicleEx(414,1775.8000000,-1691.5000000,13.6000000,179.9950000,006,058,120); //Mule
+    entregadorCar[3] = AddStaticVehicleEx(414,1780.6000000,-1691.5000000,13.6000000,179.9950000,025,098,120); //Mule
+    entregadorCar[4] = AddStaticVehicleEx(414,1786.1000000,-1691.5000000,13.6000000,179.9950000,100,068,120); //Mule
+    entregadorCar[5] = AddStaticVehicleEx(414,1791.6000000,-1691.6000000,13.6000000,179.9950000,005,108,120); //Mule
+    entregadorCar[6] = AddStaticVehicleEx(414,1797.2000000,-1691.6000000,13.6000000,179.9950000,058,250,120); //Mule
+    entregadorCar[7] = AddStaticVehicleEx(414,1804.3000000,-1691.7000000,13.6000000,179.9950000,009,115,120); //Mule
+
+    pizzaBoyCar[0] = AddStaticVehicleEx(448,2122.8999000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[1] = AddStaticVehicleEx(448,2121.0000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[2] = AddStaticVehicleEx(448,2119.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[3] = AddStaticVehicleEx(448,2117.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[4] = AddStaticVehicleEx(448,2115.3000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[5] = AddStaticVehicleEx(448,2113.2000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[6] = AddStaticVehicleEx(448,2111.1001000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[7] = AddStaticVehicleEx(448,2108.8000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[8] = AddStaticVehicleEx(448,2106.7000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[9] = AddStaticVehicleEx(448,2104.6001000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+
+    
+    transportadorCar[0] = AddStaticVehicleEx(403,2672.0000000,-2486.1001000,14.4000000,180.0000000,006,159,120); //Linerunner
+    transportadorCar[1] = AddStaticVehicleEx(403,2671.8000000,-2466.8999000,14.3000000,180.0000000,058,139,120); //Linerunner
+    transportadorCar[2] = AddStaticVehicleEx(403,2667.4004000,-2507.3994000,14.4000000,270.0000000,069,128,120); //Linerunner
+    transportadorCar[3] = AddStaticVehicleEx(403,2647.8999000,-2507.2000000,14.4000000,270.0000000,098,058,120); //Linerunner
+    transportadorCar[4] = AddStaticVehicleEx(403,2626.8000000,-2507.2000000,14.4000000,270.0000000,036,069,120); //Linerunner
+    transportadorCar[5] = AddStaticVehicleEx(403,2605.6001000,-2507.3000000,14.4000000,270.0000000,024,123,120); //Linerunner
+    transportadorCar[6] = AddStaticVehicleEx(403,2584.6006000,-2507.2998000,14.4000000,270.0000000,015,048,120); //Linerunner
+
+    AddStaticVehicleEx(435,2672.0000000,-2476.7000000,14.3000000,180.0000000,058,158,60); //Trailer 1
+    AddStaticVehicleEx(435,2671.8000000,-2457.5000000,14.3000000,180.0000000,006,085,60); //Trailer 1
+    AddStaticVehicleEx(435,2658.5000000,-2507.3999000,14.1000000,269.9950000,045,125,60); //Trailer 1
+    AddStaticVehicleEx(435,2638.3999000,-2507.3000000,14.1000000,269.9950000,063,054,60); //Trailer 1
+    AddStaticVehicleEx(435,2617.4004000,-2507.2998000,14.1000000,270.0000000,058,026,60); //Trailer 1
+    AddStaticVehicleEx(435,2595.8999000,-2507.3999000,14.1000000,270.0000000,128,169,60); //Trailer 1
+    AddStaticVehicleEx(435,2575.1001000,-2507.2000000,14.1000000,270.0000000,068,052,60); //Trailer 1
+
+    pescaCar[0] = AddStaticVehicleEx(453,2640.3999000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[1] = AddStaticVehicleEx(453,2633.7000000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[2] = AddStaticVehicleEx(453,2626.7000000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[3] = AddStaticVehicleEx(453,2619.8999000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[4] = AddStaticVehicleEx(453,2613.0000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[5] = AddStaticVehicleEx(453,2606.5000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+
+    gariCar[0] = AddStaticVehicleEx(408,2112.7000000,-2070.8999000,14.3000000,132.0000000,014,016,120); //Trashmaster
+    gariCar[1] = AddStaticVehicleEx(408,2117.7000000,-2076.0000000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[2] = AddStaticVehicleEx(408,2124.8000000,-2083.3999000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[3] = AddStaticVehicleEx(408,2120.8000000,-2079.7000000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[4] = AddStaticVehicleEx(408,2127.8000000,-2086.8000000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[5] = AddStaticVehicleEx(408,2132.2000000,-2090.8000000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[6] = AddStaticVehicleEx(408,2135.0000000,-2094.1001000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[7] = AddStaticVehicleEx(408,2139.6001000,-2098.7000000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[8] = AddStaticVehicleEx(408,2108.7000000,-2066.1001000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[9] = AddStaticVehicleEx(408,2105.1001000,-2061.6001000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[10] = AddStaticVehicleEx(408,2101.1001000,-2057.3999000,14.3000000,131.9950000,014,016,120); //Trashmaster
+
+    carroForteCar[0] = AddStaticVehicleEx(428,612.5000000,-1305.6000000,14.9000000,8.0000000,006,006,120); //Securicar
+    carroForteCar[1] = AddStaticVehicleEx(428,607.7999900,-1306.1000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[2] = AddStaticVehicleEx(428,603.0999800,-1306.6000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[3] = AddStaticVehicleEx(428,598.7999900,-1306.9000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[4] = AddStaticVehicleEx(428,593.7999900,-1307.6000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[5] = AddStaticVehicleEx(428,587.9000200,-1308.5000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[6] = AddStaticVehicleEx(428,582.4000200,-1309.3000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[7] = AddStaticVehicleEx(428,578.2000100,-1300.7000000,14.9000000,281.9980000,006,006,120); //Securicar
+    carroForteCar[8] = AddStaticVehicleEx(428,576.7999900,-1294.5000000,14.9000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[9] = AddStaticVehicleEx(428,575.5999800,-1288.3000000,15.6000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[10] = AddStaticVehicleEx(428,574.2999900,-1282.4000000,16.2000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[11] = AddStaticVehicleEx(428,573.0999800,-1276.8000000,16.5000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[12] = AddStaticVehicleEx(428,572.0000000,-1271.4000000,16.7000000,281.9970000,006,006,120); //Securicar
+
+    mecanicoCar[0] = AddStaticVehicleEx(525,-77.0000000,-1106.5000000,1.1000000,160.0000000,001,086,120); //Tow Truck
+    mecanicoCar[1] = AddStaticVehicleEx(525,-72.3000000,-1108.3000000,1.1000000,159.9990000,001,086,120); //Tow Truck
+    mecanicoCar[2] = AddStaticVehicleEx(525,-67.6000000,-1110.1000000,1.1000000,159.9990000,001,086,120); //Tow Truck
+    mecanicoCar[3] = AddStaticVehicleEx(525,-66.3000000,-1120.4000000,1.1000000,67.9990000,001,086,120); //Tow Truck
+    mecanicoCar[4] = AddStaticVehicleEx(525,-61.5000000,-1130.1000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[5] = AddStaticVehicleEx(525,-53.2000000,-1133.0000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[6] = AddStaticVehicleEx(525,-45.1000000,-1136.3000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[7] = AddStaticVehicleEx(525,-41.3000000,-1155.8000000,1.1000000,333.9940000,001,086,120); //Tow Truck
+    mecanicoCar[8] = AddStaticVehicleEx(525,-45.7000000,-1153.7000000,1.1000000,333.9900000,001,086,120); //Tow Truck
+    mecanicoCar[9] = AddStaticVehicleEx(525,-50.8000000,-1151.1000000,1.1000000,333.9900000,001,086,120); //Tow Truck
 
     /*=========================[  VEICULO PUBLICOS ]============================*/
 
@@ -1079,14 +1295,146 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
     new car = GetPlayerVehicleID(playerid);//armazena na váriavel car o carro em q ele está.
     if(newstate == PLAYER_STATE_DRIVER)//se O Player entrar como motorista
 	{
+		// Petroleiro
     	for(new i = 0; i < sizeof(petroleiroCar); i ++)
 		{
 			if(car == petroleiroCar[i])
 			{
 		    	if(PlayerDados[playerid][Profissao] != Petroleiro)
 		    	{
-					SendClientMessage(playerid, 0x008000AA, "[Erro] Você não é um petroleiro, e não pode dirigir esse veiculo..");
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um petroleiro, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Taxistas
+		for(new i = 0; i < sizeof(taxiCar); i ++)
+		{
+			if(car == taxiCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Taxistas)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Taxistas, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Mecanico
+		for(new i = 0; i < sizeof(mecanicoCar); i ++)
+		{
+			if(car == mecanicoCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Mecanico)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Mecanico, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Motorista de carro Forte
+		for(new i = 0; i < sizeof(carroForteCar); i ++)
+		{
+			if(car == carroForteCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != MotoristacarroForte)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Motorista de carro Forte, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Gari
+		for(new i = 0; i < sizeof(gariCar); i ++)
+		{
+			if(car == gariCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Gari)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Gari, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Pescador
+		for(new i = 0; i < sizeof(pescaCar); i ++)
+		{
+			if(car == pescaCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Pescador)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Pescador, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Transportador
+		for(new i = 0; i < sizeof(transportadorCar); i ++)
+		{
+			if(car == transportadorCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Transportador)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Transportador, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// PizzaBoy 
+		for(new i = 0; i < sizeof(pizzaBoyCar); i ++)
+		{
+			if(car == pizzaBoyCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != PizzaBoy)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um PizzaBoy, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// PizzaBoy 
+		for(new i = 0; i < sizeof(pizzaBoyCar); i ++)
+		{
+			if(car == pizzaBoyCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != PizzaBoy)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um PizzaBoy, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// Entregador 
+		for(new i = 0; i < sizeof(entregadorCar); i ++)
+		{
+			if(car == entregadorCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != Entregador)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Entregador, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}
+			}
+		}
+		// MotoTaxi 
+		for(new i = 0; i < sizeof(motoTaxiCar); i ++)
+		{
+			if(car == motoTaxiCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != MotoTaxi)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Moto Taxi, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 				}
 			}
 		}
@@ -1108,7 +1456,7 @@ public OnPlayerEnterCheckpoint(playerid)
 
 	if(Checkpoint == CheckAgencia)
 	{
-	    ShowPlayerDialog(playerid, DialogMenuAgencia, DIALOG_STYLE_LIST, "Agência de Empregos", "Honestas\nTransporte\nPolicia\nForças Armadas", "Selecionar", "Fechar");
+	    ShowPlayerDialog(playerid, DialogMenuAgencia, DIALOG_STYLE_LIST, "Agência de Empregos", "Honestas\nTransporte\nPolicia\nGoverno", "Selecionar", "Fechar");
 	}
     if(Checkpoint == CPAutoEscola )
     {
@@ -1643,13 +1991,51 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
         case DialogMenuAgencia:{
             if(response){
     	        if(listitem == 0){
-    	            ShowPlayerDialog(playerid, DialogHonestas, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Honestas", "Profissão\t{33AAFF}Level\t{008000}Salário\nFotografo\t{33AAFF}0\t{008000}$600,00\nParamedico\t{33AAFF}5\t{008000}$700,00", "Selecionar", "Voltar");
+ 					new string[952];
+					strcat(string, "Profissão\t{33AAFF}Level\t{008000}Salário\n");
+					strcat(string, "Gari\t{33AAFF}0\t{008000}$580,00\n");
+					strcat(string, "PizzaBoy\t{33AAFF}2\t{008000}$600,00\n");
+					strcat(string, "MotoBoy\t{33AAFF}4\t{008000}$620,00\n");
+					strcat(string, "Pescador\t{33AAFF}8\t{008000}$680,00\n");
+					strcat(string, "Mecanico\t{33AAFF}10\t{008000}$780,00\n");
+					strcat(string, "Correios\t{33AAFF}12\t{008000}$900,00\n");
+					strcat(string, "Fazendeiro\t{33AAFF}14\t{008000}$1800,00\n");
+					strcat(string, "AgenteFunerario\t{33AAFF}16\t{008000}$1480,00\n");
+					strcat(string, "Fotografo\t{33AAFF}18\t{008000}$1480,00\n");
+					strcat(string, "Jornalista\t{33AAFF}18\t{008000}$1580,00\n");
+					strcat(string, "Meteorologista\t{33AAFF}18\t{008000}$1600,00\n");
+					strcat(string, "Advogador\t{33AAFF}18\t{008000}$1800,00\n");
+					strcat(string, "Paramedico\t{33AAFF}18\t{008000}$2000,00");
+    	        	ShowPlayerDialog(playerid, DialogHonestas, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Honestas", string, "Selecionar", "Voltar");   	        
     	        }
     	        if(listitem == 1){
-    	            ShowPlayerDialog(playerid, DialogTransportes, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Transportes", "Profissão\t{33AAFF}Level\t{008000}Salário\nPetroleiro\t{33AAFF}0\t{008000}$1.100,00\nConcreteiro\t{33AAFF}10\t{008000}$1.200,00", "Selecionar", "Voltar");
+ 					new string[952];
+					strcat(string, "Profissão\t{33AAFF}Level\t{008000}Salário\n");
+					strcat(string, "Moto Táxi\t{33AAFF}0\t{008000}$700,00\n");
+					strcat(string, "Entregador\t{33AAFF}2\t{008000}$750,00\n");
+					strcat(string, "Taxistas\t{33AAFF}4\t{008000}$800,00\n");
+					strcat(string, "Motorista de Onibus\t{33AAFF}8\t{008000}$820,00\n");
+					strcat(string, "Transportador\t{33AAFF}10\t{008000}$840,00\n");
+					strcat(string, "Maquinista\t{33AAFF}12\t{008000}$860,00\n");
+					strcat(string, "Petroleiro\t{33AAFF}14\t{008000}$880,00\n");
+					strcat(string, "Concreteiro\t{33AAFF}16\t{008000}$890,00\n");
+					strcat(string, "Táxi Aéreo\t{33AAFF}18\t{008000}$900,00\n");
+					strcat(string, "Piloto\t{33AAFF}18\t{008000}$980,00\n");
+					strcat(string, "Motorista de carro Forte\t{33AAFF}18\t{008000}$1000,00");
+    	            ShowPlayerDialog(playerid, DialogTransportes, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Transportes", string, "Selecionar", "Voltar");
     	        }
     	        if(listitem == 2){
-    	            ShowPlayerDialog(playerid, DialogPolicias, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Policias", "Profissão\t{33AAFF}Level\t{008000}Salário\nPolícia Militar\t{33AAFF}50\t{008000}$2.100,00\nInterpol\t{33AAFF}200\t{008000}$2.500,00", "Selecionar", "Voltar");
+    	        	new string[952];
+					strcat(string, "Profissão\t{33AAFF}Level\t{008000}Salário\n");
+					strcat(string, "PMilitar\t{33AAFF}0\t{008000}$1800,00\n");
+					strcat(string, "PFederal\t{33AAFF}2\t{008000}$1900,00\n");
+					strcat(string, "PRodoviaria\t{33AAFF}4\t{008000}$2000,00\n");
+					strcat(string, "Delegado\t{33AAFF}8\t{008000}$2100,00\n");
+					strcat(string, "FBI\t{33AAFF}10\t{008000}$2200,00\n");
+					strcat(string, "CIA\t{33AAFF}12\t{008000}$2300,00\n");
+					strcat(string, "SWAT\t{33AAFF}12\t{008000}$2400,00\n");
+					strcat(string, "Interpol\t{33AAFF}18\t{008000}$2500,00");
+    	            ShowPlayerDialog(playerid, DialogPolicias, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » Policias", string, "Selecionar", "Voltar");
     	        }
     	        if(listitem == 3){
     	            ShowPlayerDialog(playerid, DialogForcasArmadas, DIALOG_STYLE_TABLIST_HEADERS, "Profissões » ForcasArmadas", "Profissão\t{33AAFF}Level\t{008000}Salário\nExército\t{33AAFF}700\t{008000}$3.000,00\nAéronautica\t{33AAFF}800\t{008000}$3.500,00", "Selecionar", "Voltar");
@@ -2513,12 +2899,22 @@ public UpdatePlayerLevel(playerid) {
 				PlayerDados[playerid][minutoUP] -= 1;
 				PlayerDados[playerid][segundoUP] = 59;		
 			}else{
+				new str[255];
+
 				PlayerDados[playerid][minutoUP] = 9;
 				PlayerDados[playerid][segundoUP] = 59;
 
 				PlayerDados[playerid][exp]	+= 1;
 
-				new str[255];
+				if(PlayerDados[playerid][exp] == 6){
+					PlayerDados[playerid][exp] = 0;
+					SetPlayerScore(playerid, (GetPlayerScore(playerid)+1) );
+
+					format(str, sizeof(str), "| UP | Parabéns %s você passou de level ( %d )", getName(playerid), GetPlayerScore(playerid));
+					SendClientMessage(playerid, COR_SUCCESS, str);
+					PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+				}
+
 				format(str, sizeof(str), "| UP | Você ganhou +1 de Experiência ( %d/6 )", PlayerDados[playerid][exp]);
 				SendClientMessage(playerid, COR_SUCCESS, str);
 				
