@@ -245,6 +245,9 @@ new PlayerText:textStatusBar[MAX_PLAYERS][8];
 
 // Status Update
 new timer_StatusFome[MAX_PLAYERS];
+new timer_StatusSede[MAX_PLAYERS];
+new timer_StatusSaude[MAX_PLAYERS];
+new timer_UpdatePlayerLevel[MAX_PLAYERS];
 
 // (Vendo o velocimetro ou não}
 new bool:PlayerVelocimetro[MAX_PLAYERS];
@@ -910,6 +913,10 @@ public OnPlayerDisconnect(playerid, reason)
     }
 
     KillTimer(timer_StatusFome[playerid]);
+    KillTimer(timer_StatusSede[playerid]);
+    KillTimer(timer_StatusSaude[playerid]);
+    KillTimer(timer_UpdatePlayerLevel[playerid]);
+
 	return 1;
 }
 
@@ -924,8 +931,6 @@ public OnPlayerSpawn(playerid)
     // Status
     for (new a = 0; a < sizeof(textStatus); a++){ TextDrawShowForPlayer(playerid, textStatus[a]); }
     for( new a = 0; a < 8; a++) PlayerTextDrawShow(playerid, textStatusBar[playerid][a]);
-
-    UpdatePlayerFome(playerid);
 
 	return 1;
 }
@@ -1459,6 +1464,7 @@ public OnPlayerUpdate(playerid)
 		    }
 		}
 	}
+
 	return 1;
 }
 
@@ -1607,6 +1613,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    SetSpawnInfo(playerid, 0, 0, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"), 269.15, 0, 0, 0, 0, 0, 0);
 	  				SpawnPlayer(playerid);
 				    TogglePlayerSpectating(playerid, false);
+				    UpdatePlayerFome(playerid);
+				    UpdatePlayerSede(playerid);
+				    UpdatePlayerSaude(playerid);
+				    UpdatePlayerLevel(playerid);
 				    Logado{playerid} = true;
 				    SendClientMessage(playerid,-1,"Logado com sucesso!");
 				}
@@ -2428,6 +2438,11 @@ stock setBasicInfoPlayer(playerid){
 	PlayerDados[playerid][diesel] = 14;
 
 	PlayerDados[playerid][Admin] = 0;
+
+	UpdatePlayerFome(playerid);
+	UpdatePlayerSede(playerid);
+	UpdatePlayerSaude(playerid);
+	UpdatePlayerLevel(playerid);
 }
 forward UpdatePlayerFome(playerid);
 public UpdatePlayerFome(playerid) {
@@ -2440,8 +2455,87 @@ public UpdatePlayerFome(playerid) {
 			UpdateTextDraw(playerid, 7);
 		}
 
-		timer_StatusFome[playerid] = SetTimerEx("UpdatePlayerFome", 30000, false, "i", playerid);
-		//print(getName(playerid));
+		timer_StatusFome[playerid] = SetTimerEx("UpdatePlayerFome", 180000, false, "i", playerid);
+	}
+	return 1;
+}
+forward UpdatePlayerSede(playerid);
+public UpdatePlayerSede(playerid) {
+	if(IsPlayerConnected(playerid)){
+
+		if(PlayerDados[playerid][sede] > 0){
+			PlayerDados[playerid][sede] = PlayerDados[playerid][sede] -1;
+
+			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(playerid, 5);
+		}
+
+		timer_StatusSede[playerid] = SetTimerEx("UpdatePlayerSede", 120000, false, "i", playerid);
+	}
+	return 1;
+}
+forward UpdatePlayerSaude(playerid);
+public UpdatePlayerSaude(playerid) {
+	if(IsPlayerConnected(playerid)){
+
+		if(PlayerDados[playerid][saude] > 0){
+			PlayerDados[playerid][saude] = PlayerDados[playerid][saude] -1;
+
+			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(playerid, 3);
+		}
+
+		timer_StatusSede[playerid] = SetTimerEx("UpdatePlayerSaude", 600000, false, "i", playerid);
+	}
+	return 1;
+}
+forward UpdatePlayerStar(playerid);
+public UpdatePlayerStar(playerid) {
+	if(IsPlayerConnected(playerid)){
+
+		new string_velo[15];
+ 
+        format(string_velo, sizeof (string_velo), "%d", GetPlayerWantedLevel(playerid));
+        PlayerTextDrawSetString(playerid, textStatusBar[1][playerid], string_velo);
+
+		UpdateTextDraw(playerid, 1);
+	}
+	return 1;
+}
+forward UpdatePlayerLevel(playerid);
+public UpdatePlayerLevel(playerid) {
+	if(IsPlayerConnected(playerid)){
+
+		PlayerDados[playerid][segundoUP] -= 1;
+
+		if(PlayerDados[playerid][segundoUP] <= 0){
+			if(PlayerDados[playerid][minutoUP] > 0){
+				PlayerDados[playerid][minutoUP] -= 1;
+				PlayerDados[playerid][segundoUP] = 59;		
+			}else{
+				PlayerDados[playerid][minutoUP] = 9;
+				PlayerDados[playerid][segundoUP] = 59;
+
+				PlayerDados[playerid][exp]	+= 1;
+
+				new str[255];
+				format(str, sizeof(str), "| UP | Você ganhou +1 de Experiência ( %d/6 )", PlayerDados[playerid][exp]);
+				SendClientMessage(playerid, COR_SUCCESS, str);
+				
+			}
+		}
+
+		new string_velo[15];
+ 
+        format(string_velo, sizeof (string_velo), "%d:%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
+        if(PlayerDados[playerid][segundoUP] < 10){
+        	format(string_velo, sizeof (string_velo), "%d:0%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
+        }
+        PlayerTextDrawSetString(playerid, textStatusBar[0][playerid], string_velo);
+
+		UpdateTextDraw(playerid, 0);
+
+		timer_UpdatePlayerLevel[playerid] = SetTimerEx("UpdatePlayerLevel", 1000, false, "i", playerid);
 	}
 	return 1;
 }
