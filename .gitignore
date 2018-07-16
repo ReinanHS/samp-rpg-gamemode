@@ -33,5 +33,6 @@ server-readme.txt
 ###################
 compiler
 /npcmodes
+/scriptfiles/Info
 
 *.vscode
