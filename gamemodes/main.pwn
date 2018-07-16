@@ -2358,38 +2358,255 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     	    {
     	        if(listitem == 0)
     	        {
-    	            if(GetPlayerScore(playerid) >= 0)
+    	            if(GetPlayerScore(playerid) >= 5)
     	            {
-    		        	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Petroleiro ~~~~~~~~~~~~~~~~~~~~~~~");
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ MotoTaxi ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como MotoTaxi!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$700,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ MotoTaxi ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = MotoTaxi;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 1)
+    			{
+    			    if(GetPlayerScore(playerid) >= 10)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Entregador ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Entregador!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$750,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Entregador ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = Entregador;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 2)
+    			{
+    			    if(GetPlayerScore(playerid) >= 15)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Taxistas ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Taxista!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$800,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Taxistas ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = Taxistas;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 3)
+    			{
+    			    if(GetPlayerScore(playerid) >= 20)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Motorista de Ônibus ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Motorista de Ônibus!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$820,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Motorista de Ônibus ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = MotoristaOnibus;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 4)
+    			{
+    			    if(GetPlayerScore(playerid) >= 40)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Transportador ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Transportador!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$840,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Transportador ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = Transportador;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 5)
+    			{
+    			    if(GetPlayerScore(playerid) >= 45)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Maquinista ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Maquinista!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$860,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Maquinista ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = Maquinista;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 6)
+    			{
+    			    if(GetPlayerScore(playerid) >= 50)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Petroleiro ~~~~~~~~~~~~~~~~~~~~~~~");
     	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
     	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Petroleiro!");
-    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$1.100,00");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$880,00");
     	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Petroleiro ~~~~~~~~~~~~~~~~~~~~~~~");
 
                         PlayerDados[playerid][Profissao] = Petroleiro;
 
                         HQ[playerid] = false;
                         cmd_hq(playerid);
-                        SendClientMessage(playerid, 0xFFFFFFAA, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
     				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
     			}
-    			if(listitem == 1)
+    			else if(listitem == 7)
     			{
-    			    if(GetPlayerScore(playerid) >= 10)
+    			    if(GetPlayerScore(playerid) >= 60)
     	            {
-    				    SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Concreteiro ~~~~~~~~~~~~~~~~~~~~~~~");
-    		            SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
-    		            SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Concreteiro!");
-    		            SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$1.200,00");
-    		            SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Concreteiro ~~~~~~~~~~~~~~~~~~~~~~~");
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Concreteiro ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Concreteiro!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$890,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Concreteiro ~~~~~~~~~~~~~~~~~~~~~~~");
 
                         PlayerDados[playerid][Profissao] = Concreteiro;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
     				}
     				else
     				{
-    				    SendClientMessage(playerid, 0xFF0000AA, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 8)
+    			{
+    			    if(GetPlayerScore(playerid) >= 70)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Táxi Aéreo ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Táxi Aéreo!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$900,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Táxi Aéreo ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = TaxiAereo;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 9)
+    			{
+    			    if(GetPlayerScore(playerid) >= 80)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Piloto ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Piloto!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$980,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Piloto ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = Piloto;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
+    				}
+    			}
+    			else if(listitem == 10)
+    			{
+    			    if(GetPlayerScore(playerid) >= 100)
+    	            {
+    			    	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Motorista de carro forte ~~~~~~~~~~~~~~~~~~~~~~~");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Seu curriculo foi aceito nesta Profissão!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Agora você trabalha como Motorista de carro forte!");
+    	            	SendClientMessage(playerid, 0xFFFFFFAA, "» Você passará a receber um salário de {008000}$1000,00");
+    	            	SendClientMessage(playerid, 0x008080AA, "~~~~~~~~~~~~~~~~~~~~~~~ Motorista de carro forte ~~~~~~~~~~~~~~~~~~~~~~~");
+
+                        PlayerDados[playerid][Profissao] = MotoristacarroForte;
+
+                        HQ[playerid] = false;
+                        cmd_hq(playerid);
+                        SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
+
+                        PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+    				}
+    				else
+    				{
+    				    SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem level suficiente para pegar esta Profissão!");
     				}
     			}
     		}
