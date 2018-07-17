@@ -11,11 +11,7 @@
 
 //------------------------- { - DEFINIÇÕES - } ---------------------------------
 // Init Gamemode + configs
-#define SERVER_NAME_INIT "• [SL] Iniciando Servidor... •"
-#define SERVER_NAME "• [SL] Skylandia Cidade Vida Real •"
-#define SERVER_GAMEMODE "Brasil RPG ® 2018"
 #define SERVER_PASSWORD "29n7nd7jak3" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
-#define SERVER_LANGUAGE "Português - Brasil"
 //==========[ DIALOGS ]=======       ==[ IDs ]==
 #define     DialogRegistro              (1)		// DEFINE DIALOG REGISTRO (ID= 1)
 #define     DialogLogin                 (2)		// DEFINE DIALOG LOGIN   (ID= etc..)
@@ -427,15 +423,9 @@ main()
 public OnGameModeInit()
 {
     // Basic Config
-    new Gamemode[256], Hostname[256], Password[256], Language[256];
-	format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
-	format(Hostname, sizeof(Hostname), "hostname %s", SERVER_NAME_INIT);
+    new Password[256];
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
-	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
-	SetGameModeText(Gamemode);
-	SendRconCommand(Hostname);
 	SendRconCommand(Password);
-	SendRconCommand(Language);
 
     print("\n----------------------------------");
 	print(" Skylandia Cidade Vida Real");
@@ -3509,10 +3499,7 @@ stock CarregarDados(playerid)
 forward ServerInit();
 public ServerInit()
 {
-	new str[256];
-	format(str, sizeof(str), "hostname %s", SERVER_NAME);
 	SendRconCommand("password 0");
-	SendRconCommand(str);
 	print("* Servidor Iniciado, Senha Removida.");
 }
 stock setBasicInfoPlayer(playerid){
@@ -3789,36 +3776,6 @@ stock fileLog(file[], string[]) // Creditos "im" do forum samp.
     return 1;
 }
 //Comandos é outros
-COMMAND:givecar(playerid, params[])
-{
-	if (IsPlayerAdmin(playerid))
-	{
-        new car;
-        new string[128];
-        new Float:X, Float:Y, Float:Z; //This will be where the vehicle spawns!
-        GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
-        if(sscanf(params,"i", car))
-        {
-            return SendClientMessage(playerid,COR_ERRO,"USAGE: /givecar <Vehicle ID 400 - 611>");
-        }
-        else if(car < 400 || car >611){
-            return SendClientMessage(playerid, COR_ERRO, "ERROR: Cannot go under 400 or above 611.");
-        }
-        else
-        {
-            if(Vehicle[playerid] != 0)
-            {
-            	DestroyVehicle(Vehicle[playerid]);
-            }
-            Vehicle[playerid] = CreateVehicle(car, X, Y, Z + 2.0, 0, -1, -1, 1);
-            PutPlayerInVehicle(playerid, Vehicle[playerid], 0);
-            format(string,sizeof(string),"You Have Spawned Vehicle ID %i",car);
-            SendClientMessage(playerid, COR_SUCCESS, string);
-        }
-    }
-	else SendClientMessage(playerid, COR_ERRO, "Only admins can use this command!");
-	return 1;
-}
 CMD:hq(playerid)
 {
     if(HQ[playerid] == true)
@@ -4038,17 +3995,6 @@ CMD:ajuda (playerid, params[])
 	fileLog("Ajuda", Log);
 	return 1;
 }
-/*===========================[ RespawnV ]====================*/
-
-CMD:respawnv (playerid)
-{
-	if(PlayerDados[playerid][Admin] == 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Usar Este Comando!");
-	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Está Em Um Veículo!");
-	new V = GetPlayerVehicleID(playerid);
-	SetVehicleToRespawn(V);
-	SendClientMessage(playerid, COR_SUCCESS, "| OK | Veículo Respawnado Com Sucesso!");
-	return 1;
-}
 /*===============[ GPS ]==============*/
 
 CMD:gps (playerid, params[])
@@ -4139,6 +4085,484 @@ CMD:admins (playerid)
 
     return 1;
 
+}
+// Comandos para admins 
+CMD:givecar(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new car;
+        new string[128];
+        new Float:X, Float:Y, Float:Z;
+        GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+        if(sscanf(params,"i", car))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /givecar <Vehicle ID 400 - 611>");
+        }
+        else if(car < 400 || car >611){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | Não pode ir abaixo de 400 ou acima de 611");
+        }
+        else
+        {
+            if(Vehicle[playerid] != 0)
+            {
+            	DestroyVehicle(Vehicle[playerid]);
+            }
+            Vehicle[playerid] = CreateVehicle(car, X, Y, Z + 2.0, 0, -1, -1, 1);
+            PutPlayerInVehicle(playerid, Vehicle[playerid], 0);
+            format(string,sizeof(string),"Você gerou o veículo ID %i",car);
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s criou um veículo!",getName(playerid));
+
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s criou um veículo [/givecar]", getName(playerid));
+			fileLog("Admins", Log);
+
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+/*===========================[ RespawnV ]====================*/
+
+CMD:respawnv (playerid)
+{
+	if(PlayerDados[playerid][Admin] == 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Usar Este Comando!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Está Em Um Veículo!");
+	new V = GetPlayerVehicleID(playerid);
+	SetVehicleToRespawn(V);
+	SendClientMessage(playerid, COR_SUCCESS, "| OK | Veículo Respawnado Com Sucesso!");
+
+	new string[128];
+	format(string,sizeof(string),"| STAFF | %s fez com que o veículo fosse respawnado!",getName(playerid));
+
+    for(new i,a = GetMaxPlayers(); i < a; i++)
+	{
+		if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+		{
+			SendClientMessage(i, COR_WARNING, string);
+		}
+	}
+
+	format(Log, sizeof(Log), "O %s fez com que o veículo fosse respawnado [/respawnv]", getName(playerid));
+	fileLog("Admins", Log);
+	return 1;
+}
+// Gasolina
+CMD:setgasolina(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setgasolina < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 100){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 100");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	PlayerDados[id][gasolina] = valor;
+
+            format(string,sizeof(string),"Você atualizou o valor da gasolina de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor da gasolina de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor da gasolina de %s [/setgasolina]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Fome
+CMD:setfome(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setvalor < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 100){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 100");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	PlayerDados[id][fome] = valor;
+
+        	PlayerTextDrawTextSize(id, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[id][fome] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(id, 7);
+
+            format(string,sizeof(string),"Você atualizou o valor da fome de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor da fome de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor da fome de %s [/setfome]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Sede
+CMD:setsede(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setsede < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 100){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 100");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	PlayerDados[id][sede] = valor;
+
+        	PlayerTextDrawTextSize(id, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[id][sede] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(id, 5);
+
+            format(string,sizeof(string),"Você atualizou o valor da sede de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor da sede de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor da sede de %s [/setsede]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Saude
+CMD:setsaude(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setsaude < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 100){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 100");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	PlayerDados[id][saude] = valor;
+
+        	PlayerTextDrawTextSize(id, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[id][saude] ) / 100 ) ), 0.000000);
+			UpdateTextDraw(id, 3);
+
+            format(string,sizeof(string),"Você atualizou o valor da saude de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor da saude de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor da saude de %s [/setsaude]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Level de Procurado
+CMD:setprocurado(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setprocurado < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 10){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 10");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	SetPlayerWantedLevel(id, valor);
+        	
+        	new string_velo[15];
+ 
+	        format(string_velo, sizeof (string_velo), "%d", GetPlayerWantedLevel(id));
+	        PlayerTextDrawSetString(id, textStatusBar[1][id], string_velo);
+
+			UpdateTextDraw(id, 1);
+
+            format(string,sizeof(string),"Você atualizou o valor do level de procurado de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor do level de procurado de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor do level de procurado de %s [/setprocurado]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+
+// Teletransportar jogador
+CMD:tp(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /tp < ID do jogador > < ID do jogador >");
+        }
+        else if(!IsPlayerConnected(id) || !IsPlayerConnected(valor)){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	new Float:X, Float:Y, Float:Z;
+        	GetPlayerPos(id, Float:X, Float:Y, Float:Z);
+
+			GetPlayerPos(valor, X, Y, Z);        	
+
+            format(string,sizeof(string),"Você teletransportou até o jogador %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s teletransportou até de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s teletransportou até %s [/tp]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+
+// Level de Procurado
+CMD:setmoney(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 2)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setmoney < ID do jogador > < Valor >");
+        }
+        else if(valor < 0 || valor > 10000){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 10000");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	GivePlayerMoney(id, valor);
+
+            format(string,sizeof(string),"Você atualizou o valor do money de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor do money de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor de money de %s [/setmoney]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Set Skin
+CMD:setskin(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 1)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setskin < ID do jogador > < ID da  >");
+        }
+        else if(valor < 0 || valor > 311){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 311");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	SetPlayerSkin(id, valor);
+
+            format(string,sizeof(string),"Você atualizou o valor da Skin de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor da Skin de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor da Skin de %s [/setskin]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Set Admin
+CMD:setadmin(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 4)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setadmin < ID do jogador > < Level Admin >");
+        }
+        else if(valor < 0 || valor > 4){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 4");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+     		PlayerDados[id][Admin] = valor;   	
+
+            format(string,sizeof(string),"Você definiu o jogador como um membro da staff %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            if(valor == 1){
+            	format(string,sizeof(string),"| STAFF | %s definiu o jogador %s como Ajudante!",getName(playerid), getName(id));
+            	SendClientMessageToAll(COR_ERRO, string);
+            }else  if(valor == 2){
+            	format(string,sizeof(string),"| STAFF | %s definiu o jogador %s como Moderador!",getName(playerid), getName(id));
+            	SendClientMessageToAll(COR_ERRO, string);
+            }else if(valor == 3){
+            	format(string,sizeof(string),"| STAFF | %s definiu o jogador %s como Administrador!",getName(playerid), getName(id));
+            	SendClientMessageToAll(COR_ERRO, string);
+            }else{
+            	format(string,sizeof(string),"| STAFF | %s definiu o jogador %s como um membro da Diretoria!",getName(playerid), getName(id));
+            	SendClientMessageToAll(COR_ERRO, string);
+            }
+            
+			format(Log, sizeof(Log), "O %s definiu o jogador %s como um membro da staff [/setadmin]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
 }
 
 //------------------------------------------------------------------------------
