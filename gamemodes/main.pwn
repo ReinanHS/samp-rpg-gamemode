@@ -396,7 +396,7 @@ new
     taxiCar[10],
     mecanicoCar[10],
 	carroForteCar[13],
-	gariCar[11],
+	gariCar[4],
 	pescaCar[8],
 	transportadorCar[7],
 	pizzaBoyCar[10],
@@ -405,6 +405,7 @@ new
     VeiculoPublico[37];
 
 new bool:HQ[MAX_PLAYERS] = false;
+new bool:profissaoUniforme[MAX_PLAYERS] = false;
 new respawntrailer;
 
 //------------------------------------------------------------------------------
@@ -684,6 +685,8 @@ public OnGameModeInit()
     AddStaticPickup(1239,23,-22.1867,-55.6953,1003.5469);// Menu Mercado 24/7 De Compras
     AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
     AddStaticPickup(1318,23,1494.325195,1304.942871,1093.289062);// Saida Auto Escola (ID: 0)
+    // Gari
+    AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
     /*              3D TEXTS                               */
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
@@ -697,6 +700,8 @@ public OnGameModeInit()
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}Entrada",50,293.1352,1416.2681,10.6482,30,0);//Entrada - Petroleiro
     Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
+    // Gari
+    Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
 
 
     //Checks
@@ -752,9 +757,9 @@ public OnGameModeInit()
     taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,006,000,120); //Taxi
     taxiCar[5] = AddStaticVehicleEx(438,1802.0000000,-1927.2998000,13.7169400,87.9950000,006,000,120); //Cabbie
     taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.2998000,13.3000000,87.9950000,006,000,120); //Taxi
-    taxiCar[7] = AddStaticVehicleEx(438,1779.2002000,-1932.2998000,13.7169400,267.9950000,215,142,120); //Cabbie
-    taxiCar[8] = AddStaticVehicleEx(420,1779.2000000,-1927.2000000,13.3000000,267.9950000,215,142,120); //Taxi
-    taxiCar[9] = AddStaticVehicleEx(438,1779.4004000,-1922.0996000,13.7169400,267.9950000,215,142,120); //Cabbie
+    taxiCar[7] = AddStaticVehicleEx(438,1779.2002000,-1932.2998000,13.7169400,267.9950000,006,000,120); //Cabbie
+    taxiCar[8] = AddStaticVehicleEx(420,1779.2000000,-1927.2000000,13.3000000,267.9950000,006,000,120); //Taxi
+    taxiCar[9] = AddStaticVehicleEx(438,1779.4004000,-1922.0996000,13.7169400,267.9950000,006,000,120); //Cabbie
 
     // Moto Taxi
     motoTaxiCar[0] = AddStaticVehicleEx(586,1775.9000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
@@ -816,17 +821,10 @@ public OnGameModeInit()
     pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
     pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
 
-    gariCar[0] = AddStaticVehicleEx(408,2112.7000000,-2070.8999000,14.3000000,132.0000000,014,016,120); //Trashmaster
-    gariCar[1] = AddStaticVehicleEx(408,2117.7000000,-2076.0000000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[2] = AddStaticVehicleEx(408,2124.8000000,-2083.3999000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[3] = AddStaticVehicleEx(408,2120.8000000,-2079.7000000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[4] = AddStaticVehicleEx(408,2127.8000000,-2086.8000000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[5] = AddStaticVehicleEx(408,2132.2000000,-2090.8000000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[6] = AddStaticVehicleEx(408,2135.0000000,-2094.1001000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[7] = AddStaticVehicleEx(408,2139.6001000,-2098.7000000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[8] = AddStaticVehicleEx(408,2108.7000000,-2066.1001000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[9] = AddStaticVehicleEx(408,2105.1001000,-2061.6001000,14.3000000,131.9950000,014,016,120); //Trashmaster
-    gariCar[10] = AddStaticVehicleEx(408,2101.1001000,-2057.3999000,14.3000000,131.9950000,014,016,120); //Trashmaster
+    gariCar[0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
+    gariCar[1] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
+    gariCar[2] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
+    gariCar[3] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
 
     carroForteCar[0] = AddStaticVehicleEx(428,612.5000000,-1305.6000000,14.9000000,8.0000000,006,006,120); //Securicar
     carroForteCar[1] = AddStaticVehicleEx(428,607.7999900,-1306.1000000,14.9000000,7.9980000,006,006,120); //Securicar
@@ -969,6 +967,7 @@ public OnPlayerConnect(playerid)
 {
     SendClientMessage(playerid, 0x0080FFAA, "| INFO | Aguarde... Carregando os dados!");
     Logado{playerid} = false;
+    profissaoUniforme[playerid] = false;
 
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
@@ -1107,6 +1106,12 @@ public OnPlayerDisconnect(playerid, reason)
 {
     if(Logado{playerid} == true) {
     	GetPlayerPos(playerid, pPosX[playerid], pPosY[playerid], pPosZ[playerid]);
+
+    	if(profissaoUniforme[playerid]){
+    		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+    		profissaoUniforme[playerid] = false;
+    	}
+
     	SalvarDados(playerid);
     	Logado{playerid} = false;
     }
@@ -1345,6 +1350,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		    	if(PlayerDados[playerid][Profissao] != Gari)
 		    	{
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Gari, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+				}else if(!profissaoUniforme[playerid]){
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de Gari, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 				}
@@ -3786,7 +3795,15 @@ CMD:hq(playerid)
     }
     else if(HQ[playerid] == false)
     {
-       if(PlayerDados[playerid][Profissao] == Petroleiro)
+       if(PlayerDados[playerid][Profissao] == Gari)
+        {
+            SetPlayerMapIcon(playerid, GPS_ID, 2176.1892,-1976.0012,13.5547, GPS_ICON, 0, MAPICON_GLOBAL);
+            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
+
+            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+            HQ[playerid] = true;
+        }
+        else if(PlayerDados[playerid][Profissao] == Petroleiro)
         {
             SetPlayerMapIcon(playerid, GPS_ID, 312.1143,1477.8135,8.8824, GPS_ICON, 0, MAPICON_GLOBAL);
             SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
@@ -3794,6 +3811,25 @@ CMD:hq(playerid)
             PlayerPlaySound(playerid, 1057, 0 ,0, 0);
             HQ[playerid] = true;
         }
+    }
+    return 1;
+}
+CMD:uniforme(playerid)
+{
+    if(PlayerDados[playerid][Profissao] == Gari)
+    {
+        if(PlayerToPoint(playerid, 2.0, 2176.1892,-1976.0012,13.5547))
+        {
+            if(!profissaoUniforme[playerid])
+            {
+                SendClientMessage(playerid, COR_SUCCESS, "| INFO | Parabéns, vocé está utilizando o uniforme de Gari! Use /profissao para ver seus comandos");
+            }
+            else 
+            {
+            	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de Gari!");
+         	}
+         }
+         else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de carregamento!");
     }
     return 1;
 }
@@ -4562,6 +4598,33 @@ CMD:setadmin(playerid, params[])
         }
     }
 	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+
+CMD:setlata(playerid, params[])
+{
+	new Float:X, Float:Y, Float:Z;
+    GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+
+    new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
+	GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+
+	Create3DTextLabel("{42f45f}Lixeira 3/3\n {FFFFFF}/coletarLixo", 0x008080FF, X, Y, Z, 15.0, 0, 0);
+	format(Log, sizeof(Log), "{%f,%f,%f, 3.0}, // %s Local: %s", X,Y,Z,getName(playerid), Zona);
+	fileLog("lata", Log);
+	return 1;
+}
+CMD:setlixo(playerid, params[])
+{
+	new Float:X, Float:Y, Float:Z;
+    GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+
+    new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
+	GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+
+	Create3DTextLabel("{42f45f}Lixeira 1/1\n {FFFFFF}/coletarLixo", 0x008080FF, X, Y, Z, 15.0, 0, 0);
+	format(Log, sizeof(Log), "{%f,%f,%f, 1.0}, // %s Local: %s", X,Y,Z,getName(playerid), Zona);
+	fileLog("lixeira", Log);
 	return 1;
 }
 
