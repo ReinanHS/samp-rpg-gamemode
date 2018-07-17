@@ -4519,7 +4519,7 @@ CMD:setskin(playerid, params[])
         new id, valor;
         if(sscanf(params,"ii", id, valor))
         {
-            return SendClientMessage(playerid,COR_ERRO,"Use: /setskin < ID do jogador > < ID da  >");
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setskin < ID do jogador > < ID da Skin >");
         }
         else if(valor < 0 || valor > 311){
             return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 311");
@@ -4548,6 +4548,49 @@ CMD:setskin(playerid, params[])
 			}
 
 			format(Log, sizeof(Log), "O %s atualizou o valor da Skin de %s [/setskin]", getName(playerid), getName(id));
+			fileLog("Admins", Log);
+        }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	return 1;
+}
+// Set level
+CMD:setlevel(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 3)
+	{
+        new id, valor;
+        if(sscanf(params,"ii", id, valor))
+        {
+            return SendClientMessage(playerid,COR_ERRO,"Use: /setlevel < ID do jogador > < Level >");
+        }
+        else if(valor < 0 || valor > 1600){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 311");
+        }
+        else if(!IsPlayerConnected(id)){
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else
+        {
+        	new string[128];
+
+        	SetPlayerScore(id, valor);
+
+            format(string,sizeof(string),"Você atualizou o valor do Level de %s!",getName(id));
+            SendClientMessage(playerid, COR_SUCCESS, string);
+
+            format(string,sizeof(string),"| STAFF | %s atualizou o valor do Level de %s!",getName(playerid), getName(id));
+            SendClientMessage(id, COR_SUCCESS, string);
+            
+            for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i) && PlayerDados[i][Admin] > 0)
+				{
+					SendClientMessage(i, COR_WARNING, string);
+				}
+			}
+
+			format(Log, sizeof(Log), "O %s atualizou o valor do Level de %s [/setskin]", getName(playerid), getName(id));
 			fileLog("Admins", Log);
         }
     }
@@ -4601,6 +4644,7 @@ CMD:setadmin(playerid, params[])
 	return 1;
 }
 
+// Debug
 CMD:setlata(playerid, params[])
 {
 	new Float:X, Float:Y, Float:Z;
