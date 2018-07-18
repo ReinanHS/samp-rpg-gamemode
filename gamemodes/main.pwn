@@ -560,6 +560,7 @@ new
 new bool:HQ[MAX_PLAYERS] = false;
 new bool:profissaoUniforme[MAX_PLAYERS] = false;
 new profissaoCar[MAX_PLAYERS] = false;
+new profissaoCarregandoOJG[MAX_PLAYERS] = false;
 new respawntrailer;
 
 //------------------------------------------------------------------------------
@@ -1127,6 +1128,7 @@ public OnPlayerConnect(playerid)
     Logado{playerid} = false;
     profissaoUniforme[playerid] = false;
     profissaoCar[playerid] = false;
+    profissaoCarregandoOJG[playerid] =false;
 
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
@@ -1274,6 +1276,7 @@ public OnPlayerDisconnect(playerid, reason)
     	SalvarDados(playerid);
     	Logado{playerid} = false;
     	profissaoCar[playerid] = false;
+    	profissaoCarregandoOJG[playerid] = false;
     }
     else{
     	printf("A conta do player %s não pode ser salva!", getName(playerid));
@@ -1419,10 +1422,20 @@ public OnPlayerCommandText(playerid, cmdtext[])
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veiculo '{B5B5B5}/LigarVeiculo{FFFFFF}' - '{B5B5B5}/DesligarVeiculo{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'");
-	if(PlayerDados[playerid][gasolina] == 0){
-		SendClientMessage(playerid,COR_ERRO,"| INFO | A Gasolina Deste carro acabou chame o Guincho");
+	if(PlayerDados[playerid][gasolina] == 0)
+	{
+		return SendClientMessage(playerid,COR_ERRO,"| INFO | A Gasolina Deste carro acabou chame o Guincho");
 	}
+
+	if(profissaoCarregandoOJG[playerid])
+	{
+		SendClientMessage(playerid, COR_WARNING, "| INFO | Você perdeu o objeto que estava segurando na mão. Porque entrou no veículo!"); 
+		profissaoCarregandoOJG[playerid] = false;
+		DisablePlayerCheckpoint(playerid);
+		RemovePlayerAttachedObject(playerid, 2);
+		return 1;		
+	}
+	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veiculo '{B5B5B5}/partida{FFFFFF}' - ou aperte o butão '{B5B5B5}Y{FFFFFF}'"); 
 	return 1;
 }
 
@@ -1523,11 +1536,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
 				}else{
-					print("Debug");
 					profissaoCar[playerid] = GetPlayerVehicleID(playerid);
-					print(profissaoCar[playerid]);
-					//profissaoCar[playerid] = gariCar[i];
-					//print(profissaoCar[playerid]);
 					return 1;
 				}
 			}
@@ -1639,6 +1648,20 @@ public OnPlayerEnterCheckpoint(playerid)
     if(Checkpoint == CPAutoEscola )
     {
     	ShowPlayerDialog(playerid, DialogAutoEscola, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    }
+
+    if(profissaoCarregandoOJG[playerid])
+    {
+	    if(PlayerDados[playerid][Profissao] == Gari)
+	    {
+	    	DisablePlayerCheckpoint(playerid);
+	    	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+	    	SendClientMessage(playerid,COR_SUCCESS,"| INFO | Você recolheu uma sacola de lixo!");
+	    	RemovePlayerAttachedObject(playerid, 2);
+	 		profissaoCarregandoOJG[playerid] = false;
+	 		PlayerPlaySound(playerid,1058,0.0,0.0,0.0);   	
+	    	return 1;
+	    }
     }
 	return 1;
 }
@@ -4234,8 +4257,11 @@ CMD:coletarlixo(playerid)
 {
 	if(PlayerDados[playerid][Profissao] == Gari)
 	{
-		print(profissaoCar[playerid]);
-		if(!profissaoCar[playerid] == false){
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não pode coletar lixo dentro de um veiculo!");
+		}
+		else if(!profissaoCar[playerid] == false){
 			new Float:vehx, Float:vehy, Float:vehz;
         	GetVehiclePos(profissaoCar[playerid], vehx, vehy, vehz);
 			if(PlayerToPoint(playerid, 40.0, vehx, vehy, vehz))
@@ -4246,35 +4272,70 @@ CMD:coletarlixo(playerid)
 				    {
 				    	if(lixosLatasPos[a][3] == 3.0)
 				    	{
-				    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
-				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
-				    		lixosLatasPos[a][3] = 2.0;
+				    		if(profissaoCarregandoOJG[playerid])
+				    		{
+					    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você já está com uma sacola de lixo na mão!");
+				    			return 1;
+							}
+							else
+							{
+					    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
+					    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
+					    		lixosLatasPos[a][3] = 2.0;
 
-				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
-		    				//ClearAnimations(playerid);
-				    		return 1;
-				    	}else if(lixosLatasPos[a][3] == 2.0)
+					    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+			    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+					    		DisablePlayerCheckpoint(playerid);
+					    		SetPlayerCheckpoint(playerid, (vehx+4.0), vehy, vehz, 3.0);
+					    		profissaoCarregandoOJG[playerid] = true;
+
+					    		return 1;
+							}
+				    	}
+				    	else if(lixosLatasPos[a][3] == 2.0)
 				    	{
-				    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
-				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
-				    		lixosLatasPos[a][3] = 1.0;
+				    		if(profissaoCarregandoOJG[playerid])
+				    		{
+					    		return SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você já está com uma sacola de lixo na mão!");
+							}
+							else
+							{
+					    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
+					    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
+					    		lixosLatasPos[a][3] = 1.0;
 
-				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
-		    				//ClearAnimations(playerid);
-				    		return 1;
-				    	}else if(lixosLatasPos[a][3] == 1.0)
+					    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+			    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+					    		DisablePlayerCheckpoint(playerid);
+					    		SetPlayerCheckpoint(playerid, (vehx+4.0), vehy, vehz, 3.0);
+					    		profissaoCarregandoOJG[playerid] = true;
+					    	}
+
+					    	return 1;
+				    	}
+				    	else if(lixosLatasPos[a][3] == 1.0)
 				    	{
-				    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
-				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
-				    		lixosLatasPos[a][3] = 0.0;
+				    		if(profissaoCarregandoOJG[playerid])
+				    		{
+					    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você já está com uma sacola de lixo na mão!");
+				    			return 1;
+							}
+							else
+							{
+					    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
+					    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
+					    		lixosLatasPos[a][3] = 0.0;
 
-				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
-		    				//ClearAnimations(playerid);
-				    		return 1;
-				    	}else
+					    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+			    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+					    		DisablePlayerCheckpoint(playerid);
+					    		SetPlayerCheckpoint(playerid, (vehx+4.0), vehy, vehz, 3.0);
+					    		profissaoCarregandoOJG[playerid] = true;
+					    	}
+
+					    	return 1;
+				    	}
+				    	else
 				    	{
 				    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
 				    		return 1;
