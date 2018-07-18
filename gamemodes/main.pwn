@@ -205,7 +205,7 @@
 #define Amarelo                                                                 0xFFFF00AA
 
 #define VALOR_LITRO 2.0                           //- Definir valor por litro da gasolina
-#define RETIRAR_KM  16                            //- A Cada 16 KM ,retirar 1 de gasolina
+#define RETIRAR_KM  50                            //- A Cada 16 KM ,retirar 1 de gasolina
 
 // GPS
 #define GPS_ID		1
@@ -550,7 +550,7 @@ new
     taxiCar[10],
     mecanicoCar[10],
 	carroForteCar[13],
-	gariCar[4],
+	gariCar[4][2],
 	pescaCar[8],
 	transportadorCar[7],
 	pizzaBoyCar[10],
@@ -981,10 +981,13 @@ public OnGameModeInit()
     pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
     pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
 
-    gariCar[0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
-    gariCar[1] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
-    gariCar[2] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
-    gariCar[3] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
+    gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
+    gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
+    gariCar[2][0] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
+    gariCar[3][0] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
+
+    // Capacidade do carro de gari
+    for(new i = 0; i < sizeof(gariCar); i ++) gariCar[i][1] = 0;
 
     carroForteCar[0] = AddStaticVehicleEx(428,612.5000000,-1305.6000000,14.9000000,8.0000000,006,006,120); //Securicar
     carroForteCar[1] = AddStaticVehicleEx(428,607.7999900,-1306.1000000,14.9000000,7.9980000,006,006,120); //Securicar
@@ -1073,7 +1076,7 @@ public OnGameModeExit()
 		    else{
 		    	printf("A conta do player %s não pode ser salva!", getName(i));
 		    }
-		    Kick(i);  	
+		    //Kick(i);  	
 		}
 	}
 
@@ -1261,9 +1264,9 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][7], -1);
 
 	// Profissões Textos Info
-	textProfissaoInfo[playerid][0] = CreatePlayerTextDraw(playerid, 10.046572, 322.089416, "box");
+	textProfissaoInfo[playerid][0] = CreatePlayerTextDraw(playerid, 10, 322.089416, "box");
 	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][0], 0.000000, 1.349609);
-	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][0], 129.599670, 0.000000);
+	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][0], 130, 0.000000);
 	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][0], 1);
 	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][0], -1);
 	PlayerTextDrawUseBox(playerid, textProfissaoInfo[playerid][0], 1);
@@ -1275,9 +1278,9 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][0], 1);
 	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][0], 0);
 
-	textProfissaoInfo[playerid][1] = CreatePlayerTextDraw(playerid, 10.046572, 322.089416, "box");
+	textProfissaoInfo[playerid][1] = CreatePlayerTextDraw(playerid, 10, 322.089416, "box");
 	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][1], 0.000000, 1.349609);
-	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], 114.537673, 0.000000);
+	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], 6, 0.000000);
 	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][1], 1);
 	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][1], -1);
 	PlayerTextDrawUseBox(playerid, textProfissaoInfo[playerid][1], 1);
@@ -1598,7 +1601,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		// Gari
 		for(new i = 0; i < sizeof(gariCar); i ++)
 		{
-			if(car == gariCar[i])
+			if(car == gariCar[i][0])
 			{
 		    	if(PlayerDados[playerid][Profissao] != Gari)
 		    	{
@@ -1613,7 +1616,16 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					return 1;
 				}else{
 					profissaoCar[playerid] = GetPlayerVehicleID(playerid);
+
+					new string_profissaoInfo[40];
+ 
+				    format(string_profissaoInfo, sizeof (string_profissaoInfo), "(%d/30)", gariCar[i][1]);
+				    PlayerTextDrawSetString(playerid, textProfissaoInfo[playerid][2], string_profissaoInfo);
+
+				    //PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 10.046572 + ( (114 * gariCar[i][1] ) / 100 ) ), 0.000000);
+
 					for( new a = 0; a < 5; a++) PlayerTextDrawShow(playerid, textProfissaoInfo[playerid][a]);
+
 					ShowPlayerVelocimetro(playerid);
 					return 1;
 				}
@@ -3873,10 +3885,10 @@ forward UpdatePlayerStar(playerid);
 public UpdatePlayerStar(playerid) {
 	if(IsPlayerConnected(playerid)){
 
-		new string_velo[15];
+		new string_star[15];
  
-        format(string_velo, sizeof (string_velo), "%d", GetPlayerWantedLevel(playerid));
-        PlayerTextDrawSetString(playerid, textStatusBar[1][playerid], string_velo);
+        format(string_star, sizeof (string_star), "%d", GetPlayerWantedLevel(playerid));
+        PlayerTextDrawSetString(playerid, textStatusBar[1][playerid], string_star);
 
 		UpdateTextDraw(playerid, 1);
 	}
