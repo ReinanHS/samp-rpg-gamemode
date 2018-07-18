@@ -478,7 +478,8 @@ new Text:textVelocimetro[5];
 // Status
 new Text:textStatus[14];
 new PlayerText:textStatusBar[MAX_PLAYERS][8];
-
+// Textos Info da Profissão
+new PlayerText:textProfissaoInfo[MAX_PLAYERS][5];
 // Status Update
 new timer_StatusFome[MAX_PLAYERS];
 new timer_StatusSede[MAX_PLAYERS];
@@ -1259,6 +1260,72 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawUseBox(playerid, textStatusBar[playerid][7], 1);
 	PlayerTextDrawBoxColor(playerid, textStatusBar[playerid][7], -1);
 
+	// Profissões Textos Info
+	textProfissaoInfo[playerid][0] = CreatePlayerTextDraw(playerid, 10.046572, 322.089416, "box");
+	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][0], 0.000000, 1.349609);
+	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][0], 129.599670, 0.000000);
+	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][0], 1);
+	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][0], -1);
+	PlayerTextDrawUseBox(playerid, textProfissaoInfo[playerid][0], 1);
+	PlayerTextDrawBoxColor(playerid, textProfissaoInfo[playerid][0], -5170508);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][0], 0);
+	PlayerTextDrawSetOutline(playerid, textProfissaoInfo[playerid][0], 0);
+	PlayerTextDrawBackgroundColor(playerid, textProfissaoInfo[playerid][0], 255);
+	PlayerTextDrawFont(playerid, textProfissaoInfo[playerid][0], 1);
+	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][0], 1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][0], 0);
+
+	textProfissaoInfo[playerid][1] = CreatePlayerTextDraw(playerid, 10.046572, 322.089416, "box");
+	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][1], 0.000000, 1.349609);
+	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], 114.537673, 0.000000);
+	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][1], 1);
+	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][1], -1);
+	PlayerTextDrawUseBox(playerid, textProfissaoInfo[playerid][1], 1);
+	PlayerTextDrawBoxColor(playerid, textProfissaoInfo[playerid][1], -4324865);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][1], 0);
+	PlayerTextDrawSetOutline(playerid, textProfissaoInfo[playerid][1], 0);
+	PlayerTextDrawBackgroundColor(playerid, textProfissaoInfo[playerid][1], 255);
+	PlayerTextDrawFont(playerid, textProfissaoInfo[playerid][1], 1);
+	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][1], 1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][1], 0);
+
+	textProfissaoInfo[playerid][2] = CreatePlayerTextDraw(playerid, 67.051933, 319.383270, "(30/30)");
+	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][2], 0.400000, 1.600000);
+	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][2], 2);
+	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][2], -1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][2], 0);
+	PlayerTextDrawSetOutline(playerid, textProfissaoInfo[playerid][2], 0);
+	PlayerTextDrawBackgroundColor(playerid, textProfissaoInfo[playerid][2], 255);
+	PlayerTextDrawFont(playerid, textProfissaoInfo[playerid][2], 2);
+	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][2], 1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][2], 0);
+
+	textProfissaoInfo[playerid][3] = CreatePlayerTextDraw(playerid, 66.826545, 305.717773, "Capacidade");
+	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][3], 0.400000, 1.000000);
+	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][3], 2);
+	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][3], -1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][3], 0);
+	PlayerTextDrawSetOutline(playerid, textProfissaoInfo[playerid][3], 1);
+	PlayerTextDrawBackgroundColor(playerid, textProfissaoInfo[playerid][3], 255);
+	PlayerTextDrawFont(playerid, textProfissaoInfo[playerid][3], 1);
+	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][3], 1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][3], 0);
+
+	textProfissaoInfo[playerid][4] = CreatePlayerTextDraw(playerid, 16.217153, 244.851974, "");
+	PlayerTextDrawLetterSize(playerid, textProfissaoInfo[playerid][4], 0.000000, 0.000000);
+	PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][4], 90.000000, 90.000000);
+	PlayerTextDrawAlignment(playerid, textProfissaoInfo[playerid][4], 1);
+	PlayerTextDrawColor(playerid, textProfissaoInfo[playerid][4], -1);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][4], 0);
+	PlayerTextDrawSetOutline(playerid, textProfissaoInfo[playerid][4], 0);
+	PlayerTextDrawBackgroundColor(playerid, textProfissaoInfo[playerid][4], 0);
+	PlayerTextDrawFont(playerid, textProfissaoInfo[playerid][4], 5);
+	PlayerTextDrawSetProportional(playerid, textProfissaoInfo[playerid][4], 0);
+	PlayerTextDrawSetShadow(playerid, textProfissaoInfo[playerid][4], 0);
+	PlayerTextDrawSetPreviewModel(playerid, textProfissaoInfo[playerid][4], 408);
+	PlayerTextDrawSetPreviewRot(playerid, textProfissaoInfo[playerid][4], 0.000000, 0.000000, 90.000000, 1.000000);
+	PlayerTextDrawSetPreviewVehCol(playerid, textProfissaoInfo[playerid][4], 1, 1);
+
     MapIcon(playerid);
 	return 1;
 }
@@ -1454,6 +1521,15 @@ public OnPlayerExitVehicle(playerid, vehicleid)
         {
             DisablePlayerCheckpoint(playerid);
         }
+
+        return 1;
+    }
+
+    // Textos Info da Profissão
+    if(profissaoCar[playerid] == vehicleid)
+    {
+    	for( new a = 0; a < 5; a++) PlayerTextDrawHide(playerid, textProfissaoInfo[playerid][a]);
+    	return 1;
     }
 	return 1;
 }
@@ -1537,6 +1613,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					return 1;
 				}else{
 					profissaoCar[playerid] = GetPlayerVehicleID(playerid);
+					for( new a = 0; a < 5; a++) PlayerTextDrawShow(playerid, textProfissaoInfo[playerid][a]);
+					ShowPlayerVelocimetro(playerid);
 					return 1;
 				}
 			}
