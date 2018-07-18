@@ -1622,7 +1622,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				    format(string_profissaoInfo, sizeof (string_profissaoInfo), "(%d/30)", gariCar[i][1]);
 				    PlayerTextDrawSetString(playerid, textProfissaoInfo[playerid][2], string_profissaoInfo);
 
-				    //PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 10.046572 + ( (114 * gariCar[i][1] ) / 100 ) ), 0.000000);
+				    PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 6 + ( (124 * 100 ) / 100 ) ), 0.000000);
 
 					for( new a = 0; a < 5; a++) PlayerTextDrawShow(playerid, textProfissaoInfo[playerid][a]);
 
