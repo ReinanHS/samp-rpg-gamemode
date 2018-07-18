@@ -559,6 +559,7 @@ new
 
 new bool:HQ[MAX_PLAYERS] = false;
 new bool:profissaoUniforme[MAX_PLAYERS] = false;
+new profissaoCar[MAX_PLAYERS] = false;
 new respawntrailer;
 
 //------------------------------------------------------------------------------
@@ -595,7 +596,7 @@ public OnGameModeInit()
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
     UsePlayerPedAnims();
     ManualVehicleEngineAndLights();
-    SetTimer("ProcessGameTime", 1000, 1);
+    //SetTimer("ProcessGameTime", 1000, 1);
 
     //Texto da tela de login e registro
     Logo = TextDrawCreate(160.000000, 310.000000, "SKYLANDIA CIDADE VIDA REAL");
@@ -1125,6 +1126,7 @@ public OnPlayerConnect(playerid)
     SendClientMessage(playerid, 0x0080FFAA, "| INFO | Aguarde... Carregando os dados!");
     Logado{playerid} = false;
     profissaoUniforme[playerid] = false;
+    profissaoCar[playerid] = false;
 
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
@@ -1271,6 +1273,7 @@ public OnPlayerDisconnect(playerid, reason)
 
     	SalvarDados(playerid);
     	Logado{playerid} = false;
+    	profissaoCar[playerid] = false;
     }
     else{
     	printf("A conta do player %s não pode ser salva!", getName(playerid));
@@ -1457,6 +1460,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um petroleiro, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1470,6 +1474,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Taxistas, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1483,6 +1488,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Mecanico, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1496,6 +1502,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Motorista de carro Forte, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1509,10 +1516,19 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Gari, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}else if(!profissaoUniforme[playerid]){
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de Gari, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
+				}else{
+					print("Debug");
+					profissaoCar[playerid] = GetPlayerVehicleID(playerid);
+					print(profissaoCar[playerid]);
+					//profissaoCar[playerid] = gariCar[i];
+					//print(profissaoCar[playerid]);
+					return 1;
 				}
 			}
 		}
@@ -1526,6 +1542,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Pescador, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1539,6 +1556,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Transportador, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1552,6 +1570,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um PizzaBoy, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1565,6 +1584,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um PizzaBoy, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1578,6 +1598,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Entregador, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -1591,6 +1612,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Moto Taxi, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
 				}
 			}
 		}
@@ -3980,13 +4002,22 @@ CMD:uniforme(playerid)
             if(!profissaoUniforme[playerid])
             {
                 SendClientMessage(playerid, COR_SUCCESS, "| INFO | Parabéns, vocé está utilizando o uniforme de Gari! Use /profissao para ver seus comandos");
+            	profissaoUniforme[playerid] = true;
+            	SetPlayerSkin(playerid, 260);	
+            	return 1;
             }
             else 
             {
             	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de Gari!");
+            	profissaoUniforme[playerid] = false;
+            	SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));	
+            	return 1;
          	}
          }
-         else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de carregamento!");
+         else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área adequada para vestir o seu uniforme!");
+    }
+    else{
+    	SendClientMessage(playerid, COR_ERRO, "ERRO | A sua profissão não tem um uniforme específico!");	
     }
     return 1;
 }
@@ -4203,48 +4234,74 @@ CMD:coletarlixo(playerid)
 {
 	if(PlayerDados[playerid][Profissao] == Gari)
 	{
-		for (new a = 0; a < sizeof(lixosLatasPos); a++)
+		print(profissaoCar[playerid]);
+		if(!profissaoCar[playerid] == false){
+			new Float:vehx, Float:vehy, Float:vehz;
+        	GetVehiclePos(profissaoCar[playerid], vehx, vehy, vehz);
+			if(PlayerToPoint(playerid, 40.0, vehx, vehy, vehz))
+			{
+				for (new a = 0; a < sizeof(lixosLatasPos); a++)
+				{
+					if(PlayerToPoint(playerid, 2.0, lixosLatasPos[a][0],lixosLatasPos[a][1],lixosLatasPos[a][2]))
+				    {
+				    	if(lixosLatasPos[a][3] == 3.0)
+				    	{
+				    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
+				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
+				    		lixosLatasPos[a][3] = 2.0;
+
+				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+		    				//ClearAnimations(playerid);
+				    		return 1;
+				    	}else if(lixosLatasPos[a][3] == 2.0)
+				    	{
+				    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
+				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
+				    		lixosLatasPos[a][3] = 1.0;
+
+				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+		    				//ClearAnimations(playerid);
+				    		return 1;
+				    	}else if(lixosLatasPos[a][3] == 1.0)
+				    	{
+				    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
+				    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
+				    		lixosLatasPos[a][3] = 0.0;
+
+				    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+		    				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
+		    				//ClearAnimations(playerid);
+				    		return 1;
+				    	}else
+				    	{
+				    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
+				    		return 1;
+				    	}
+				    }			
+				}
+
+				SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo de uma lixeira!");
+				return 1;
+			}else{
+
+				SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo do seu carro de lixo!");
+				SendClientMessage(playerid, COR_ERRO, "| ERROR | Foi marcado no seu radar o local do seu carro de lixo!");
+
+	            SetPlayerMapIcon(playerid, GPS_ID, vehx, vehy, vehz, GPS_ICON, 0, MAPICON_GLOBAL);
+	            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+	            HQ[playerid] = true;
+
+				return 1;
+			}
+		}else
 		{
-			if(PlayerToPoint(playerid, 2.0, lixosLatasPos[a][0],lixosLatasPos[a][1],lixosLatasPos[a][2]))
-		    {
-		    	if(lixosLatasPos[a][3] == 3.0)
-		    	{
-		    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
-		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
-		    		lixosLatasPos[a][3] = 2.0;
-
-		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-    				ClearAnimations(playerid);
-		    		return 1;
-		    	}else if(lixosLatasPos[a][3] == 2.0)
-		    	{
-		    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
-		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
-		    		lixosLatasPos[a][3] = 1.0;
-
-		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-    				ClearAnimations(playerid);
-		    		return 1;
-		    	}else if(lixosLatasPos[a][3] == 1.0)
-		    	{
-		    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
-		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
-		    		lixosLatasPos[a][3] = 0.0;
-
-		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
-    				ClearAnimations(playerid);
-		    		return 1;
-		    	}else
-		    	{
-		    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
-		    		return 1;
-		    	}
-		    }			
+			SendClientMessage(playerid, COR_ERRO, "| ERROR | Vá até seu HQ para buscar um carro de lixo!");
+			return 1;
 		}
-
-		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo de uma lixeira!");
-		return 1;
-	}else
+	}
+	else
 	{
 		SendClientMessage(playerid, COR_ERRO, "| ERROR | Este comando é exclusivo para a profissão de gari!");
 	}
