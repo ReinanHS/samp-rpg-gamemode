@@ -11,7 +11,7 @@
 
 //------------------------- { - DEFINIÇÕES - } ---------------------------------
 // Init Gamemode + configs
-#define SERVER_PASSWORD "29n7nd7jak3" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
+#define SERVER_PASSWORD "sklyandia456123" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
 //==========[ DIALOGS ]=======       ==[ IDs ]==
 #define     DialogRegistro              (1)		// DEFINE DIALOG REGISTRO (ID= 1)
 #define     DialogLogin                 (2)		// DEFINE DIALOG LOGIN   (ID= etc..)
@@ -266,6 +266,159 @@ new Float:PostosDeGasolina[17][3] =
 	{1382.3008,460.9545,19.6525} 		// Posto de Montgomery
 };
 
+// Lixos Pela Cidade Lata
+new Text3D:lixosLatasText[148];
+new Float:lixosLatasPos[148][4] = 
+{
+	{1659.880615,2159.108154,10.820312, 3.0}, // MakeABigLove Local: Redsands West
+	{1659.870849,2161.945068,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1659.960327,2124.111328,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1665.887329,2108.989746,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1659.797973,2084.208007,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1665.851318,2055.916992,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1665.807373,2034.607177,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1445.339965,1917.659301,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1427.905151,1905.005737,10.820312, 3.0}, // oArthurTV Local: Redsands West
+	{1576.840820,2091.516357,10.820312, 3.0}, // MakeABigLove Local: Redsands West
+	{1576.841552,2118.924804,10.820312, 3.0}, // MakeABigLove Local: Redsands West
+	{1576.852294,2161.098632,10.820312, 3.0}, // MakeABigLove Local: Redsands West
+	{1612.264038,-1896.164794,13.547922, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1619.213012,-1896.258056,13.549642, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1625.992797,-1896.330078,13.551314, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1629.861328,-1906.063476,13.551663, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1643.702880,-1907.518798,13.552103, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{-2759.328613,144.504440,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2762.186767,114.866287,6.965419, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2765.158691,86.311645,6.970289, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2761.418457,64.072830,6.967107, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2765.370605,52.514404,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2718.954833,77.910636,4.335937, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2718.016113,74.651329,4.335937, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2755.222412,90.086982,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2755.479736,93.639083,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2756.908691,96.029754,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2652.299804,92.387336,4.096681, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2655.657714,115.290832,4.111680, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2652.956542,133.424789,4.179687, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2656.724609,135.285125,4.179687, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2655.534912,71.669174,4.108856, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2650.855468,52.585090,4.179687, 3.0}, // oArthurTV Local: Ocean Flats
+	{1627.364501,-1847.431152,13.537542, 3.0}, // Davi_Satler Local: Verdant Bluffs
+	{1648.491088,-1841.342895,13.544188, 3.0}, // Davi_Satler Local: Commerce
+	{1635.785888,-1847.031372,13.539696, 3.0}, // Davi_Satler Local: Verdant Bluffs
+	{1601.165771,-1831.938598,13.488179, 3.0}, // Davi_Satler Local: Commerce
+	{1597.069458,-1809.257202,13.396594, 3.0}, // Davi_Satler Local: Commerce
+	{-2657.260498,-89.587234,4.177209, 3.0}, // oArthurTV Local: Ocean Flats
+	{1593.646484,-1784.680908,13.284209, 3.0}, // Davi_Satler Local: Commerce
+	{-2658.227294,-125.212974,4.081083, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2654.726074,-124.595207,4.091534, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2657.929687,-169.006225,4.093238, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2654.434326,-167.380996,4.086997, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2656.882324,-189.503646,4.164876, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2653.840576,-188.273513,4.149031, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2754.998046,-178.563842,6.940709, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2754.359130,-149.845672,6.933187, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2758.210693,-136.260482,6.956016, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2754.321533,-121.648780,6.942591, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2758.155273,-120.928550,6.945843, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2758.760742,-96.556129,6.970007, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2755.475585,-85.449035,7.031250, 3.0}, // oArthurTV Local: Ocean Flats
+	{1902.564575,-1789.789062,13.546875, 3.0}, // Davi_Satler Local: Idlewood
+	{1902.561767,-1778.837890,13.546875, 3.0}, // Davi_Satler Local: Idlewood
+	{-2755.905273,-56.767398,7.031614, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2759.664062,-54.228942,7.039062, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2756.962158,-36.343055,6.959138, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2762.647460,-13.587108,6.961468, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2760.518066,7.775696,6.959648, 3.0}, // oArthurTV Local: Ocean Flats
+	{-2764.978027,25.035526,7.039062, 3.0}, // oArthurTV Local: Ocean Flats
+	{1939.674316,-1887.528442,13.538429, 3.0}, // adrian2098 Local: El Corona
+	{1862.334594,-1887.739135,13.462883, 3.0}, // MakeABigLove Local: El Corona
+	{1891.161254,-1887.640380,13.491042, 3.0}, // adrian2098 Local: El Corona
+	{1840.525512,-1887.938964,13.425951, 3.0}, // MakeABigLove Local: El Corona
+	{1847.039550,-1861.520385,13.578125, 3.0}, // adrian2098 Local: El Corona
+	{1855.890258,-1861.876464,13.578125, 3.0}, // adrian2098 Local: El Corona
+	{1667.040893,-998.542114,24.054567, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{1611.966308,-994.903137,24.078125, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{1660.705932,-1001.342468,24.046083, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{1631.104492,-988.457275,24.075675, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{1633.130126,-991.195434,24.077634, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{1658.965332,-1064.715698,23.903686, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{1829.539916,-1113.947998,23.876493, 3.0}, // Davi_Satler Local: Glen Park
+	{1829.538818,-1097.306030,23.882259, 3.0}, // Davi_Satler Local: Glen Park
+	{1829.539794,-1084.294067,23.881219, 3.0}, // Davi_Satler Local: Glen Park
+	{1829.584960,-1143.868652,23.880861, 3.0}, // Davi_Satler Local: Glen Park
+	{1829.540405,-1147.415039,23.882211, 3.0}, // Davi_Satler Local: Glen Park
+	{1800.407714,-1147.258056,23.841415, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{1786.255737,-1147.261718,23.872426, 3.0}, // Davi_Satler Local: Mulholland Intersection
+	{-2135.744628,-2263.161865,30.631902, 3.0}, // oArthurTV Local: Angel Pine
+	{-2137.922119,-2261.443359,30.631902, 3.0}, // oArthurTV Local: Angel Pine
+	{-2088.535888,-2342.689941,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2175.499511,-2425.128417,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2184.750732,-2448.105224,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{1788.734375,-1116.109619,24.085935, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{-2146.089599,-2463.277587,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2137.213623,-2451.346923,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{1788.872192,-1112.386108,24.085935, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{-2088.625000,-2440.140380,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2107.786865,-2456.887939,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2106.756591,-2457.106445,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{1521.220581,-1018.233886,23.917407, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{1521.233276,-1014.792907,23.975431, 3.0}, // adrian2098 Local: Mulholland Intersection
+	{-2213.313476,-2340.107421,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2218.013916,-2336.744873,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-2102.879882,-2480.225585,30.625000, 3.0}, // oArthurTV Local: Angel Pine
+	{-77.833663,-1189.046630,1.750000, 3.0}, // oArthurTV Local: Flint County
+	{-64.218757,-1107.193725,1.078125, 3.0}, // oArthurTV Local: Flint County
+	{-69.038307,-1105.630126,1.078125, 3.0}, // oArthurTV Local: Flint County
+	{255.072708,-133.658996,1.578125, 3.0}, // oArthurTV Local: Blueberry
+	{259.476562,-133.844665,1.578125, 3.0}, // oArthurTV Local: Blueberry
+	{668.137512,-623.402221,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{665.149963,-623.338806,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{724.840026,-465.785980,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{339.040435,53.780426,3.607334, 3.0}, // oArthurTV Local: Blueberry
+	{340.475677,55.427253,3.658917, 3.0}, // oArthurTV Local: Blueberry
+	{694.326110,-455.964691,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{655.935729,-440.320159,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{653.797607,-496.443328,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{653.850524,-499.335296,16.335937, 3.0}, // Davi_Satler Local: Dillimore
+	{-25.856176,1165.398681,19.360418, 3.0}, // oArthurTV Local: Fort Carson
+	{-44.115924,1178.239624,19.413167, 3.0}, // oArthurTV Local: Fort Carson
+	{-88.740135,1164.346435,19.742187, 3.0}, // oArthurTV Local: Fort Carson
+	{-149.645629,1163.064086,19.749988, 3.0}, // oArthurTV Local: Fort Carson
+	{-161.052108,1175.032592,19.742187, 3.0}, // oArthurTV Local: Fort Carson
+	{-170.299285,1170.099365,19.749988, 3.0}, // oArthurTV Local: Fort Carson
+	{-148.805740,1133.948974,19.742187, 3.0}, // oArthurTV Local: Fort Carson
+	{-122.764945,1079.321777,19.781459, 3.0}, // oArthurTV Local: Fort Carson
+	{-89.552352,1128.303588,19.742187, 3.0}, // oArthurTV Local: Fort Carson
+	{308.949340,-254.097839,1.583575, 3.0}, // Davi_Satler Local: Blueberry
+	{306.045654,-254.049346,1.583575, 3.0}, // Davi_Satler Local: Blueberry
+	{253.449447,-264.151428,1.583575, 3.0}, // Davi_Satler Local: Blueberry
+	{251.410354,-263.587066,1.578125, 3.0}, // Davi_Satler Local: Blueberry
+	{1337.552734,-1774.017456,13.546875, 3.0}, // MakeABigLove Local: Commerce
+	{1337.083129,-1842.888061,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1337.528808,-1816.234130,13.546875, 3.0}, // MakeABigLove Local: Commerce
+	{1420.383666,-1844.273071,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1420.489013,-1846.539306,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1466.204345,-1847.898437,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1468.807495,-1847.749755,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1485.991088,-1847.321899,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1516.799438,-1849.293090,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1538.220703,-1849.323730,13.546875, 3.0}, // MakeABigLove Local: Verdant Bluffs
+	{1352.587280,204.583236,19.554687, 3.0}, // Davi_Satler Local: Montgomery
+	{1546.319213,-1808.654785,13.546875, 3.0}, // MakeABigLove Local: Commerce
+	{1352.121337,201.396667,19.554687, 3.0}, // Davi_Satler Local: Montgomery
+	{1461.677001,-1488.477172,13.546875, 3.0}, // MakeABigLove Local: Commerce
+	{1534.896972,-1480.240844,9.500000, 3.0}, // MakeABigLove Local: Commerce
+	{1537.656372,-1479.913818,9.500000, 3.0}, // MakeABigLove Local: Commerce
+	{1593.078247,-1201.418579,19.816234, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1616.499877,-1201.411865,19.806867, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1660.520141,-1201.406250,19.793170, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1322.311645,-1236.913940,13.546875, 3.0}, // MakeABigLove Local: Market
+	{1425.616577,-1080.529907,17.558263, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1425.553344,-1084.289428,17.553672, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1435.805297,-1094.766479,17.596670, 3.0}, // MakeABigLove Local: Downtown Los Santos
+	{1438.203125,-1094.812866,17.609136, 3.0} // MakeABigLove Local: Downtown Los Santos
+};
 // Give Veiculo
 new Vehicle[MAX_PLAYERS];
 
@@ -702,7 +855,11 @@ public OnGameModeInit()
     Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
     // Gari
     Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
-
+    // Lixos pela cidade 
+    for(new i = 0; i < sizeof(lixosLatasPos); i ++)
+	{
+		lixosLatasText[i] = Create3DTextLabel("{30e551}Lixeira 3/3:\n{FFFFFF}/coletarlixo",0x008080FF,lixosLatasPos[i][0],lixosLatasPos[i][1],lixosLatasPos[i][2],10.0,0);
+	}
 
     //Checks
 	CheckAgencia = CPS_AddCheckpoint(363.0818,173.8653,1008.3828, 1.0, 50);// Local de pegar Profissão
@@ -4042,6 +4199,42 @@ CMD:gps (playerid, params[])
 }
 //------------------------------------------------------------------------------
 /*===============[ Abastecer ]==============*/
+CMD:coletarlixo(playerid)
+{
+	for (new a = 0; a < sizeof(lixosLatasPos); a++)
+	{
+		if(PlayerToPoint(playerid, 2.0, lixosLatasPos[a][0],lixosLatasPos[a][1],lixosLatasPos[a][2]))
+	    {
+	    	if(lixosLatasPos[a][3] == 3.0)
+	    	{
+	    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
+	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
+	    		lixosLatasPos[a][3] = 2.0;
+	    		return 1;
+	    	}else if(lixosLatasPos[a][3] == 2.0)
+	    	{
+	    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
+	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
+	    		lixosLatasPos[a][3] = 1.0;
+	    		return 1;
+	    	}else if(lixosLatasPos[a][3] == 1.0)
+	    	{
+	    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
+	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
+	    		lixosLatasPos[a][3] = 0.0;
+	    		return 1;
+	    	}else
+	    	{
+	    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
+	    		return 1;
+	    	}
+	    }			
+	}
+
+	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo de uma lixeira!");
+    return 1;
+}
+/*===============[ Abastecer ]==============*/
 CMD:abastecer(playerid)
 {
 	for (new a = 0; a < sizeof(PostosDeGasolina); a++)
@@ -4444,7 +4637,7 @@ CMD:tp(playerid, params[])
         	new Float:X, Float:Y, Float:Z;
         	GetPlayerPos(id, Float:X, Float:Y, Float:Z);
 
-			GetPlayerPos(valor, X, Y, Z);        	
+			SetPlayerPos(valor, X, Y, Z);        	
 
             format(string,sizeof(string),"Você teletransportou até o jogador %s!",getName(id));
             SendClientMessage(playerid, COR_SUCCESS, string);
@@ -4557,7 +4750,7 @@ CMD:setskin(playerid, params[])
 // Set level
 CMD:setlevel(playerid, params[])
 {
-	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 3)
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] >= 3)
 	{
         new id, valor;
         if(sscanf(params,"ii", id, valor))
@@ -4641,34 +4834,6 @@ CMD:setadmin(playerid, params[])
         }
     }
 	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
-	return 1;
-}
-
-// Debug
-CMD:setlata(playerid, params[])
-{
-	new Float:X, Float:Y, Float:Z;
-    GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
-
-    new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
-	GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
-
-	Create3DTextLabel("{42f45f}Lixeira 3/3\n {FFFFFF}/coletarLixo", 0x008080FF, X, Y, Z, 15.0, 0, 0);
-	format(Log, sizeof(Log), "{%f,%f,%f, 3.0}, // %s Local: %s", X,Y,Z,getName(playerid), Zona);
-	fileLog("lata", Log);
-	return 1;
-}
-CMD:setlixo(playerid, params[])
-{
-	new Float:X, Float:Y, Float:Z;
-    GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
-
-    new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
-	GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
-
-	Create3DTextLabel("{42f45f}Lixeira 1/1\n {FFFFFF}/coletarLixo", 0x008080FF, X, Y, Z, 15.0, 0, 0);
-	format(Log, sizeof(Log), "{%f,%f,%f, 1.0}, // %s Local: %s", X,Y,Z,getName(playerid), Zona);
-	fileLog("lixeira", Log);
 	return 1;
 }
 
