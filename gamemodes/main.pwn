@@ -4201,37 +4201,53 @@ CMD:gps (playerid, params[])
 /*===============[ Abastecer ]==============*/
 CMD:coletarlixo(playerid)
 {
-	for (new a = 0; a < sizeof(lixosLatasPos); a++)
+	if(PlayerDados[playerid][Profissao] == Gari)
 	{
-		if(PlayerToPoint(playerid, 2.0, lixosLatasPos[a][0],lixosLatasPos[a][1],lixosLatasPos[a][2]))
-	    {
-	    	if(lixosLatasPos[a][3] == 3.0)
-	    	{
-	    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
-	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
-	    		lixosLatasPos[a][3] = 2.0;
-	    		return 1;
-	    	}else if(lixosLatasPos[a][3] == 2.0)
-	    	{
-	    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
-	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
-	    		lixosLatasPos[a][3] = 1.0;
-	    		return 1;
-	    	}else if(lixosLatasPos[a][3] == 1.0)
-	    	{
-	    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
-	    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
-	    		lixosLatasPos[a][3] = 0.0;
-	    		return 1;
-	    	}else
-	    	{
-	    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
-	    		return 1;
-	    	}
-	    }			
-	}
+		for (new a = 0; a < sizeof(lixosLatasPos); a++)
+		{
+			if(PlayerToPoint(playerid, 2.0, lixosLatasPos[a][0],lixosLatasPos[a][1],lixosLatasPos[a][2]))
+		    {
+		    	if(lixosLatasPos[a][3] == 3.0)
+		    	{
+		    		SendClientMessage(playerid, COR_SUCCESS, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 2!");
+		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{30e551}Lixeira 2/3:\n{FFFFFF}/coletarlixo");
+		    		lixosLatasPos[a][3] = 2.0;
 
-	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo de uma lixeira!");
+		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+    				ClearAnimations(playerid);
+		    		return 1;
+		    	}else if(lixosLatasPos[a][3] == 2.0)
+		    	{
+		    		SendClientMessage(playerid, COR_WARNING, "| ERROR | Você removeu uma sacola de lixo da lixeira e ainda falta 1!");
+		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2da3c}Lixeira 1/3:\n{FFFFFF}/coletarlixo");
+		    		lixosLatasPos[a][3] = 1.0;
+
+		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+    				ClearAnimations(playerid);
+		    		return 1;
+		    	}else if(lixosLatasPos[a][3] == 1.0)
+		    	{
+		    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você removeu a última sacola de lixo da lixeira!");
+		    		Update3DTextLabelText(lixosLatasText[a], 0xFFFFFFFF, "{f2543c}Lixeira vazia");
+		    		lixosLatasPos[a][3] = 0.0;
+
+		    		SetPlayerAttachedObject(playerid, 2, 1265, 5, 0.1, 0.07, 0.04, 180.0, 0.0, 0.0, 0.5, 0.5, 0.5); 
+    				ClearAnimations(playerid);
+		    		return 1;
+		    	}else
+		    	{
+		    		SendClientMessage(playerid, COR_ERRO, "| ERROR | Essa lixeira está vazia procure outra!");
+		    		return 1;
+		    	}
+		    }			
+		}
+
+		SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está próximo de uma lixeira!");
+		return 1;
+	}else
+	{
+		SendClientMessage(playerid, COR_ERRO, "| ERROR | Este comando é exclusivo para a profissão de gari!");
+	}
     return 1;
 }
 /*===============[ Abastecer ]==============*/
