@@ -268,7 +268,55 @@ new Float:PostosDeGasolina[17][3] =
 	{2114.5654,921.0345,10.3901}, 		// Posto de Las Venturas
 	{1382.3008,460.9545,19.6525} 		// Posto de Montgomery
 };
-
+// Empresa
+new Text3D:empresasText[44];
+new Float:empresasPos[44][4] = 
+{
+	{2101.901611, 2257.378173, 11.023437, 5.0}, // Davi_Satler Local: The Emerald Isle Tipo: Clothes
+	{2101.892822, 2228.836181, 11.023437, 2.0}, // Davi_Satler Local: The Emerald Isle Tipo: Cluckin' Bell
+	{2097.725341, 2224.697998, 11.023437, 5.0}, // oArthurTV Local: The Emerald Isle Tipo: Clothes
+	{2090.510009, 2224.696044, 11.023437, 5.0}, // Davi_Satler Local: The Emerald Isle Tipo: Clothes
+	{2083.330810, 2224.701416, 11.023437, 4.0}, // oArthurTV Local: The Emerald Isle Tipo: Well Stacked Pizza Co
+	{1367.590454, 248.123062, 19.566932, 4.0}, // MakeABigLove Local: Montgomery Tipo: Well Stacked Pizza Co
+	{1872.257324, 2071.827392, 11.062500, 1.0}, // oArthurTV Local: Redsands East Tipo: Burger Shot 
+	{1657.037353, 1733.218505, 10.828111, 5.0}, // oArthurTV Local: Las Venturas Airport Tipo: Clothes
+	{202.760604, -201.940490, 1.578125, 4.0}, // MakeABigLove Local: Blueberry Tipo: Well Stacked Pizza Co
+	{172.944961, 1177.191894, 14.757812, 2.0}, // MakeABigLove Local: Bone County Tipo: Cluckin' Bell
+	{-143.919204, 1225.217773, 19.899219, 1.0}, // MakeABigLove Local: Bone County Tipo: Burger Shot 
+	{-180.735488, 1034.745971, 19.742187, 3.0}, // oArthurTV Local: Fort Carson Tipo: Diner
+	{-1912.451416, 827.931152, 35.232040, 1.0}, // oArthurTV Local: Downtown Tipo: Burger Shot 
+	{-1882.228515, 866.473022, 35.171875, 5.0}, // oArthurTV Local: Downtown Tipo: Clothes
+	{-1808.627563, 945.999145, 24.890625, 4.0}, // oArthurTV Local: Financial Tipo: Well Stacked Pizza Co
+	{1199.405395, -918.137268, 43.122257, 1.0}, // MakeABigLove Local: Temple Tipo: Burger Shot 
+	{-2489.863769, -29.010885, 25.617187, 5.0}, // oArthurTV Local: Hashbury Tipo: Clothes
+	{1315.499877, -897.681762, 39.578125, 3.0}, // MakeABigLove Local: Mulholland Tipo: Diner
+	{-2355.821289, 1008.115295, 50.898437, 1.0}, // oArthurTV Local: Juniper Hollow Tipo: Burger Shot 
+	{499.613586, -1360.660522, 16.368721, 5.0}, // MakeABigLove Local: Rodeo Tipo: Clothes
+	{461.701080, -1500.797363, 31.045394, 5.0}, // MakeABigLove Local: Rodeo Tipo: Clothes
+	{454.221405, -1478.028076, 30.815431, 5.0}, // MakeABigLove Local: Rodeo Tipo: Clothes
+	{810.488525, -1616.180175, 13.546875, 1.0}, // MakeABigLove Local: Marina Tipo: Burger Shot 
+	{1352.468505, -1759.253662, 13.507812, 3.0}, // MakeABigLove Local: Commerce Tipo: Diner
+	{928.916381, -1352.931518, 13.343750, 2.0}, // MakeABigLove Local: Market Tipo: Cluckin' Bell
+	{1038.065307, -1340.731567, 13.745098, 1.0}, // MakeABigLove Local: Market Tipo: Burger Shot 
+	{2419.708740, -1509.049194, 24.000000, 2.0}, // MakeABigLove Local: East Los Santos Tipo: Cluckin' Bell
+	{-2373.775634, 910.083740, 45.445312, 5.0}, // oArthurTV Local: Juniper Hill Tipo: Clothes
+	{2244.327880, -1665.528808, 15.476562, 5.0}, // MakeABigLove Local: Ganton Tipo: Clothes
+	{2105.467773, -1806.578979, 13.554687, 4.0}, // MakeABigLove Local: Idlewood Tipo: Well Stacked Pizza Co
+	{-2442.654785, 755.415832, 35.171875, 3.0}, // oArthurTV Local: Juniper Hill Tipo: Diner
+	{-1720.948120, 1359.833862, 7.185316, 4.0}, // oArthurTV Local: Esplanade North Tipo: Well Stacked Pizza Co
+	{-2336.867187, -166.883834, 35.554687, 1.0}, // MakeABigLove Local: Garcia Tipo: Burger Shot 
+	{-2671.403320, 257.923919, 4.632812, 2.0}, // MakeABigLove Local: Ocean Flats Tipo: Cluckin' Bell
+	{2194.941162, 1991.000122, 12.296875, 3.0}, // Davi_Satler Local: Starfish Casino Tipo: Diner
+	{2472.863769, 2034.142211, 11.062500, 1.0}, // Davi_Satler Local: Old Venturas Strip Tipo: Burger Shot 
+	{2393.234863, 2041.559326, 10.820312, 1.0}, // Davi_Satler Local: Old Venturas Strip Tipo: Burger Shot 
+	{2393.282226, 2041.559936, 10.820312, 2.0}, // Davi_Satler Local: Old Venturas Strip Tipo: Cluckin' Bell
+	{-1562.557006, -2732.954345, 48.743457, 3.0}, // MakeABigLove Local: Whetstone Tipo: Diner
+	{2367.050292, 2071.209472, 10.820312, 1.0}, // Davi_Satler Local: Old Venturas Strip Tipo: Burger Shot 
+	{-2155.285644, -2460.126464, 30.851562, 2.0}, // oArthurTV Local: Angel Pine Tipo: Cluckin' Bell
+	{2452.390869, 2065.190429, 10.820312, 3.0}, // oArthurTV Local: Old Venturas Strip Tipo: Diner
+	{2351.844482, 2533.621337, 10.820312, 4.0}, // Davi_Satler Local: Roca Escalante Tipo: Well Stacked Pizza Co
+	{2247.625976, 2396.167968, 10.820312, 3.0} // Davi_Satler Local: Roca Escalante Tipo: Diner
+};
 // Lixos Pela Cidade Lata
 new Text3D:lixosLatasText[148];
 new Float:lixosLatasPos[148][4] = 
@@ -566,7 +614,8 @@ new bool:profissaoUniforme[MAX_PLAYERS] = false;
 new profissaoCar[MAX_PLAYERS] = false;
 new profissaoCarregandoOJG[MAX_PLAYERS] = false;
 new respawntrailer;
-
+// Atores
+new Atores[6];
 //------------------------------------------------------------------------------
 
 #if defined GAMEMODE
@@ -582,12 +631,14 @@ main()
 
 public OnGameModeInit()
 {
+	// Atores
+	CriarAtores();
     // Basic Config
     new Password[256],Gamemode[256],Language[256];
     format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
 	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
-	SendRconCommand(Password);
+	//SendRconCommand(Password);
 	SetGameModeText(Gamemode);
 	SendRconCommand(Language);
 
@@ -606,7 +657,6 @@ public OnGameModeInit()
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
     UsePlayerPedAnims();
     ManualVehicleEngineAndLights();
-    //SetTimer("ProcessGameTime", 1000, 1);
 
     //Texto da tela de login e registro
     Logo = TextDrawCreate(160.000000, 310.000000, "SKYLANDIA CIDADE VIDA REAL");
@@ -849,6 +899,10 @@ public OnGameModeInit()
     AddStaticPickup(1239,23,-22.1867,-55.6953,1003.5469);// Menu Mercado 24/7 De Compras
     AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
     AddStaticPickup(1318,23,1494.325195,1304.942871,1093.289062);// Saida Auto Escola (ID: 0)
+    AddStaticPickup(1318,23,364.8353,-11.7157,1001.8516);// Cluckin' bell
+    AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
+    AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
+    AddStaticPickup(1318,23,372.3253,-133.5240,1001.4922);// Well stacked pizza
     // Gari
     AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
     /*              3D TEXTS                               */
@@ -859,6 +913,14 @@ public OnGameModeInit()
     Create3DTextLabel("{FFFFFF}Menu do Mercado 24/7\nAperte {00FFFF}'F' Ou Use /mercado\n{FFFFFF}Para Comprar",50,-22.1867,-55.6953,1003.5469,15,0);// Menu do Mercado 24/7
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.325195,1304.942871,1093.289062,15,0);//Saida Mercado 24/7 (ID: All)
+    // Cluckin' bell
+    Create3DTextLabel("{30e551}Cluckin' bell\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,364.8353,-11.7157,1001.8516,15,0);
+    // Burger shot
+    Create3DTextLabel("{30e551}Burger shot\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,362.9280,-75.2216,1001.5078,15,0);
+    // Clothes
+    Create3DTextLabel("{30e551}Clothes\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,161.4121,-97.1048,1001.8047,15,0);
+    // Well stacked pizza
+    Create3DTextLabel("{30e551}Pizzaria\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,372.3253,-133.5240,1001.4922,15,0);
     // Petroleiro
     Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
@@ -1062,7 +1124,9 @@ public OnGameModeInit()
 	VeiculoPublico[35] = AddStaticVehicle(533,1536.0165,-1677.9349,13.0919,180.9664,166,166); //
 	VeiculoPublico[36] = AddStaticVehicle(562,2746.4739,-2459.2637,13.3080,271.7818,166,166); //
 
-    SetTimer("ServerInit", 1000, false);
+    //SetTimer("ServerInit", 1000, false);
+    //SetTimer("ProcessGameTime", 60000, true);
+    SetTimer("UpdateLixeira", 900000, true);
 
     return 1;
 }
@@ -1421,9 +1485,50 @@ public MapIcon(playerid)
     //PostosDeGasolina
     for (new a = 0; a < sizeof(PostosDeGasolina); a++)
 	{
-		SetPlayerMapIcon(playerid, (54+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL); //Auto Escola (id: 0)		
+		SetPlayerMapIcon(playerid, (54+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
+	}
+	// Empresas
+	new empresaInfo[100];
+	for (new a = 0; a < sizeof(empresasPos); a++)
+	{
+		if(empresasPos[a][3] == 1.0)
+		{
+			format(empresaInfo, sizeof(empresaInfo), "{30e551}Burger Shot{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
+			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
+			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
+		}
+		else if(empresasPos[a][3] == 2.0)
+		{
+			format(empresaInfo, sizeof(empresaInfo), "{30e551}Cluckin' Bell{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
+			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
+			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
+		}
+		else if(empresasPos[a][3] == 3.0)
+		{
+			format(empresaInfo, sizeof(empresaInfo), "{30e551}Loja de utilitário{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
+			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
+			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
+		}
+		else if(empresasPos[a][3] == 4.0)
+		{
+			format(empresaInfo, sizeof(empresaInfo), "{30e551}Pizzaria{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
+			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
+			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
+		}
+		else
+		{
+			format(empresaInfo, sizeof(empresaInfo), "{30e551}Clothes{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
+			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
+			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
+		}
 	}
 
+	return 1;
 }
 
 public OnVehicleSpawn(vehicleid)
@@ -2059,37 +2164,132 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
             GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
             SetPlayerInterior(playerid, 3);
             SetPlayerPos(playerid, 388.1492,173.6989,1008.3828);
+
+            return 1;
         }
 
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, 390.7674,173.7650,1008.3828))
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 390.7674,173.7650,1008.3828))
         {
             //Agencia de Empregos Saida
             SetPlayerInterior(playerid, 0);
             SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+            return 1;
         }
 
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, 1833.7811,-1842.6208,13.5781)){ //Mercados 24/7 ID(0) Entrada
-        GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
-        SetPlayerInterior(playerid, 6);
-        SetPlayerPos(playerid, -26.691598,-55.714897,1003.546875);}
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1833.7811,-1842.6208,13.5781))
+        { 
+        	//Mercados 24/7 ID(0) Entrada
+        	GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+        	SetPlayerInterior(playerid, 6);
+        	SetPlayerPos(playerid, -26.691598,-55.714897,1003.546875);
 
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, -27.3571,-58.2683,1003.5469)){//Mercados 24/7 ID(0) Saida
-        SetPlayerInterior(playerid, 0);
-        SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);}
-
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, 1519.1331,-1453.9199,14.2084)){ //Auto Escola ID(0) Entrada
-        GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
-        SetPlayerInterior(playerid, 3);
-        SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);}
-
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, 1494.325195,1304.942871,1093.289062)){//Auto Escola 24/7 ID(0) Saida
-        SetPlayerInterior(playerid, 0);
-        SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);}
-
-        //Sistema de Compras ou Outros
-        if(IsPlayerInRangeOfPoint(playerid, 2.0, -22.1867,-55.6953,1003.5469)){
-           // cmd_mercado(playerid);
+        	return 1;
         }
+
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, -27.3571,-58.2683,1003.5469))
+        {
+        	//Mercados 24/7 ID(0) Saida
+        	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+        	return 1;
+        }
+
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1519.1331,-1453.9199,14.2084))
+        { 
+        	//Auto Escola ID(0) Entrada
+        	GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+        	SetPlayerInterior(playerid, 3);
+        	SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);
+
+        	return 1;
+        }
+
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1494.325195,1304.942871,1093.289062))
+        {
+        	//Auto Escola 24/7 ID(0) Saida
+        	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+        	return 1;
+        }
+
+        //Burger shot
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 362.9280,-75.2216,1001.5078))
+        {
+           	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+        	return 1;
+        }
+        // Cluckin' bell
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 364.8353,-11.7157,1001.8516))
+        {
+           	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+        	return 1;
+        }
+        // Well stacked pizza
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 372.3253,-133.5240,1001.4922))
+        {
+           	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+        	return 1;
+        }
+        // Zip
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 161.4121,-97.1048,1001.8047))
+        {
+           	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+        	return 1;
+        }
+        else
+        {
+        	for (new a = 0; a < sizeof(empresasPos); a++)
+			{
+				if(IsPlayerInRangeOfPoint(playerid, 2.0, empresasPos[a][0],empresasPos[a][1],empresasPos[a][2]))
+				{
+					if(empresasPos[a][3] == 1.0)
+					{
+						GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        		SetPlayerInterior(playerid, 10);
+		        		SetPlayerPos(playerid, 362.9280,-75.2216,1001.5078);				
+						return 1;
+					}
+					else if(empresasPos[a][3] == 2.0)
+					{
+						GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        		SetPlayerInterior(playerid, 9);
+		        		SetPlayerPos(playerid, 364.8353,-11.7157,1001.8516);
+						return 1;
+					}
+					else if(empresasPos[a][3] == 3.0)
+					{
+						GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        		SetPlayerInterior(playerid, 6);
+		        		SetPlayerPos(playerid, -26.691598,-55.714897,1003.546875);
+						return 1;
+					}
+					else if(empresasPos[a][3] == 4.0)
+					{
+						GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        		SetPlayerInterior(playerid, 5);
+		        		SetPlayerPos(playerid, 372.3253,-133.5240,1001.4922);
+						return 1;
+					}
+					else
+					{
+						GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        		SetPlayerInterior(playerid, 18);
+		        		SetPlayerPos(playerid, 161.4121,-97.1048,1001.8047);
+						return 1;
+					}
+		        }
+			}
+        }
+        
     }
 
     if (newkeys==KEY_YES )
@@ -4029,6 +4229,16 @@ public UpdatePlayerLevel(playerid) {
 	}
 	return 1;
 }
+forward UpdateLixeira();
+public UpdateLixeira() {
+	for(new i = 0; i < sizeof(lixosLatasPos); i ++)
+	{
+		Update3DTextLabelText(lixosLatasText[i], 0xFFFFFFFF, "{30e551}Lixeira 3/3:\n{FFFFFF}/coletarlixo");
+		lixosLatasPos[i][3] = 3.0;
+	}
+	print("Todas as lixeiras foram atualizadas");
+    return 1;
+}
 forward UpdateTextDraw(playerid, textid);
 public UpdateTextDraw(playerid, textid) {
 	PlayerTextDrawHide(playerid, textStatusBar[playerid][textid]);
@@ -4107,41 +4317,68 @@ stock getVehicleName(vehicleid){
         strcat(nameVeh, VehicleNames[vehmodel - 400]);
         return nameVeh;
 }
+
+stock CriarAtores()
+{
+    Atores[0] = CreateActor(11, -22.5920,-57.3681,1003.5469,359.4778); // 24/7
+	Atores[1] = CreateActor(93, 359.7139,173.5991,1008.3893,275.3541); // AG
+	Atores[2] = CreateActor(167, 368.0838,-4.4926,1001.8516,179.0419); // Cluckin' bell
+	Atores[3] = CreateActor(205, 376.4423,-65.8463,1001.5078,183.8009); // Burger shot
+	Atores[4] = CreateActor(155, 376.6889,-117.2670,1001.4922,176.4589); // Well stacked pizza
+	Atores[5] = CreateActor(192, 162.7293,-81.1873,1001.8047,182.0424); // Zip
+
+
+	ApplyActorAnimation(Atores[0], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+	ApplyActorAnimation(Atores[1], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+	//ApplyActorAnimation(Atores[2], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+	ApplyActorAnimation(Atores[3], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+	//ApplyActorAnimation(Atores[4], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+	ApplyActorAnimation(Atores[5], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
+
+	SetActorInvulnerable(Atores[0], true);
+	SetActorInvulnerable(Atores[1], true);
+	SetActorInvulnerable(Atores[2], true);
+	SetActorInvulnerable(Atores[3], true);
+	SetActorInvulnerable(Atores[4], true);
+	SetActorInvulnerable(Atores[5], true);
+
+    return 1;
+}
  
 stock GetVehicleSpeed(vehicleid)
 {
-        new Float:xPos[3];
-        GetVehicleVelocity(vehicleid, xPos[0], xPos[1], xPos[2]);
-        return floatround(floatsqroot(xPos[0] * xPos[0] + xPos[1] * xPos[1] + xPos[2] * xPos[2]) * 170.00);
+    new Float:xPos[3];
+    GetVehicleVelocity(vehicleid, xPos[0], xPos[1], xPos[2]);
+    return floatround(floatsqroot(xPos[0] * xPos[0] + xPos[1] * xPos[1] + xPos[2] * xPos[2]) * 170.00);
 }
 
 stock motorcarro(playerid)
 {
-    	if( GetPlayerState(playerid) == PLAYER_STATE_DRIVER )
-		{
+	if( GetPlayerState(playerid) == PLAYER_STATE_DRIVER )
+	{
+	
+		new mot, lu, alar, por, cap, porma, ob;
+		new carro = GetPlayerVehicleID(playerid);
+		new Float:vidacarro;
+		GetVehicleHealth(carro, vidacarro);
+		GetVehicleParamsEx(carro, mot, lu, alar, por, cap, porma, ob);
 		
-			new mot, lu, alar, por, cap, porma, ob;
-			new carro = GetPlayerVehicleID(playerid);
-			new Float:vidacarro;
-			GetVehicleHealth(carro, vidacarro);
-			GetVehicleParamsEx(carro, mot, lu, alar, por, cap, porma, ob);
-			
 
-			if(Motor[carro] == 0 && PlayerDados[playerid][gasolina] > 0)
-			{
-				SetVehicleParamsEx(carro, VEHICLE_PARAMS_ON, VEHICLE_PARAMS_ON, alar, por, cap, porma, ob);
-				Motor[carro] = 1;
-				SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Ligado!");
-			}
-			else if(Motor[carro] == 1)
-			{
-				SetVehicleParamsEx(carro, VEHICLE_PARAMS_OFF, VEHICLE_PARAMS_OFF, alar, por, cap, porma, ob);
-				Motor[carro] = 0;
-				SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Desligado!");
-			}
-			return 1;
+		if(Motor[carro] == 0 && PlayerDados[playerid][gasolina] > 0)
+		{
+			SetVehicleParamsEx(carro, VEHICLE_PARAMS_ON, VEHICLE_PARAMS_ON, alar, por, cap, porma, ob);
+			Motor[carro] = 1;
+			SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Ligado!");
 		}
-     	return 1;
+		else if(Motor[carro] == 1)
+		{
+			SetVehicleParamsEx(carro, VEHICLE_PARAMS_OFF, VEHICLE_PARAMS_OFF, alar, por, cap, porma, ob);
+			Motor[carro] = 0;
+			SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Desligado!");
+		}
+		return 1;
+	}
+ 	return 1;
 }
 stock IsNumeric(const string[])
 {
@@ -4226,7 +4463,7 @@ CMD:rotas(playerid)
 {
     if(PlayerDados[playerid][Profissao] == Gari)
     {
-        ShowPlayerDialog(playerid, DialogRotasGari, DIALOG_STYLE_TABLIST_HEADERS, "Rotas » Estratégicas", "Local\t\nRota de El Corona\nRota de Verdant Bluffs\nRota De Commerce\nRota De Mulholland Intersection\nRota De Ocean Flats\n{f44242}Desativar rota{#ffffff}", "Selecionar", "Voltar");
+        ShowPlayerDialog(playerid, DialogRotasGari, DIALOG_STYLE_TABLIST_HEADERS, "Rotas » Estratégicas", "Local\t\nRota de El Corona\nRota de Verdant Bluffs\nRota De Commerce\nRota De Mulholland Intersection\nRota De Ocean Flats\n{f44242}Desativar rota", "Selecionar", "Voltar");
         return 1;
     }
     else
@@ -4278,9 +4515,10 @@ CMD:descarregar(playerid)
 								GivePlayerMoney(playerid, (64*gariCar[i][1]) );
 								PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
 								gariCar[i][1] = 0;
+								RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 								return 1;
 							}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Seu caminhão está vazio!");
-						}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo um caminhão de lixo!");
+						}//else return SendClientMessage(playerid, COR_ERRO, "ERRO | Esse caminhão de lixo pertence a outro jogador");
 					}
 				}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
 			}else return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que desligar o veiculo!");
@@ -4756,7 +4994,7 @@ CMD:givecar(playerid, params[])
 
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 /*===========================[ RespawnV ]====================*/
@@ -4824,7 +5062,7 @@ CMD:setgasolina(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Fome
@@ -4870,7 +5108,7 @@ CMD:setfome(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Sede
@@ -4916,7 +5154,7 @@ CMD:setsede(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Saude
@@ -4962,7 +5200,7 @@ CMD:setsaude(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Level de Procurado
@@ -5012,7 +5250,7 @@ CMD:setprocurado(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 
@@ -5056,7 +5294,7 @@ CMD:tp(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 
@@ -5100,7 +5338,7 @@ CMD:setmoney(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Set Skin
@@ -5143,7 +5381,7 @@ CMD:setskin(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Set level
@@ -5186,7 +5424,7 @@ CMD:setlevel(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 // Set Admin
@@ -5232,7 +5470,7 @@ CMD:setadmin(playerid, params[])
 			fileLog("Admins", Log);
         }
     }
-	else SendClientMessage(playerid, COR_ERRO, "Somente administradores podem usar este comando!");
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 
