@@ -1622,7 +1622,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				    format(string_profissaoInfo, sizeof (string_profissaoInfo), "(%d/30)", gariCar[i][1]);
 				    PlayerTextDrawSetString(playerid, textProfissaoInfo[playerid][2], string_profissaoInfo);
 
-				    PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 6 + ( (124 * 100 ) / 100 ) ), 0.000000);
+				    PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 6 + ( (124 * gariCar[i][1] ) / 30 ) ), 0.000000);
 
 					for( new a = 0; a < 5; a++) PlayerTextDrawShow(playerid, textProfissaoInfo[playerid][a]);
 
@@ -1744,12 +1744,33 @@ public OnPlayerEnterCheckpoint(playerid)
     {
 	    if(PlayerDados[playerid][Profissao] == Gari)
 	    {
+	    	new mgSacolaLixo[100];
+
 	    	DisablePlayerCheckpoint(playerid);
 	    	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.1, 0, 1, 1, 0, 0, 0);
-	    	SendClientMessage(playerid,COR_SUCCESS,"| INFO | Você recolheu uma sacola de lixo!");
 	    	RemovePlayerAttachedObject(playerid, 2);
 	 		profissaoCarregandoOJG[playerid] = false;
-	 		PlayerPlaySound(playerid,1058,0.0,0.0,0.0);   	
+	 		PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+	 		for(new i = 0; i < sizeof(gariCar); i ++)
+			{
+				if(profissaoCar[playerid] == gariCar[i][0])
+				{
+					if(gariCar[i][1] < 30)
+					{
+						gariCar[i][1] = gariCar[i][1] + 1;
+						format(mgSacolaLixo, sizeof(mgSacolaLixo), "| INFO | Ainda faltam %d sacolas para você atingir a capacidade do seu caminhão!", (30 - gariCar[i][1]) );
+						SendClientMessage(playerid,COR_SUCCESS,mgSacolaLixo);
+						return 1;
+					}
+					else
+					{
+						SendClientMessage(playerid,COR_ERRO,"| INFO | O caminhão de lixo já está lotado. Dirijá seu caminhão até o aterro sanitário mais próximo!");
+						return 1;
+					}
+				}
+			}
+
 	    	return 1;
 	    }
     }
@@ -4278,12 +4299,31 @@ CMD:profissao (playerid)
 {
 	if(PlayerDados[playerid][Profissao] == Desempregado) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Está Desempregado! Vá Até Uma Agência de Empregos!");
 
-	if(PlayerDados[playerid][Profissao] == Petroleiro)
+	else if(PlayerDados[playerid][Profissao] == Gari)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}GARI:\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}GARI {c0c0c0}é procurando lixeiras por toda San Andreas!\n");
+	    strcat(str, "{c0c0c0}No HQ de Gari, Tem varios Caminhões, Os Quais Você Deve usar para coletar as sacolas de lixo!\n");
+	    strcat(str, "{c0c0c0}Quando a lixeira estiver com o {ffffff}/ColetarLixo {30e551}Verde {c0c0c0}significa que ali tem lixos para você coletar\n");
+	    strcat(str, "{c0c0c0}Porém, quando o {ffffff}/ColetarLixo{c0c0c0} estiver {f2543c}Vermelho {c0c0c0}significa que não tem mais lixos!\n");
+	    strcat(str, "{c0c0c0}Você receberá R$ 1920 para entregar 30 sacolas de lixo para o aterro sanitario!\n\n");
+	    strcat(str, "{ffffff}/ColetarLixo{c0c0c0} - Para coletar uma sacola de lixo próximo de você!\n");
+	    strcat(str, "{ffffff}/descarregar{c0c0c0} - Para você descarregar o Caminhão!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
+	    strcat(str, "{ffffff}/rotas{c0c0c0} - Lista das melhores rotas em San Andreas!");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+
+	else if(PlayerDados[playerid][Profissao] == Petroleiro)
 	{
 	    new str[1280];
 	    strcat(str, "{FF0000}Transportador de Concretos:\n\n{c0c0c0}Você Trabalha Transportando Concretos Com Caminhões!\n\nNa Base De Transp. Concretos, Tem Os Caminhões, Os Quais Você Deve Usar Para Transportar As Cargas De Concreto!\nApós Entregar O Concreto, Você Recebera Uma Quantia Referente A Carga Selecionada.\n\n");
 	    strcat(str, "/Carregar - Para Selecionar A Carga A Ser Entregue\n/Descarregar - Para Descarregar A Carga Em Seu Destino\n/Cp - Chat Profissão\n\n{00FF04}Salario: $1800");
 	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
 	}
 	return 1;
 }
