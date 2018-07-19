@@ -12,6 +12,8 @@
 //------------------------- { - DEFINIÇÕES - } ---------------------------------
 // Init Gamemode + configs
 #define SERVER_PASSWORD "sklyandia456123" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
+#define SERVER_GAMEMODE "Brasil RPG ® 2018"
+#define SERVER_LANGUAGE "Português - Brasil"
 //==========[ DIALOGS ]=======       ==[ IDs ]==
 #define     DialogRegistro              (1)		// DEFINE DIALOG REGISTRO (ID= 1)
 #define     DialogLogin                 (2)		// DEFINE DIALOG LOGIN   (ID= etc..)
@@ -34,6 +36,7 @@
 #define     DialogPostoGNV       		(19)	// Posto Table de GNV 
 #define     DialogPostoDiesel       	(20)	// Posto Table de Diesel 
 #define 	DialogAdmins				(21)	// Administrador Online
+#define 	DialogRotasGari				(22)	// Rotas Gari
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -209,7 +212,7 @@
 
 // GPS
 #define GPS_ID		1
-#define GPS_ICON	41
+#define GPS_ICON	53
 
 //------------------------------------------------------------------------------
 
@@ -580,9 +583,13 @@ main()
 public OnGameModeInit()
 {
     // Basic Config
-    new Password[256];
+    new Password[256],Gamemode[256],Language[256];
+    format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
+	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
 	SendRconCommand(Password);
+	SetGameModeText(Gamemode);
+	SendRconCommand(Language);
 
     print("\n----------------------------------");
 	print(" Skylandia Cidade Vida Real");
@@ -592,8 +599,9 @@ public OnGameModeInit()
 
     if(fexist("/Contas/")) print("A pasta Contas foi encontrada!"), print("Sistema De Login carregado com sucesso!");
     else print("A pasta Contas não foi encontrada!"), SendRconCommand("exit");
-    SetGameModeText("Brasil: SLR RPG v0.0.1");
-	AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
+
+	//AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
+
     DisableInteriorEnterExits(); // desativar entradas em lojas/casas ( pikcups amarelos ) do jogo normal
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
     UsePlayerPedAnims();
@@ -3669,6 +3677,65 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				return 1;        
     		}
         }
+        case DialogRotasGari:
+        {
+            if(response)
+    	    {
+    	        if(listitem == 0)
+				{
+					SetPlayerMapIcon(playerid, GPS_ID, 1884.9633,-1884.2972,13.2042, GPS_ICON, 0, MAPICON_GLOBAL);
+		            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local da rota!");
+
+		            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+		            HQ[playerid] = true;
+	   				return 1;
+				}
+				else if(listitem == 1)
+	          	{
+					SetPlayerMapIcon(playerid, GPS_ID, 1631.2876,-1902.7292,13.2800, GPS_ICON, 0, MAPICON_GLOBAL);
+		            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local da rota!");
+
+		            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+		            HQ[playerid] = true;
+	   				return 1;
+	          	}
+	          	else if(listitem == 2)
+	          	{
+					SetPlayerMapIcon(playerid, GPS_ID, 1625.4355,-1810.2416,13.2473, GPS_ICON, 0, MAPICON_GLOBAL);
+		            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local da rota!");
+
+		            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+		            HQ[playerid] = true;
+	   				return 1;
+				}
+				else if(listitem == 3)
+				{
+					SetPlayerMapIcon(playerid, GPS_ID, 1643.9307,-1079.3708,23.6297, GPS_ICON, 0, MAPICON_GLOBAL);
+		            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local da rota!");
+
+		            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+		            HQ[playerid] = true;
+	   				return 1;
+				}
+				else if(listitem == 4)
+				{
+					SetPlayerMapIcon(playerid, GPS_ID, -2655.7380,-148.9500,3.7700, GPS_ICON, 0, MAPICON_GLOBAL);
+		            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local da rota!");
+
+		            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+		            HQ[playerid] = true;
+	   				return 1;
+				}
+				else if(listitem == 5)
+				{
+					SendClientMessage(playerid, COR_ERRO, "INFO | Você desmarcou do seu radar o local da rota de Gari!");
+			        RemovePlayerMapIcon(playerid, GPS_ID);
+			        HQ[playerid] = false;
+
+			        return 1;
+				}
+    		}
+        }
     }
     return 1;
 }
@@ -4155,6 +4222,19 @@ CMD:uniforme(playerid)
     }
     return 1;
 }
+CMD:rotas(playerid)
+{
+    if(PlayerDados[playerid][Profissao] == Gari)
+    {
+        ShowPlayerDialog(playerid, DialogRotasGari, DIALOG_STYLE_TABLIST_HEADERS, "Rotas » Estratégicas", "Local\t\nRota de El Corona\nRota de Verdant Bluffs\nRota De Commerce\nRota De Mulholland Intersection\nRota De Ocean Flats\n{f44242}Desativar rota{#ffffff}", "Selecionar", "Voltar");
+        return 1;
+    }
+    else
+    {
+    	SendClientMessage(playerid, COR_ERRO, "ERRO | A sua profissão não tem uma rota específico!");	 
+    }
+    return 1;
+}
 CMD:carregar(playerid)
 {
     if(PlayerDados[playerid][Profissao] == Petroleiro)
@@ -4177,11 +4257,40 @@ CMD:carregar(playerid)
 }
 CMD:descarregar(playerid)
 {
-    if(PlayerDados[playerid][Profissao] == Petroleiro)
+	if(PlayerDados[playerid][Profissao] == Gari)
+	{
+		if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 408)
+		{
+			if(Motor[GetPlayerVehicleID(playerid)] == 0)
+			{
+				if(PlayerToPoint(playerid, 20.0, 2145.3713,-1985.9852,13.5546))
+				{
+					// Gari
+					for(new i = 0; i < sizeof(gariCar); i ++)
+					{
+						if(GetPlayerVehicleID(playerid) == gariCar[i][0])
+						{
+							if(gariCar[i][1] > 0)
+							{
+								new descarregarGari[100];
+								format(descarregarGari, sizeof(descarregarGari), "| INFO | você descarregou seu caminhão com %d sacolas de lixo e recebeu R$ %d", gariCar[i][1], (64*gariCar[i][1]) );
+								SendClientMessage(playerid, COR_SUCCESS, descarregarGari);
+								GivePlayerMoney(playerid, (64*gariCar[i][1]) );
+								PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+								gariCar[i][1] = 0;
+								return 1;
+							}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Seu caminhão está vazio!");
+						}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo um caminhão de lixo!");
+					}
+				}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
+			}else return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que desligar o veiculo!");
+		}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo um caminhão de lixo!");
+	}
+    else if(PlayerDados[playerid][Profissao] == Petroleiro)
     {
         if(carregado[playerid] == 0)
         {
-            SendClientMessage(playerid, COR_ERRO, "ERRO | O seu caminhão não está carregado!");
+            return SendClientMessage(playerid, COR_ERRO, "ERRO | O seu caminhão não está carregado!");
         }
         else
         {
@@ -4200,89 +4309,115 @@ CMD:descarregar(playerid)
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Las Venturas
-			            else if(PlayerToPoint(playerid, 20.0, 2639.6121,1106.8522,10.3771) && carregado[playerid] == 2){
+			            else if(PlayerToPoint(playerid, 20.0, 2639.6121,1106.8522,10.3771) && carregado[playerid] == 2)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$800");
 	                        GivePlayerMoney(playerid, 800);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Temple
-			            else if(PlayerToPoint(playerid, 20.0, 1004.0529,-938.4166,41.7306) && carregado[playerid] == 3){
+			            else if(PlayerToPoint(playerid, 20.0, 1004.0529,-938.4166,41.7306) && carregado[playerid] == 3)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1000");
 	                        GivePlayerMoney(playerid, 1000);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Whetstone
-			            else if(PlayerToPoint(playerid, 20.0, -1607.2217,-2714.9656,48.1127) && carregado[playerid] == 4){
+			            else if(PlayerToPoint(playerid, 20.0, -1607.2217,-2714.9656,48.1127) && carregado[playerid] == 4)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1800");
 	                        GivePlayerMoney(playerid, 1800);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Doherty
-			            else if(PlayerToPoint(playerid, 20.0, -2028.1998,156.6336,28.3998) && carregado[playerid] == 5){
+			            else if(PlayerToPoint(playerid, 20.0, -2028.1998,156.6336,28.3998) && carregado[playerid] == 5)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1400");
 	                        GivePlayerMoney(playerid, 1400);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Easter Basin
-			            else if(PlayerToPoint(playerid, 20.0, -1676.0660,413.3091,6.7472) && carregado[playerid] == 6){
+			            else if(PlayerToPoint(playerid, 20.0, -1676.0660,413.3091,6.7472) && carregado[playerid] == 6)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1450");
 	                        GivePlayerMoney(playerid, 1450);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Juniper Hollow
-			            else if(PlayerToPoint(playerid, 20.0, -2409.0630,976.4838,44.8595) && carregado[playerid] == 7){
+			            else if(PlayerToPoint(playerid, 20.0, -2409.0630,976.4838,44.8595) && carregado[playerid] == 7)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1600");
 	                        GivePlayerMoney(playerid, 1600);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Tirra Robada
-			            else if(PlayerToPoint(playerid, 20.0, -1329.1506,2677.6660,49.6365) && carregado[playerid] == 8){
+			            else if(PlayerToPoint(playerid, 20.0, -1329.1506,2677.6660,49.6365) && carregado[playerid] == 8)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$1300");
 	                        GivePlayerMoney(playerid, 1300);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
 			            // Posto de Fort Carson
-			            else if(PlayerToPoint(playerid, 20.0, 70.7164,1219.1143,18.3873) && carregado[playerid] == 9){
+			            else if(PlayerToPoint(playerid, 20.0, 70.7164,1219.1143,18.3873) && carregado[playerid] == 9)
+			            {
 			            	SendClientMessage(playerid, COR_SUCCESS, "Você descarregou o seu caminhão e ganhou R$70");
 	                        GivePlayerMoney(playerid, 70);
 	                        respawntrailer = (GetVehicleTrailer(GetPlayerVehicleID(playerid)));
 	                        SetVehicleToRespawn(respawntrailer);
 	                        RemovePlayerMapIcon(playerid, 41);
 	                        carregado[playerid] = 0;
+
+	                        return 1;
 			            }
-			            else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
-                	}else{
-                		SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que desligar o veiculo!");
+			            else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área de descarregamento!");
                 	}
+                	else return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que desligar o veiculo!");
                 }
-                else SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está com um 'Trailer de petroleo'");
+                else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está com um 'Trailer de petroleo'");
             }
-            else SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo uma carreta de petroleo!");
+            else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você só pode descarregar se estiver dirigindo uma carreta de petroleo!");
         }
     }
+    else SendClientMessage(playerid, COR_ERRO, "ERRO | Sua profissão não necessita descarregar o veiculo!");
     return 1;
 }
 /*==================[ level = status ]=====================*/
@@ -4290,7 +4425,7 @@ CMD:descarregar(playerid)
 CMD:level (playerid)
 {
 	new str[600];
-	format(str, sizeof(str), "{16d300}• Seu Level Atual É {0097FF}%d\n{17f300}• Seu EXP Atual É %d/10000\n\n{c0c0c0}Digite /AjudaLevel Para Mais Informações.\n", GetPlayerScore(playerid), 0);
+	format(str, sizeof(str), "{16d300}• Seu Level Atual É {0097FF}%d\n{17f300}• Seu EXP Atual É %d/10000\n\n{c0c0c0}Digite /AjudaLevel Para Mais Informações.\n", GetPlayerScore(playerid), PlayerDados[playerid][exp]);
 	ShowPlayerDialog(playerid, DialogScore, DIALOG_STYLE_MSGBOX, "{0097FF}Level", str, "OK", "");
 	return 1;
 }
@@ -4302,7 +4437,7 @@ CMD:profissao (playerid)
 	else if(PlayerDados[playerid][Profissao] == Gari)
 	{
 	    new str[1280];
-	    strcat(str, "{9ACD32}GARI:\n\n");
+	    strcat(str, "{9ACD32}GARI\n\n");
 	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}GARI {c0c0c0}é procurando lixeiras por toda San Andreas!\n");
 	    strcat(str, "{c0c0c0}No HQ de Gari, Tem varios Caminhões, Os Quais Você Deve usar para coletar as sacolas de lixo!\n");
 	    strcat(str, "{c0c0c0}Quando a lixeira estiver com o {ffffff}/ColetarLixo {30e551}Verde {c0c0c0}significa que ali tem lixos para você coletar\n");
