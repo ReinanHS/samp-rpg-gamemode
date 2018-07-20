@@ -41,6 +41,8 @@
 #define 	DialogBurgerShot			(24)	// Burger shot
 #define 	DialogCluckinBell			(25)	// Cluckin' bell
 #define 	DialogPizza					(26)	// Well stacked pizza
+#define 	DialogCreditoSMS			(27)	// Crédito para SMS
+#define 	DialogVendaProdutos			(28)	// Venda de produtos
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -509,6 +511,14 @@ enum pDados
 }
 enum mInfo
 {
+	Peixes,
+	Fotos,
+	Frutas,
+	KitReparo,
+	GalaoDeCombustivel,
+	TravaEletica,
+	CreditoSMS,
+	bool:RelogioUP,
     bool:Celular,
     bool:PedagioSemPagar,
     bool:GPS,
@@ -922,7 +932,7 @@ public OnGameModeInit()
     /*              3D TEXTS                               */
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
-    Create3DTextLabel("{FFFFFF}Menu do Mercado 24/7\nAperte {00FFFF}'F' Ou Use /mercado\n{FFFFFF}Para Comprar",50,-22.1867,-55.6953,1003.5469,15,0);// Menu do Mercado 24/7
+    // Auto Escola
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.325195,1304.942871,1093.289062,15,0);//Saida Mercado 24/7 (ID: All)
     // Cluckin' bell
@@ -2466,20 +2476,23 @@ public OnPlayerUpdate(playerid)
 		TextDrawHideForPlayer(playerid,Logo);
 		new carro = GetPlayerVehicleID(playerid);
 		if(Motor[carro] == 1){
-			if(PlayerDados[playerid][gasolina] == 0 && Avisado[playerid] == false) {
-		        SendClientMessage(playerid,COR_ERRO,"| INFO | A Gasolina Deste carro acabou chame o Guincho");
-		        //Motor[carro] = 0;
-		        //TogglePlayerControllable(playerid, false);
+			if(PlayerDados[playerid][gasolina] == 0 && Avisado[playerid] == false) 
+			{
+		        SendClientMessage(playerid, COR_ERRO, "| INFO | A Gasolina Deste carro acabou chame o Guincho");
 		        motorcarro(playerid);
-
 		        Avisado[playerid] = true;
+		        return 1;
 		    }
-		    if(PlayerDados[playerid][gasolina] > 0) {
+		    else if(PlayerDados[playerid][gasolina] > 0) 
+		    {
 		        Retirada[playerid]+=1;
-		        if(Retirada[playerid] >= (RETIRAR_KM*13)) {
+		        if(Retirada[playerid] >= (RETIRAR_KM*13)) 
+		        {
 		            PlayerDados[playerid][gasolina] = PlayerDados[playerid][gasolina] - 1;
 		            Retirada[playerid]=0;
 		            Avisado[playerid] = false;
+
+		            return 1;
 		        }
 		    }
 		}
@@ -2512,29 +2525,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
     switch(dialogid)
 	{
-        //Dialog
-        case DialogMercado:
-        {
-            if(response){
-                if(listitem == 0){
-                    if(GetPlayerMoney(playerid) < 1000) return SendClientMessage(playerid,0xFF0000AA,"Você não possui R$ 1000 para comprar!");
-                    if(MercadoInfo[playerid][Celular] == false){
-                        SendClientMessage(playerid, 0x008000AA ,"Agora você pode usar o comando /celular [ID] [SMS] para enviar uma mensagem.");
-                        GivePlayerMoney(playerid, -1000);
-                        MercadoInfo[playerid][Celular] = true;}
-                    else{SendClientMessage(playerid, 0x008000AA ,"você já tem um celular portanto não pode comprar outro.");}
-                }
-                if(listitem == 1){
-                    if(GetPlayerMoney(playerid) < 50000) return SendClientMessage(playerid,0xFF0000AA,"Você não possui R$ 50000 para comprar!");
-                    if(MercadoInfo[playerid][PedagioSemPagar] == false){
-                        SendClientMessage(playerid, 0x008000AA ,"Compra realizada com sucesso obrigado volte sempre.");
-                        GivePlayerMoney(playerid, -50000);
-                        MercadoInfo[playerid][PedagioSemPagar] = true;}
-                    else{SendClientMessage(playerid, 0x008000AA ,"você já está utilizando o nosso serviço de pedágio.");}
-                }
-            }
-            return 1;
-        }
         //Dialog
 	    case DialogRegistro:
 	    {
@@ -4090,6 +4080,283 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
     		}
         }
+        case DialogMercado:
+        {
+            if(response){
+                if(listitem == 0){
+                    if(GetPlayerMoney(playerid) < 500) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][GalaoDeCombustivel] < 10)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou um Galão de Combustível com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -500);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][GalaoDeCombustivel] = MercadoInfo[playerid][GalaoDeCombustivel] + 1;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 1){
+                    if(GetPlayerMoney(playerid) < 900) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][KitReparo] < 5)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou 1 Kit Reparo com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -900);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][KitReparo] = MercadoInfo[playerid][KitReparo] + 1;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 2){
+                    if(GetPlayerMoney(playerid) < 1000) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Celular] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou Celular com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -1000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Celular] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 3){
+                    if(GetPlayerMoney(playerid) < 1500) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][GPS] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou GPS com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -1500);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][GPS] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 4){
+                    if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Capacete] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou Capacete com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -2500);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Capacete] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 5){
+                    if(GetPlayerMoney(playerid) < 2800) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Oculos] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou Óculos com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -2800);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Oculos] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 6){
+                    if(GetPlayerMoney(playerid) < 3000) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Bone] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou Boné com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -3000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Bone] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 7){
+                    if(GetPlayerMoney(playerid) < 3100) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Gorro] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou Gorro com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -3100);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Gorro] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 8){
+                    if(GetPlayerMoney(playerid) < 4500) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][TravaEletica] < 5)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou uma Trava para veículos com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -4500);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][TravaEletica] = MercadoInfo[playerid][TravaEletica] + 1;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 9){
+                    if(GetPlayerMoney(playerid) < 5800) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][Arara] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou uma Arara com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -5800);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Arara] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 8000) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][PedagioSemPagar] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou uma Pedágio automatico com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -8000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][PedagioSemPagar] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 11){
+                    if(GetPlayerMoney(playerid) < 20000) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(MercadoInfo[playerid][RelogioUP] == false)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou uma Relógio de UP com sucesso use /utilitarios para ver todos os comandos!");
+                        GivePlayerMoney(playerid, -20000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][RelogioUP] = true;
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você atingiu o limite de capacidade desse produto!");
+                }
+                else if(listitem == 12) return ShowPlayerDialog(playerid, DialogCreditoSMS, DIALOG_STYLE_TABLIST_HEADERS, "Utilitários » Crédito para SMS", "Créditos\t{008000}Preço\n25\t{008000}R$ 25\n50\t{008000}R$ 50\n100\t{008000}R$ 100\n500\t{008000}R$ 500", "Selecionar", "Voltar");
+                else if(listitem == 13){
+                	new string[952];
+					strcat(string, "Opções\t{008000}Preço\n");
+					strcat(string, "Peixes\t{008000}R$ 200\n");
+					strcat(string, "Fotos\t{008000}R$ 320\n");
+					strcat(string, "Frutas\t{008000}R$ 400\n");
+					return ShowPlayerDialog(playerid, DialogVendaProdutos, DIALOG_STYLE_TABLIST_HEADERS, "Utilitários » Venda de produtos", string, "Selecionar", "Voltar");
+                }
+            }
+            return 1;
+        }
+        case DialogCreditoSMS:
+        {
+            if(response)
+            {
+                if(MercadoInfo[playerid][Celular] == false) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não tem um celular!");
+                else{
+                	if(listitem == 0){
+	                    if(GetPlayerMoney(playerid) < 25) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+	                    else if(MercadoInfo[playerid][CreditoSMS] <= 0)
+	                    {
+	                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma recarga no seu celular no valor de R$ 25!");
+	                        GivePlayerMoney(playerid, -25);
+	                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+	                        MercadoInfo[playerid][CreditoSMS] = 25;
+
+	                        return 1;
+	                    }
+	                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você tem que esperar seus créditos acabarem!");
+	                }
+	                else if(listitem == 1){
+	                    if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+	                    else if(MercadoInfo[playerid][CreditoSMS] <= 0)
+	                    {
+	                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma recarga no seu celular no valor de R$ 50!");
+	                        GivePlayerMoney(playerid, -50);
+	                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+	                        MercadoInfo[playerid][CreditoSMS] = 50;
+
+	                        return 1;
+	                    }
+	                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você tem que esperar seus créditos acabarem!");
+	                }
+	                else if(listitem == 2){
+	                    if(GetPlayerMoney(playerid) < 100) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+	                    else if(MercadoInfo[playerid][CreditoSMS] <= 0)
+	                    {
+	                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma recarga no seu celular no valor de R$ 100!");
+	                        GivePlayerMoney(playerid, -100);
+	                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+	                        MercadoInfo[playerid][CreditoSMS] = 100;
+
+	                        return 1;
+	                    }
+	                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você tem que esperar seus créditos acabarem!");
+	                }
+	                else if(listitem == 3){
+	                    if(GetPlayerMoney(playerid) < 500) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+	                    else if(MercadoInfo[playerid][CreditoSMS] <= 0)
+	                    {
+	                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma recarga no seu celular no valor de R$ 500!");
+	                        GivePlayerMoney(playerid, -500);
+	                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+	                        MercadoInfo[playerid][CreditoSMS] = 500;
+
+	                        return 1;
+	                    }
+	                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você tem que esperar seus créditos acabarem!");
+	            	}
+                }
+            }    
+            return 1;
+        }
+        case DialogVendaProdutos:
+        {
+            if(response)
+            {
+                if(listitem == 0){
+                    if(MercadoInfo[playerid][Peixes] < 5) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui 5 Peixes para vender esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma venda de 5 peixe no valor de R$ 1000!");
+                        GivePlayerMoney(playerid, 1000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Peixes] = MercadoInfo[playerid][Peixes] - 5;
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 1){
+                    if(MercadoInfo[playerid][Fotos] < 5) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui 5 Fotos para vender esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma venda de 5 Fotos no valor de R$ 1600!");
+                        GivePlayerMoney(playerid, 1600);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Fotos] = MercadoInfo[playerid][Fotos] - 5;
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 2){
+                    if(MercadoInfo[playerid][Frutas] < 5) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui 5 Frutas para vender esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você fez uma venda de 5 Frutas no valor de R$ 2000!");
+                        GivePlayerMoney(playerid, 2000);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        MercadoInfo[playerid][Frutas] = MercadoInfo[playerid][Frutas] - 5;
+
+                        return 1;
+                    }
+                }
+            }    
+            return 1;
+        }
+  
     }
     return 1;
 }
@@ -4175,6 +4442,7 @@ stock SalvarDados(playerid)
     DOF2_SetFloat(PegarConta(playerid), "lPosX", iPosX[playerid]);
     DOF2_SetFloat(PegarConta(playerid), "lPosY", iPosY[playerid]);
     DOF2_SetFloat(PegarConta(playerid), "lPosZ", iPosZ[playerid]);
+    // Mercado
     DOF2_SetBool(PegarConta(playerid), "Celular", MercadoInfo[playerid][Celular]);
     DOF2_SetBool(PegarConta(playerid), "Pedagio", MercadoInfo[playerid][PedagioSemPagar]);
     DOF2_SetBool(PegarConta(playerid), "GPS", MercadoInfo[playerid][GPS]);
@@ -4183,6 +4451,16 @@ stock SalvarDados(playerid)
     DOF2_SetBool(PegarConta(playerid), "Bone", MercadoInfo[playerid][Bone]);
     DOF2_SetBool(PegarConta(playerid), "Gorro", MercadoInfo[playerid][Gorro]);
     DOF2_SetBool(PegarConta(playerid), "Arara", MercadoInfo[playerid][Arara]);
+    DOF2_SetBool(PegarConta(playerid), "RelogioUP", MercadoInfo[playerid][RelogioUP]);
+    DOF2_SetInt(PegarConta(playerid), "KitReparo", MercadoInfo[playerid][KitReparo]);
+    DOF2_SetInt(PegarConta(playerid), "GalaoDeCombustivel", MercadoInfo[playerid][GalaoDeCombustivel]);
+    DOF2_SetInt(PegarConta(playerid), "TravaEletica", MercadoInfo[playerid][TravaEletica]);
+    DOF2_SetInt(PegarConta(playerid), "CreditoSMS", MercadoInfo[playerid][CreditoSMS]);
+
+    DOF2_SetInt(PegarConta(playerid), "Peixes", MercadoInfo[playerid][Peixes]);
+    DOF2_SetInt(PegarConta(playerid), "Fotos", MercadoInfo[playerid][Fotos]);
+    DOF2_SetInt(PegarConta(playerid), "Frutas", MercadoInfo[playerid][Frutas]);
+
     DOF2_SaveFile();
 }
 stock CarregarDados(playerid)
@@ -4237,6 +4515,15 @@ stock CarregarDados(playerid)
             MercadoInfo[playerid][Bone] = DOF2_GetBool(PegarConta(playerid), "Bone");
             MercadoInfo[playerid][Gorro] = DOF2_GetBool(PegarConta(playerid), "Gorro");
             MercadoInfo[playerid][Arara] = DOF2_GetBool(PegarConta(playerid), "Arara");
+            MercadoInfo[playerid][RelogioUP] = DOF2_GetBool(PegarConta(playerid), "RelogioUP");
+            MercadoInfo[playerid][KitReparo] = DOF2_GetInt(PegarConta(playerid), "KitReparo");
+            MercadoInfo[playerid][GalaoDeCombustivel] = DOF2_GetInt(PegarConta(playerid), "GalaoDeCombustivel");
+            MercadoInfo[playerid][TravaEletica] = DOF2_GetInt(PegarConta(playerid), "TravaEletica");
+            MercadoInfo[playerid][CreditoSMS] = DOF2_GetInt(PegarConta(playerid), "CreditoSMS");
+
+            MercadoInfo[playerid][Peixes] = DOF2_GetInt(PegarConta(playerid), "Peixes");
+            MercadoInfo[playerid][Fotos] = DOF2_GetInt(PegarConta(playerid), "Fotos");
+            MercadoInfo[playerid][Frutas] = DOF2_GetInt(PegarConta(playerid), "Frutas");
             // Posição do jogador
             iPosX[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosX");
             iPosY[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosY");
@@ -4259,6 +4546,15 @@ stock setBasicInfoPlayer(playerid){
     MercadoInfo[playerid][Bone] = false;
     MercadoInfo[playerid][Gorro] = false;
     MercadoInfo[playerid][Arara] = false;
+
+    MercadoInfo[playerid][RelogioUP] = false;
+	MercadoInfo[playerid][KitReparo] = 0;
+	MercadoInfo[playerid][GalaoDeCombustivel] = 0;
+	MercadoInfo[playerid][TravaEletica] = 0;
+	MercadoInfo[playerid][CreditoSMS] = 0;
+	MercadoInfo[playerid][Peixes] = 0;
+	MercadoInfo[playerid][Fotos] = 0;
+	MercadoInfo[playerid][Frutas] = 0;
 
     PlayerDados[playerid][vip] = false;
 	PlayerDados[playerid][exp] = 0;
