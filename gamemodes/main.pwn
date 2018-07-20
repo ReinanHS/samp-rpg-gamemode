@@ -233,24 +233,63 @@ new Aviso[MAX_PLAYERS];
 new Log[256];
 
 new point[MAX_PLAYERS];
-new Float:AutoPoints[16][3] = //Cordenadas dos Race Checkpoints
+new Float:AutoPointsTerrestre[16][3] = //Cordenadas dos Race Checkpoints
 {
-    {1535.5942,-1457.8770,12.0806},
-    {1468.1927,-1438.7798,13.2615},
-    {1426.9215,-1580.5010,13.2443},
-    {1426.1265,-1718.1543,13.2614},
-    {1386.0983,-1747.1523,13.2613},
-    {1412.6836,-1875.0875,13.2613},
-    {1665.5758,-1873.0076,13.2670},
-    {1691.4797,-1817.2625,13.2671},
-    {1811.8418,-1834.3431,13.2771},
-    {1815.5009,-1729.4799,13.2613},
-    {1692.3575,-1730.3171,13.2646},
-    {1690.5511,-1598.3267,13.2634},
-    {1660.3773,-1578.7968,13.2690},
-    {1660.3748,-1456.0530,13.2638},
-    {1535.1095,-1437.5797,13.2614},
-    {1535.1095,-1437.5797,13.2614}
+    {-213.8526,-268.9630,1.1568},
+	{-366.6301,-263.2197,18.2114},
+	{-595.5271,-245.2665,63.0237},
+	{-941.0117,-236.1228,38.2102},
+	{-898.8070,-138.8719,56.1301},
+	{-671.8285,12.7322,69.9154},
+	{-882.9682,-42.9285,34.9181},
+	{-664.9200,50.9309,31.5698},
+	{-773.8671,151.6971,6.6104},
+	{-569.1605,281.5934,1.8052},
+	{-221.6697,240.7802,11.5184},
+	{14.0659,146.7365,1.8052},
+	{227.7298,45.0886,2.1568},
+	{229.4099,-202.0976,1.1528},
+	{205.9151,-280.0430,1.1568},
+	{198.6410,-252.6718,1.3052}
+};
+
+new Float:AutoPointsMaritimo[15][3] = //Cordenadas dos Race Checkpoints
+{
+    {-2824.6116,-993.8824,-0.0978},
+	{-2666.5288,-913.3810,-0.1006},
+	{-2396.2371,-923.9433,-0.1775},
+	{-2169.0850,-1095.1292,-0.1380},
+	{-1891.8954,-1449.5781,-0.1950},
+	{-1649.5706,-1630.1246,-0.1991},
+	{-1448.4696,-1692.3353,-0.1386},
+	{-1187.6443,-2002.5485,-0.1665},
+	{-1198.7758,-2274.7949,-0.1800},
+	{-1240.0469,-2399.1777,-0.1174},
+	{-1190.7472,-2600.6372,-0.1491},
+	{-1164.7815,-2685.0295,0.4984},
+	{-1004.5907,-2972.8459,-0.2097},
+	{-723.8929,-3103.1897,0.5628},
+	{-588.7319,-3312.1174,0.1651}
+};
+
+new Float:AutoPointsAereo[16][3] = //Cordenadas dos Race Checkpoints
+{
+	{1479.6305,1743.5908,11.2808},
+	{1478.0903,1606.9702,21.0862},
+	{1476.6915,1431.9797,53.6698},
+	{1491.4854,1084.7115,57.7066},
+	{1715.1531,581.3810,98.9179},
+	{1855.5598,181.8968,108.5845},
+	{2126.4795,-89.7059,131.6843},
+	{2506.4238,-570.4764,144.7487},
+	{2453.2305,-1070.5182,101.3079},
+	{2183.5667,-1462.6193,80.4114},
+	{2081.0042,-1715.5007,81.0441},
+	{2023.5948,-1896.8536,90.0089},
+	{2122.4004,-2131.1016,101.1793},
+	{2298.1260,-2387.1797,95.1853},
+	{2096.9648,-2512.9473,88.5175},
+	{1572.7443,-2494.2610,14.0182}
 };
 
 new Float:PostosDeGasolina[17][3] = 
@@ -920,7 +959,7 @@ public OnGameModeInit()
     AddStaticPickup(1318,23,1733.5103,-1912.0349,13.5620);// Entrada Da Agência de Empregos
     AddStaticPickup(1318,23,390.7674,173.7650,1008.3828);// Saida Da Agência de Empregos
     AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
-    AddStaticPickup(1318,23,1494.325195,1304.942871,1093.289062);// Saida Auto Escola (ID: 0)
+    AddStaticPickup(1318,23,1494.4420,1303.5804,1093.2891);// Saida Auto Escola (ID: 0)
     // Empresas
     AddStaticPickup(1318,23,-27.3571,-58.2683,1003.5469);// Saida Mercado 24/7 (ID: 0)
     AddStaticPickup(1318,23,364.8353,-11.7157,1001.8516);// Cluckin' bell
@@ -934,7 +973,7 @@ public OnGameModeInit()
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
     // Auto Escola
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
-    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.325195,1304.942871,1093.289062,15,0);//Saida Mercado 24/7 (ID: All)
+    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.4420,1303.5804,1093.2891,15,0);//Saida Mercado 24/7 (ID: All)
     // Cluckin' bell
     Create3DTextLabel("{30e551}Cluckin' bell\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,364.8353,-11.7157,1001.8516,15,0);
     // Burger shot
@@ -1563,6 +1602,7 @@ public OnPlayerDeath(playerid, killerid, reason)
       	DestroyVehicle(currentveh);
       	InAutoEscola[playerid] = 0;
       	DisablePlayerRaceCheckpoint(playerid);
+      	SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
 
       	return 1;
 	}
@@ -1743,15 +1783,19 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
-    if(carroauto[playerid] == vehicleid && InAutoEscola[playerid] == 1)
+    if(carroauto[playerid] == vehicleid)
     {
-        SendClientMessage(playerid,-1,"(AUTO ESCOLA) Reprovado! Você você saiu do veículo.");
+        SendClientMessage(playerid,COR_ERRO,"| AUTO ESCOLA | Reprovado! Você você saiu do veículo!");
+        
         DisablePlayerRaceCheckpoint(playerid);
-	    //PlayerDados[playerid][Habilitacao] = true;
+	    
 	    InAutoEscola[playerid] = 0;
+        
         DestroyVehicle(vehicleid);
+        
         SetPlayerInterior(playerid, 3);
-        SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);
+        SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+        
         if(IsPlayerInCheckpoint(playerid))
         {
             DisablePlayerCheckpoint(playerid);
@@ -1759,9 +1803,8 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
         return 1;
     }
-
     // Textos Info da Profissão
-    if(profissaoCar[playerid] == vehicleid)
+    else if(profissaoCar[playerid] == vehicleid)
     {
     	for( new a = 0; a < 5; a++) PlayerTextDrawHide(playerid, textProfissaoInfo[playerid][a]);
     	return 1;
@@ -2123,198 +2166,647 @@ public OnPlayerLeaveCheckpoint(playerid)
 
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
-    switch(point[playerid])
-     {
-         case 1:
-         {
-       		  DisablePlayerRaceCheckpoint(playerid);
-       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[1][0], AutoPoints[1][1], AutoPoints[1][2],AutoPoints[2][0], AutoPoints[2][1], AutoPoints[2][2], 10);
-       		  point[playerid] = 2;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [1|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-   	    	  return 1;
-         }
-         case 2:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[2][0], AutoPoints[2][1], AutoPoints[2][2],AutoPoints[3][0], AutoPoints[3][1], AutoPoints[3][2], 10);
-              point[playerid] = 3;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [2|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-          	  return 1;
-         }
-         case 3:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[3][0], AutoPoints[3][1], AutoPoints[3][2],AutoPoints[4][0], AutoPoints[4][1], AutoPoints[4][2], 10);
-              point[playerid] = 4;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [3|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 4:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[4][0], AutoPoints[4][1], AutoPoints[4][2],AutoPoints[5][0], AutoPoints[5][1], AutoPoints[5][2], 10);
-              point[playerid] = 5;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [4|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 5:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[5][0], AutoPoints[5][1], AutoPoints[5][2],AutoPoints[6][0], AutoPoints[6][1], AutoPoints[6][2], 10);
-              point[playerid] = 6;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [5|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 6:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[6][0], AutoPoints[6][1], AutoPoints[6][2],AutoPoints[7][0], AutoPoints[7][1], AutoPoints[7][2], 10);
-              point[playerid] = 7;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [6|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 7:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[7][0], AutoPoints[7][1], AutoPoints[7][2],AutoPoints[8][0], AutoPoints[8][1], AutoPoints[8][2], 10);
-              point[playerid] = 8;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [7|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 8:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[8][0], AutoPoints[8][1], AutoPoints[8][2],AutoPoints[9][0], AutoPoints[9][1], AutoPoints[9][2], 10);
-              point[playerid] = 9;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [8|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 9:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[9][0], AutoPoints[9][1], AutoPoints[9][2],AutoPoints[10][0], AutoPoints[10][1], AutoPoints[10][2], 10);
-              point[playerid] = 10;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [9|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 10:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[10][0], AutoPoints[10][1], AutoPoints[10][2],AutoPoints[11][0], AutoPoints[11][1], AutoPoints[11][2], 10);
-              point[playerid] = 11;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [10|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 11:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[11][0], AutoPoints[11][1], AutoPoints[11][2],AutoPoints[12][0], AutoPoints[12][1], AutoPoints[12][2], 10);
-              point[playerid] = 12;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [11|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 12:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[12][0], AutoPoints[12][1], AutoPoints[12][2],AutoPoints[13][0], AutoPoints[13][1], AutoPoints[13][2], 10);
-              point[playerid] = 13;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [12|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 13:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[13][0], AutoPoints[13][1], AutoPoints[13][2],AutoPoints[14][0], AutoPoints[14][1], AutoPoints[14][2], 10);
-              point[playerid] = 14;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [13|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 14:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[14][0], AutoPoints[14][1], AutoPoints[14][2],AutoPoints[14][0], AutoPoints[14][1], AutoPoints[14][2], 10);
-              point[playerid] = 15;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [14|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 15:
-         {
-              DisablePlayerRaceCheckpoint(playerid);
-              SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[15][0], AutoPoints[15][1], AutoPoints[15][2],AutoPoints[15][0], AutoPoints[15][1], AutoPoints[15][2], 10);
-              point[playerid] = 16;
-              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [15|15] de pontos espalhados pelo mapa!");
-              PlayerPlaySound(playerid, 1057, 0, 0, 0);
-              return 1;
-         }
-         case 16:
-         {
-            if(IsPlayerInVehicle(playerid, carroauto[playerid]))
-            {
-			  new Float:lataria;
-			  GetVehicleHealth(carroauto[playerid], lataria);
-			  if(lataria < 87)
-			  {
-			    DisablePlayerRaceCheckpoint(playerid);
-           	    new currentveh;
-   		      	currentveh = GetPlayerVehicleID(playerid);
-              	DestroyVehicle(currentveh);
-              	SendClientMessage(playerid,COR_ERRO,"| INFO | Reprovado! Você danificou muito a lataria do veículo.");
-                SetPlayerInterior(playerid, 3);
-                SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);
-              	return 1;
-			  }
-              
-              DisablePlayerRaceCheckpoint(playerid);
-              GameTextForPlayer(playerid, "AUTO ESCOLA COMPLETA", 3000, 1);
+	if(InAutoEscolaType[playerid] <= 3)
+	{
+	    switch(point[playerid])
+	    {
+	         case 1:
+	         {
+	       		  DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2],AutoPointsTerrestre[2][0], AutoPointsTerrestre[2][1], AutoPointsTerrestre[2][2], 10);
+	       		  point[playerid] = 2;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [1|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	   	    	  return 1;
+	         }
+	         case 2:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[2][0], AutoPointsTerrestre[2][1], AutoPointsTerrestre[2][2],AutoPointsTerrestre[3][0], AutoPointsTerrestre[3][1], AutoPointsTerrestre[3][2], 10);
+	              point[playerid] = 3;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [2|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	          	  return 1;
+	         }
+	         case 3:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[3][0], AutoPointsTerrestre[3][1], AutoPointsTerrestre[3][2],AutoPointsTerrestre[4][0], AutoPointsTerrestre[4][1], AutoPointsTerrestre[4][2], 10);
+	              point[playerid] = 4;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [3|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 4:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[4][0], AutoPointsTerrestre[4][1], AutoPointsTerrestre[4][2],AutoPointsTerrestre[5][0], AutoPointsTerrestre[5][1], AutoPointsTerrestre[5][2], 10);
+	              point[playerid] = 5;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [4|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 5:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[5][0], AutoPointsTerrestre[5][1], AutoPointsTerrestre[5][2],AutoPointsTerrestre[6][0], AutoPointsTerrestre[6][1], AutoPointsTerrestre[6][2], 10);
+	              point[playerid] = 6;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [5|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 6:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[6][0], AutoPointsTerrestre[6][1], AutoPointsTerrestre[6][2],AutoPointsTerrestre[7][0], AutoPointsTerrestre[7][1], AutoPointsTerrestre[7][2], 10);
+	              point[playerid] = 7;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [6|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 7:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[7][0], AutoPointsTerrestre[7][1], AutoPointsTerrestre[7][2],AutoPointsTerrestre[8][0], AutoPointsTerrestre[8][1], AutoPointsTerrestre[8][2], 10);
+	              point[playerid] = 8;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [7|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 8:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[8][0], AutoPointsTerrestre[8][1], AutoPointsTerrestre[8][2],AutoPointsTerrestre[9][0], AutoPointsTerrestre[9][1], AutoPointsTerrestre[9][2], 10);
+	              point[playerid] = 9;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [8|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 9:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[9][0], AutoPointsTerrestre[9][1], AutoPointsTerrestre[9][2],AutoPointsTerrestre[10][0], AutoPointsTerrestre[10][1], AutoPointsTerrestre[10][2], 10);
+	              point[playerid] = 10;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [9|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 10:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[10][0], AutoPointsTerrestre[10][1], AutoPointsTerrestre[10][2],AutoPointsTerrestre[11][0], AutoPointsTerrestre[11][1], AutoPointsTerrestre[11][2], 10);
+	              point[playerid] = 11;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [10|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 11:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[11][0], AutoPointsTerrestre[11][1], AutoPointsTerrestre[11][2],AutoPointsTerrestre[12][0], AutoPointsTerrestre[12][1], AutoPointsTerrestre[12][2], 10);
+	              point[playerid] = 12;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [11|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 12:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[12][0], AutoPointsTerrestre[12][1], AutoPointsTerrestre[12][2],AutoPointsTerrestre[13][0], AutoPointsTerrestre[13][1], AutoPointsTerrestre[13][2], 10);
+	              point[playerid] = 13;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [12|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 13:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[13][0], AutoPointsTerrestre[13][1], AutoPointsTerrestre[13][2],AutoPointsTerrestre[14][0], AutoPointsTerrestre[14][1], AutoPointsTerrestre[14][2], 10);
+	              point[playerid] = 14;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [13|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 14:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[14][0], AutoPointsTerrestre[14][1], AutoPointsTerrestre[14][2],AutoPointsTerrestre[14][0], AutoPointsTerrestre[14][1], AutoPointsTerrestre[14][2], 10);
+	              point[playerid] = 15;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [14|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 15:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[15][0], AutoPointsTerrestre[15][1], AutoPointsTerrestre[15][2],AutoPointsTerrestre[15][0], AutoPointsTerrestre[15][1], AutoPointsTerrestre[15][2], 10);
+	              point[playerid] = 16;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [15|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 16:
+	         {
+	            if(IsPlayerInVehicle(playerid, carroauto[playerid]))
+	            {
+					new Float:lataria;
 
-              if(InAutoEscolaType[playerid] == 1){
-              	PlayerDados[playerid][HabT_1] = true;
-              }
+				  	GetVehicleHealth(carroauto[playerid], lataria);
 
-              if(InAutoEscolaType[playerid] == 2){
-              	PlayerDados[playerid][HabT_2] = true;
-              }
+				  	if(lataria < 90)
+				  	{
+				    	DisablePlayerRaceCheckpoint(playerid);
+	           	    	
+	           	    	new currentveh;
+	   		      		
+	   		      		currentveh = GetPlayerVehicleID(playerid);
+	              		DestroyVehicle(currentveh);
+	              		
+	              		SendClientMessage(playerid,COR_ERRO,"| INFO | Reprovado! Você danificou muito a lataria do veículo!");
+	                	
+	                	SetPlayerInterior(playerid, 3);
+	                	SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              		
+	              		return 1;
+	              	}
+		            else if(InAutoEscolaType[playerid] == 1)
+		            {
+	              		SendClientMessage(playerid, COR_SUCCESS,"| AUTO ESCOLA | Aprovado! Você passou no teste para tirar a habilitação!");
 
-              if(InAutoEscolaType[playerid] == 3){
-              	PlayerDados[playerid][HabT_3] = true;
-              }
+		              	PlayerDados[playerid][HabT_1] = true;
+		              	DisablePlayerRaceCheckpoint(playerid);
 
+	              		InAutoEscola[playerid] = 0;
+						
+						new currentveh;
+			   		    currentveh = GetPlayerVehicleID(playerid);
+			            DestroyVehicle(currentveh);
+			            
+			            SetPlayerInterior(playerid, 3);
+	                	SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
 
-			  InAutoEscola[playerid] = 0;
-			  new currentveh;
-   		      currentveh = GetPlayerVehicleID(playerid);
-              DestroyVehicle(currentveh);
-              SetPlayerInterior(playerid, 3);
-              SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);
-              return 1;
-           	}
-           	else
-           	{
-           	    DisablePlayerRaceCheckpoint(playerid);
-           	    new currentveh;
-   		      	currentveh = GetPlayerVehicleID(playerid);
-              	DestroyVehicle(currentveh);
-              	SendClientMessage(playerid,-1,"| AUTO ESCOLA | Reprovado! Você não está em um veículo da Auto Escola.");
-                SetPlayerInterior(playerid, 3);
-                SetPlayerPos(playerid, 1494.325195,1304.942871,1093.289062);
-              	return 1;
-           	}
-         }
-     }
+	              		return 1;
+		            }
+
+		            else if(InAutoEscolaType[playerid] == 2)
+		            {
+	              		SendClientMessage(playerid, COR_SUCCESS,"| AUTO ESCOLA | Aprovado! Você passou no teste para tirar a habilitação!");
+
+		            	DisablePlayerRaceCheckpoint(playerid);
+		              	PlayerDados[playerid][HabT_2] = true;
+
+		              	InAutoEscola[playerid] = 0;
+						
+						new currentveh;
+			   		    
+			   		    currentveh = GetPlayerVehicleID(playerid);
+			            DestroyVehicle(currentveh);
+			            
+			            SetPlayerInterior(playerid, 3);
+			            SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+
+		              	return 1;
+		            }
+
+		            else if(InAutoEscolaType[playerid] == 3)
+		            { 
+	              		SendClientMessage(playerid, COR_SUCCESS,"| AUTO ESCOLA | Aprovado! Você passou no teste para tirar a habilitação!");
+
+		            	DisablePlayerRaceCheckpoint(playerid);
+		              	PlayerDados[playerid][HabT_3] = true;
+
+		              	InAutoEscola[playerid] = 0;
+						
+						new currentveh;
+			   		    
+			   		    currentveh = GetPlayerVehicleID(playerid); 
+			            DestroyVehicle(currentveh);
+			            
+			            SetPlayerInterior(playerid, 3);
+			            SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+
+		              	return 1;
+		            }
+
+	            	return 1;
+	           	}
+	           	else
+	           	{
+	           	    DisablePlayerRaceCheckpoint(playerid);
+	           	    
+	           	    new currentveh;
+	   		      	
+	   		      	currentveh = GetPlayerVehicleID(playerid);
+	              	DestroyVehicle(currentveh);
+	              	
+	              	SendClientMessage(playerid, COR_ERRO,"| AUTO ESCOLA | Reprovado! Você não está em um veículo da Auto Escola!");
+	                
+	                SetPlayerInterior(playerid, 3);
+	                SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              	
+	              	return 1;
+	           	}
+	        }
+	    }
+		return 1;
+	}
+	else if(InAutoEscolaType[playerid] == 4)
+	{
+		switch(point[playerid])
+	    {
+	         case 1:
+	         {
+	       		  DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[1][0], AutoPointsMaritimo[1][1], AutoPointsMaritimo[1][2],AutoPointsMaritimo[2][0], AutoPointsMaritimo[2][1], AutoPointsMaritimo[2][2], 10);
+	       		  point[playerid] = 2;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [1|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	   	    	  return 1;
+	         }
+	         case 2:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[2][0], AutoPointsMaritimo[2][1], AutoPointsMaritimo[2][2],AutoPointsMaritimo[3][0], AutoPointsMaritimo[3][1], AutoPointsMaritimo[3][2], 10);
+	              point[playerid] = 3;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [2|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	          	  return 1;
+	         }
+	         case 3:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[3][0], AutoPointsMaritimo[3][1], AutoPointsMaritimo[3][2],AutoPointsMaritimo[4][0], AutoPointsMaritimo[4][1], AutoPointsMaritimo[4][2], 10);
+	              point[playerid] = 4;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [3|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 4:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[4][0], AutoPointsMaritimo[4][1], AutoPointsMaritimo[4][2],AutoPointsMaritimo[5][0], AutoPointsMaritimo[5][1], AutoPointsMaritimo[5][2], 10);
+	              point[playerid] = 5;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [4|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 5:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[5][0], AutoPointsMaritimo[5][1], AutoPointsMaritimo[5][2],AutoPointsMaritimo[6][0], AutoPointsMaritimo[6][1], AutoPointsMaritimo[6][2], 10);
+	              point[playerid] = 6;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [5|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 6:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[6][0], AutoPointsMaritimo[6][1], AutoPointsMaritimo[6][2],AutoPointsMaritimo[7][0], AutoPointsMaritimo[7][1], AutoPointsMaritimo[7][2], 10);
+	              point[playerid] = 7;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [6|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 7:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[7][0], AutoPointsMaritimo[7][1], AutoPointsMaritimo[7][2],AutoPointsMaritimo[8][0], AutoPointsMaritimo[8][1], AutoPointsMaritimo[8][2], 10);
+	              point[playerid] = 8;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [7|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 8:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[8][0], AutoPointsMaritimo[8][1], AutoPointsMaritimo[8][2],AutoPointsMaritimo[9][0], AutoPointsMaritimo[9][1], AutoPointsMaritimo[9][2], 10);
+	              point[playerid] = 9;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [8|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 9:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[9][0], AutoPointsMaritimo[9][1], AutoPointsMaritimo[9][2],AutoPointsMaritimo[10][0], AutoPointsMaritimo[10][1], AutoPointsMaritimo[10][2], 10);
+	              point[playerid] = 10;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [9|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 10:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[10][0], AutoPointsMaritimo[10][1], AutoPointsMaritimo[10][2],AutoPointsMaritimo[11][0], AutoPointsMaritimo[11][1], AutoPointsMaritimo[11][2], 10);
+	              point[playerid] = 11;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [10|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 11:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[11][0], AutoPointsMaritimo[11][1], AutoPointsMaritimo[11][2],AutoPointsMaritimo[12][0], AutoPointsMaritimo[12][1], AutoPointsMaritimo[12][2], 10);
+	              point[playerid] = 12;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [11|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 12:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[12][0], AutoPointsMaritimo[12][1], AutoPointsMaritimo[12][2],AutoPointsMaritimo[13][0], AutoPointsMaritimo[13][1], AutoPointsMaritimo[13][2], 10);
+	              point[playerid] = 13;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [12|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 13:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[13][0], AutoPointsMaritimo[13][1], AutoPointsMaritimo[13][2],AutoPointsMaritimo[14][0], AutoPointsMaritimo[14][1], AutoPointsMaritimo[14][2], 10);
+	              point[playerid] = 14;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [13|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 14:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[14][0], AutoPointsMaritimo[14][1], AutoPointsMaritimo[14][2],AutoPointsMaritimo[14][0], AutoPointsMaritimo[14][1], AutoPointsMaritimo[14][2], 10);
+	              point[playerid] = 15;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [14|14] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 15:
+	         {
+	            if(IsPlayerInVehicle(playerid, carroauto[playerid]))
+	            {
+					new Float:lataria;
+
+				  	GetVehicleHealth(carroauto[playerid], lataria);
+
+				  	if(lataria < 90)
+				  	{
+				    	DisablePlayerRaceCheckpoint(playerid);
+	           	    	
+	           	    	new currentveh;
+	   		      		
+	   		      		currentveh = GetPlayerVehicleID(playerid);
+	              		DestroyVehicle(currentveh);
+	              		
+	              		SendClientMessage(playerid,COR_ERRO,"| INFO | Reprovado! Você danificou muito a lataria do veículo!");
+	                	
+	                	SetPlayerInterior(playerid, 3);
+	                	SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              		
+	              		return 1;
+	              	}
+		            else
+		            { 
+	              		SendClientMessage(playerid, COR_SUCCESS,"| AUTO ESCOLA | Aprovado! Você passou no teste para tirar a habilitação!");
+
+		            	DisablePlayerRaceCheckpoint(playerid);
+		              	PlayerDados[playerid][HabN] = true;
+
+		              	InAutoEscola[playerid] = 0;
+						
+						new currentveh;
+			   		    
+			   		    currentveh = GetPlayerVehicleID(playerid); 
+			            DestroyVehicle(currentveh);
+			            
+			            SetPlayerInterior(playerid, 3);
+			            SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+		            }
+
+	            	return 1;
+	           	}
+	           	else
+	           	{
+	           	    DisablePlayerRaceCheckpoint(playerid);
+	           	    
+	           	    new currentveh;
+	   		      	
+	   		      	currentveh = GetPlayerVehicleID(playerid);
+	              	DestroyVehicle(currentveh);
+	              	
+	              	SendClientMessage(playerid, COR_ERRO,"| AUTO ESCOLA | Reprovado! Você não está em um veículo da Auto Escola!");
+	                
+	                SetPlayerInterior(playerid, 3);
+	                SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              	
+	              	return 1;
+	           	}
+	        }
+	    }
+		return 1;	
+	}
+	else if(InAutoEscolaType[playerid] == 5)
+	{
+		switch(point[playerid])
+	    {
+	         case 1:
+	         {
+	       		  DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[1][0], AutoPointsAereo[1][1], AutoPointsAereo[1][2],AutoPointsAereo[2][0], AutoPointsAereo[2][1], AutoPointsAereo[2][2], 10);
+	       		  point[playerid] = 2;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [1|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	   	    	  return 1;
+	         }
+	         case 2:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	       		  SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[2][0], AutoPointsAereo[2][1], AutoPointsAereo[2][2],AutoPointsAereo[3][0], AutoPointsAereo[3][1], AutoPointsAereo[3][2], 10);
+	              point[playerid] = 3;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [2|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	          	  return 1;
+	         }
+	         case 3:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[3][0], AutoPointsAereo[3][1], AutoPointsAereo[3][2],AutoPointsAereo[4][0], AutoPointsAereo[4][1], AutoPointsAereo[4][2], 10);
+	              point[playerid] = 4;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [3|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 4:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[4][0], AutoPointsAereo[4][1], AutoPointsAereo[4][2],AutoPointsAereo[5][0], AutoPointsAereo[5][1], AutoPointsAereo[5][2], 10);
+	              point[playerid] = 5;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [4|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 5:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[5][0], AutoPointsAereo[5][1], AutoPointsAereo[5][2],AutoPointsAereo[6][0], AutoPointsAereo[6][1], AutoPointsAereo[6][2], 10);
+	              point[playerid] = 6;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [5|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 6:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[6][0], AutoPointsAereo[6][1], AutoPointsAereo[6][2],AutoPointsAereo[7][0], AutoPointsAereo[7][1], AutoPointsAereo[7][2], 10);
+	              point[playerid] = 7;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [6|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 7:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[7][0], AutoPointsAereo[7][1], AutoPointsAereo[7][2],AutoPointsAereo[8][0], AutoPointsAereo[8][1], AutoPointsAereo[8][2], 10);
+	              point[playerid] = 8;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [7|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 8:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[8][0], AutoPointsAereo[8][1], AutoPointsAereo[8][2],AutoPointsAereo[9][0], AutoPointsAereo[9][1], AutoPointsAereo[9][2], 10);
+	              point[playerid] = 9;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [8|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 9:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[9][0], AutoPointsAereo[9][1], AutoPointsAereo[9][2],AutoPointsAereo[10][0], AutoPointsAereo[10][1], AutoPointsAereo[10][2], 10);
+	              point[playerid] = 10;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [9|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 10:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[10][0], AutoPointsAereo[10][1], AutoPointsAereo[10][2],AutoPointsAereo[11][0], AutoPointsAereo[11][1], AutoPointsAereo[11][2], 10);
+	              point[playerid] = 11;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [10|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 11:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[11][0], AutoPointsAereo[11][1], AutoPointsAereo[11][2],AutoPointsAereo[12][0], AutoPointsAereo[12][1], AutoPointsAereo[12][2], 10);
+	              point[playerid] = 12;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [11|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 12:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[12][0], AutoPointsAereo[12][1], AutoPointsAereo[12][2],AutoPointsAereo[13][0], AutoPointsAereo[13][1], AutoPointsAereo[13][2], 10);
+	              point[playerid] = 13;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [12|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 13:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[13][0], AutoPointsAereo[13][1], AutoPointsAereo[13][2],AutoPointsAereo[14][0], AutoPointsAereo[14][1], AutoPointsAereo[14][2], 10);
+	              point[playerid] = 14;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [13|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 14:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 3, AutoPointsAereo[14][0], AutoPointsAereo[14][1], AutoPointsAereo[14][2],AutoPointsAereo[14][0], AutoPointsAereo[14][1], AutoPointsAereo[14][2], 10);
+	              point[playerid] = 15;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [14|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 15:
+	         {
+	              DisablePlayerRaceCheckpoint(playerid);
+	              SetPlayerRaceCheckpoint(playerid, 0, AutoPointsAereo[15][0], AutoPointsAereo[15][1], AutoPointsAereo[15][2],AutoPointsAereo[15][0], AutoPointsAereo[15][1], AutoPointsAereo[15][2], 10);
+	              point[playerid] = 16;
+	              SendClientMessage(playerid,COR_WARNING,"| AUTO ESCOLA | Agora só falta [15|15] de pontos espalhados pelo mapa!");
+	              PlayerPlaySound(playerid, 1057, 0, 0, 0);
+	              return 1;
+	         }
+	         case 16:
+	         {
+	            if(IsPlayerInVehicle(playerid, carroauto[playerid]))
+	            {
+					new Float:lataria;
+
+				  	GetVehicleHealth(carroauto[playerid], lataria);
+
+				  	if(lataria < 90)
+				  	{
+				    	DisablePlayerRaceCheckpoint(playerid);
+	           	    	
+	           	    	new currentveh;
+	   		      		
+	   		      		currentveh = GetPlayerVehicleID(playerid);
+	              		DestroyVehicle(currentveh);
+	              		
+	              		SendClientMessage(playerid,COR_ERRO,"| INFO | Reprovado! Você danificou muito a lataria do veículo!");
+	                	
+	                	SetPlayerInterior(playerid, 3);
+	                	SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              		
+	              		return 1;
+	              	}
+		            else
+		            { 
+	              		SendClientMessage(playerid, COR_SUCCESS,"| AUTO ESCOLA | Aprovado! Você passou no teste para tirar a habilitação!");
+
+		            	DisablePlayerRaceCheckpoint(playerid);
+		              	PlayerDados[playerid][HabA] = true;
+
+		              	InAutoEscola[playerid] = 0;
+						
+						new currentveh;
+			   		    
+			   		    currentveh = GetPlayerVehicleID(playerid); 
+			            DestroyVehicle(currentveh);
+			            
+			            SetPlayerInterior(playerid, 3);
+			            SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+		            }
+
+	            	return 1;
+	           	}
+	           	else
+	           	{
+	           	    DisablePlayerRaceCheckpoint(playerid);
+	           	    
+	           	    new currentveh;
+	   		      	
+	   		      	currentveh = GetPlayerVehicleID(playerid);
+	              	DestroyVehicle(currentveh);
+	              	
+	              	SendClientMessage(playerid, COR_ERRO,"| AUTO ESCOLA | Reprovado! Você não está em um veículo da Auto Escola!");
+	                
+	                SetPlayerInterior(playerid, 3);
+	                SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+	              	
+	              	return 1;
+	           	}
+	        }
+	    }
+		return 1;	
+	}
 	return 1;
 }
 
@@ -3661,23 +4153,138 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     		}
         }
         case DialogAutoEscola:{
-            if(response == 1){
-                SetPlayerInterior(playerid, 0);
-                SetPlayerPos(playerid, 1535.5942,-1457.8770,12.0806);
-                InAutoEscola[playerid] = 1;
-                carroauto[playerid] = CreateVehicle(583, 1517.0026,-1475.8237,9.5000,297.6633, 0, 0, -1);
-                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
-                SendClientMessage(playerid,-1,"(AUTO ESCOLA) Voce iniciou a auto escola,siga as setas.");
-                SetPlayerRaceCheckpoint(playerid, 0, AutoPoints[0][0], AutoPoints[0][1], AutoPoints[0][2],AutoPoints[1][0], AutoPoints[1][1], AutoPoints[1][2], 10);
-                point[playerid] = 1;
-                GivePlayerMoney(playerid, -200);
-                return 1;
-            }
-            if(response == 0){
-                SendClientMessage(playerid,-1,"(AUTO ESCOLA) Voce desistiu da auto escola.");
-                GivePlayerMoney(playerid, -200);
-                return 1;
-            }
+        	if(response)
+    	    {
+    	        if(listitem == 0)
+    	        {
+    	        	if(GetPlayerMoney(playerid) < 600) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar essa Habilitação!");
+                    else if(PlayerDados[playerid][HabT_1] == false)
+                    {
+                        SetPlayerInterior(playerid, 0);
+		                SetPlayerPos(playerid, -180.8094,-207.6359,1.1489);
+		                
+		                carroauto[playerid] = CreateVehicle(522, -180.8094,-207.6359,1.1489,86.8742, 93, 79, -1);
+		                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
+		                
+		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
+		                
+		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
+		                
+		                point[playerid] = 1;
+		                InAutoEscolaType[playerid] = 1;
+		                
+		                GivePlayerMoney(playerid, -600);
+		                return 1;
+
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse tipo de Habilitação!");
+    	        }
+    	        else if(listitem == 1)
+    	        {
+    	        	if(GetPlayerMoney(playerid) < 1400) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar essa Habilitação!");
+                    else if(PlayerDados[playerid][HabT_2] == false)
+                    {
+                        SetPlayerInterior(playerid, 0);
+		                SetPlayerPos(playerid, -180.8094,-207.6359,1.1489);
+		                
+		                carroauto[playerid] = CreateVehicle(506, -180.8094,-207.6359,1.1489,86.8742, 07, 0, -1);
+		                
+		                AddVehicleComponent(carroauto[playerid], 1010); // nitro x10
+		                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
+		                
+		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
+		                
+		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
+		                
+		                point[playerid] = 1;
+		                InAutoEscolaType[playerid] = 2;
+		                
+		                GivePlayerMoney(playerid, -1400);
+		                return 1;
+
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse tipo de Habilitação!");
+    	        }
+    	        else if(listitem == 2)
+    	        {
+    	        	if(GetPlayerMoney(playerid) < 2400) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar essa Habilitação!");
+                    else if(PlayerDados[playerid][HabT_3] == false)
+                    {
+                        SetPlayerInterior(playerid, 0);
+		                SetPlayerPos(playerid, -180.8094,-207.6359,1.1489);
+		                
+		                carroauto[playerid] = CreateVehicle(515, -180.8094,-207.6359,1.1489,86.8742, 07, 0, -1);
+		                
+		                AddVehicleComponent(carroauto[playerid], 1010); // nitro x10
+		                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
+		                
+		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
+		                
+		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
+		                
+		                point[playerid] = 1;
+		                InAutoEscolaType[playerid] = 3;
+		                
+		                GivePlayerMoney(playerid, -2400);
+		                return 1;
+
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse tipo de Habilitação!");
+    	        }
+    	        else if(listitem == 3)
+    	        {
+    	        	if(GetPlayerMoney(playerid) < 3400) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar essa Habilitação!");
+                    else if(PlayerDados[playerid][HabN] == false)
+                    {
+                        SetPlayerInterior(playerid, 0);
+		                SetPlayerPos(playerid, -2978.5122,-996.9440,-0.4036);
+
+		                carroauto[playerid] = CreateVehicle(493, -2978.5122,-996.9440,-0.4036,272.9156, 86, 07, -1);
+		                AddVehicleComponent(carroauto[playerid], 1010); // nitro x10
+		                
+		                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
+		                
+		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
+		                
+		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[0][0], AutoPointsMaritimo[0][1], AutoPointsMaritimo[0][2],AutoPointsMaritimo[1][0], AutoPointsMaritimo[1][1], AutoPointsMaritimo[1][2], 10);
+		                
+		                point[playerid] = 1;
+		                InAutoEscolaType[playerid] = 4;
+		                
+		                GivePlayerMoney(playerid, -3400);
+		                return 1;
+
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse tipo de Habilitação!");
+    	        }
+    	        else if(listitem == 4)
+    	        {
+    	        	if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar essa Habilitação!");
+                    else if(PlayerDados[playerid][HabA] == false)
+                    {
+                        SetPlayerInterior(playerid, 0);
+		                SetPlayerPos(playerid, 1522.7395,1829.2170,11.2812);
+
+		                carroauto[playerid] = CreateVehicle(593, 1522.7395,1829.2170,11.2812,178.6199, 1, 16, -1);
+		                
+		                PutPlayerInVehicle(playerid, carroauto[playerid], 0);
+		                
+		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
+		                
+		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsAereo[0][0], AutoPointsAereo[0][1], AutoPointsAereo[0][2],AutoPointsAereo[1][0], AutoPointsAereo[1][1], AutoPointsAereo[1][2], 10);
+		                
+		                point[playerid] = 1;
+		                InAutoEscolaType[playerid] = 5;
+		                
+		                GivePlayerMoney(playerid, -5000);
+		                return 1;
+
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse tipo de Habilitação!");
+    	        }
+    	    }
+           	
+           	return 1;
         }
         case DialogCarregarPetroleiro:{
             if(response)
