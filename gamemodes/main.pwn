@@ -529,6 +529,9 @@ new Text:textVelocimetro[5];
 // Status
 new Text:textStatus[14];
 new PlayerText:textStatusBar[MAX_PLAYERS][8];
+
+new Float:vida[MAX_PLAYERS];
+new bool:MorreuFome[MAX_PLAYERS], bool:MorreuSede[MAX_PLAYERS], bool:MorreuSaude[MAX_PLAYERS];
 // Textos Info da Profissão
 new PlayerText:textProfissaoInfo[MAX_PLAYERS][5];
 // Status Update
@@ -1453,13 +1456,57 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
-    if(InAutoEscola[playerid] == 1)
+	if(MorreuFome[playerid] == true)
+	{
+		PlayerDados[playerid][fome] = 5;
+		MorreuFome[playerid] = true;
+
+		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+		UpdateTextDraw(playerid, 7);
+
+		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+
+		return 1;
+	}
+	else if(MorreuSede[playerid] == true)
+	{
+		PlayerDados[playerid][sede] = 5;
+		MorreuSede[playerid] = false;
+
+		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+		UpdateTextDraw(playerid, 5);
+
+		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+
+		return 1;
+	}
+	else if(MorreuSaude[playerid] == true)
+	{	
+		PlayerDados[playerid][saude] = 5;
+		MorreuSaude[playerid] = true;
+
+		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
+		UpdateTextDraw(playerid, 3);
+
+		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+
+		return 1;
+	}
+    else if(InAutoEscola[playerid] == 1)
 	{
 	    new currentveh;
      	currentveh = GetPlayerVehicleID(playerid);
       	DestroyVehicle(currentveh);
       	InAutoEscola[playerid] = 0;
       	DisablePlayerRaceCheckpoint(playerid);
+
+      	return 1;
 	}
 	return 1;
 }
@@ -4128,6 +4175,21 @@ forward UpdatePlayerFome(playerid);
 public UpdatePlayerFome(playerid) {
 	if(IsPlayerConnected(playerid)){
 
+		if(PlayerDados[playerid][fome] <= 0)
+		{
+			SetPlayerHealth(playerid, 0);
+            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de fome!");
+            MorreuFome[playerid] = true;
+		}
+		else if(PlayerDados[playerid][fome] <= 5)
+		{
+			GetPlayerHealth(playerid,vida[playerid]);
+			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete comer ou irá morrer de fome!");
+
+			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+		}
+
 		if(PlayerDados[playerid][fome] > 0){
 			PlayerDados[playerid][fome] = PlayerDados[playerid][fome] -1;
 
@@ -4143,6 +4205,21 @@ forward UpdatePlayerSede(playerid);
 public UpdatePlayerSede(playerid) {
 	if(IsPlayerConnected(playerid)){
 
+		if(PlayerDados[playerid][sede] <= 0)
+		{
+			SetPlayerHealth(playerid, 0);
+            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de sede!");
+            MorreuSede[playerid] = true;
+		}
+		else if(PlayerDados[playerid][sede] <= 5)
+		{
+			GetPlayerHealth(playerid,vida[playerid]);
+			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete beber qualquer coisa ou irá morrer de sede!");
+
+			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+		}
+
 		if(PlayerDados[playerid][sede] > 0){
 			PlayerDados[playerid][sede] = PlayerDados[playerid][sede] -1;
 
@@ -4157,6 +4234,21 @@ public UpdatePlayerSede(playerid) {
 forward UpdatePlayerSaude(playerid);
 public UpdatePlayerSaude(playerid) {
 	if(IsPlayerConnected(playerid)){
+
+		if(PlayerDados[playerid][saude] <= 0)
+		{
+			SetPlayerHealth(playerid, 0);
+            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu pois você portador da AIDS!");
+            MorreuSaude[playerid] = true;
+		}
+		else if(PlayerDados[playerid][saude] <= 5)
+		{
+			GetPlayerHealth(playerid,vida[playerid]);
+			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até um hospital para realizar o tratamento, Porém essa doença não tem cura!");
+
+			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+		}
 
 		if(PlayerDados[playerid][saude] > 0){
 			PlayerDados[playerid][saude] = PlayerDados[playerid][saude] -1;
