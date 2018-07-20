@@ -15,8 +15,8 @@
 #define SERVER_GAMEMODE "Brasil RPG ® 2018"
 #define SERVER_LANGUAGE "Português - Brasil"
 //==========[ DIALOGS ]=======       ==[ IDs ]==
-#define     DialogRegistro              (1)		// DEFINE DIALOG REGISTRO (ID= 1)
-#define     DialogLogin                 (2)		// DEFINE DIALOG LOGIN   (ID= etc..)
+#define     DialogRegistro              (1)		// DEFINE DIALOG REGISTRO
+#define     DialogLogin                 (2)		// DEFINE DIALOG LOGIN
 #define     DialogEmail                 (3)		// DEFINE DIALOG Email
 #define     DialogSexo                  (4)		// DEFINE DIALOG Sexo
 #define     DialogMercado               (5)		// DEFINE DIALOG Da Loja 27/7
@@ -37,6 +37,10 @@
 #define     DialogPostoDiesel       	(20)	// Posto Table de Diesel 
 #define 	DialogAdmins				(21)	// Administrador Online
 #define 	DialogRotasGari				(22)	// Rotas Gari
+#define 	DialogDidier				(23)	// Loja de Skins
+#define 	DialogBurgerShot			(24)	// Burger shot
+#define 	DialogCluckinBell			(25)	// Cluckin' bell
+#define 	DialogPizza					(26)	// Well stacked pizza
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -222,7 +226,6 @@
 new InAutoEscola[MAX_PLAYERS];
 new InAutoEscolaType[MAX_PLAYERS];
 new carroauto[MAX_PLAYERS];
-new CPAutoEscola;
 new carregado[MAX_PLAYERS] = 0;
 new Aviso[MAX_PLAYERS];
 new Log[256];
@@ -269,9 +272,11 @@ new Float:PostosDeGasolina[17][3] =
 	{1382.3008,460.9545,19.6525} 		// Posto de Montgomery
 };
 // Empresa
-new Text3D:empresasText[44];
-new Float:empresasPos[44][4] = 
+new Text3D:empresasText[45];
+new Float:empresasPos[45][4] = 
 {
+	{1833.7811, -1842.6208, 13.5781, 3.0}, // ReinanHS Tipo: Diner
+	{2105.467773, -1806.578979, 13.554687, 4.0}, // MakeABigLove Local: Idlewood Tipo: Well Stacked Pizza Co
 	{2101.901611, 2257.378173, 11.023437, 5.0}, // Davi_Satler Local: The Emerald Isle Tipo: Clothes
 	{2101.892822, 2228.836181, 11.023437, 2.0}, // Davi_Satler Local: The Emerald Isle Tipo: Cluckin' Bell
 	{2097.725341, 2224.697998, 11.023437, 5.0}, // oArthurTV Local: The Emerald Isle Tipo: Clothes
@@ -301,7 +306,6 @@ new Float:empresasPos[44][4] =
 	{2419.708740, -1509.049194, 24.000000, 2.0}, // MakeABigLove Local: East Los Santos Tipo: Cluckin' Bell
 	{-2373.775634, 910.083740, 45.445312, 5.0}, // oArthurTV Local: Juniper Hill Tipo: Clothes
 	{2244.327880, -1665.528808, 15.476562, 5.0}, // MakeABigLove Local: Ganton Tipo: Clothes
-	{2105.467773, -1806.578979, 13.554687, 4.0}, // MakeABigLove Local: Idlewood Tipo: Well Stacked Pizza Co
 	{-2442.654785, 755.415832, 35.171875, 3.0}, // oArthurTV Local: Juniper Hill Tipo: Diner
 	{-1720.948120, 1359.833862, 7.185316, 4.0}, // oArthurTV Local: Esplanade North Tipo: Well Stacked Pizza Co
 	{-2336.867187, -166.883834, 35.554687, 1.0}, // MakeABigLove Local: Garcia Tipo: Burger Shot 
@@ -475,6 +479,7 @@ new Vehicle[MAX_PLAYERS];
 
 enum pDados
 {
+		Float:vida,
         Admin,
         Profissao,
         exp,
@@ -530,7 +535,7 @@ new Text:textVelocimetro[5];
 new Text:textStatus[14];
 new PlayerText:textStatusBar[MAX_PLAYERS][8];
 
-new Float:vida[MAX_PLAYERS];
+//new Float:vida[MAX_PLAYERS];
 new bool:MorreuFome[MAX_PLAYERS], bool:MorreuSede[MAX_PLAYERS], bool:MorreuSaude[MAX_PLAYERS];
 // Textos Info da Profissão
 new PlayerText:textProfissaoInfo[MAX_PLAYERS][5];
@@ -597,8 +602,15 @@ new Float:iPosZ[MAX_PLAYERS];
 forward ProcessGameTime(playerid);
 forward MapIcon(playerid);
 //Checkpoints
-
 new CheckAgencia;
+new CPAutoEscola;
+new CheckPizza;
+new CheckCluckin;
+new CheckBurgerShot;
+new CheckDidier;
+new CheckUtilitarios;
+
+// Profissão Veiculos
 new
     petroleiroCar[18],
     taxiCar[10],
@@ -680,7 +692,7 @@ public OnGameModeInit()
     TextDrawSetProportional(Versao, 1);
     TextDrawSetSelectable(Versao, 0);
 
-    site = TextDrawCreate(177.000000, 389.000000, "www.skylandia.com.br");
+    site = TextDrawCreate(177.000000, 389.000000, "heavyhost.com.br");
     TextDrawBackgroundColor(site, 255);
     TextDrawFont(site, 2);
     TextDrawLetterSize(site, 0.600000, 2.000000);
@@ -897,11 +909,10 @@ public OnGameModeInit()
     /*              PICKUPS De lugares Publicos             */
     AddStaticPickup(1318,23,1733.5103,-1912.0349,13.5620);// Entrada Da Agência de Empregos
     AddStaticPickup(1318,23,390.7674,173.7650,1008.3828);// Saida Da Agência de Empregos
-    AddStaticPickup(1318,23,1833.7811,-1842.6208,13.5781);// Entrada Mercado 24/7 (ID: 0)
-    AddStaticPickup(1318,23,-27.3571,-58.2683,1003.5469);// Saida Mercado 24/7 (ID: 0)
-    AddStaticPickup(1239,23,-22.1867,-55.6953,1003.5469);// Menu Mercado 24/7 De Compras
     AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
     AddStaticPickup(1318,23,1494.325195,1304.942871,1093.289062);// Saida Auto Escola (ID: 0)
+    // Empresas
+    AddStaticPickup(1318,23,-27.3571,-58.2683,1003.5469);// Saida Mercado 24/7 (ID: 0)
     AddStaticPickup(1318,23,364.8353,-11.7157,1001.8516);// Cluckin' bell
     AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
     AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
@@ -911,8 +922,6 @@ public OnGameModeInit()
     /*              3D TEXTS                               */
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
-    Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1833.7811,-1842.6208,13.5781,15,0);// Entrada Mercado 24/7 (ID: 0)
-    Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7 (ID: All)
     Create3DTextLabel("{FFFFFF}Menu do Mercado 24/7\nAperte {00FFFF}'F' Ou Use /mercado\n{FFFFFF}Para Comprar",50,-22.1867,-55.6953,1003.5469,15,0);// Menu do Mercado 24/7
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
     Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.325195,1304.942871,1093.289062,15,0);//Saida Mercado 24/7 (ID: All)
@@ -924,6 +933,8 @@ public OnGameModeInit()
     Create3DTextLabel("{30e551}Clothes\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,161.4121,-97.1048,1001.8047,15,0);
     // Well stacked pizza
     Create3DTextLabel("{30e551}Pizzaria\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,372.3253,-133.5240,1001.4922,15,0);
+    // 24/7
+    Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7
     // Petroleiro
     Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
@@ -940,6 +951,11 @@ public OnGameModeInit()
     //Checks
 	CheckAgencia = CPS_AddCheckpoint(363.0818,173.8653,1008.3828, 1.0, 50);// Local de pegar Profissão
     CPAutoEscola = CPS_AddCheckpoint(1490.9628,1305.9032,1093.2964,1.0,50);// Auto Escola
+	CheckPizza = CPS_AddCheckpoint(376.7471,-119.2690,1001.4995,1.0,50);// Well stacked pizza
+	CheckCluckin = CPS_AddCheckpoint(368.1835,-6.5612,1001.8516,1.0,50);// Cluckin' bell
+	CheckBurgerShot = CPS_AddCheckpoint(376.4791,-68.1216,1001.5151,1.0,50);// Burger shot
+	CheckDidier = CPS_AddCheckpoint(162.8003,-84.0606,1001.8047,1.0,50);// Didier
+	CheckUtilitarios = CPS_AddCheckpoint(-22.1867,-55.6953,1003.5469,1.0,50);// Loja de utilitários
 
     // Veiculos de petoleiro
     petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,108,125,60); //Tanker
@@ -1203,6 +1219,11 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
+	PlayAudioStreamForPlayer(playerid, "https://vocaroo.com/media_command.php?media=s0z3Jzj3z9TN&command=download_mp3");
+    for(new a = 0; a < 100; a++)
+	{
+		SendClientMessage(playerid, -1, " ");
+	}
     SendClientMessage(playerid, 0x0080FFAA, "| INFO | Aguarde... Carregando os dados!");
     Logado{playerid} = false;
     profissaoUniforme[playerid] = false;
@@ -1442,6 +1463,9 @@ public OnPlayerDisconnect(playerid, reason)
 public OnPlayerSpawn(playerid)
 {
     SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+    TogglePlayerSpectating(playerid, false);
+    TogglePlayerControllable(playerid, true);
+
     TextDrawHideForPlayer(playerid,Logo);
     TextDrawHideForPlayer(playerid,Versao);
     TextDrawHideForPlayer(playerid,site);
@@ -1458,7 +1482,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 {
 	if(MorreuFome[playerid] == true)
 	{
-		PlayerDados[playerid][fome] = 5;
+		PlayerDados[playerid][fome] = 2;
 		MorreuFome[playerid] = true;
 
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
@@ -1467,12 +1491,20 @@ public OnPlayerDeath(playerid, killerid, reason)
 		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
+		SetPlayerHealth(playerid, 100.00);
+
+		if(GetPlayerMoney(playerid) >= 500)
+	    {
+	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
+	    	GivePlayerMoney(playerid, -500);
+		}
 
 		return 1;
 	}
 	else if(MorreuSede[playerid] == true)
 	{
-		PlayerDados[playerid][sede] = 5;
+		PlayerDados[playerid][sede] = 2;
 		MorreuSede[playerid] = false;
 
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
@@ -1481,12 +1513,20 @@ public OnPlayerDeath(playerid, killerid, reason)
 		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
+		SetPlayerHealth(playerid, 100.00);
+
+		if(GetPlayerMoney(playerid) >= 500)
+	    {
+	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
+	    	GivePlayerMoney(playerid, -500);
+		}
 
 		return 1;
 	}
 	else if(MorreuSaude[playerid] == true)
 	{	
-		PlayerDados[playerid][saude] = 5;
+		PlayerDados[playerid][saude] = 2;
 		MorreuSaude[playerid] = true;
 
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
@@ -1495,6 +1535,14 @@ public OnPlayerDeath(playerid, killerid, reason)
 		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
+		SetPlayerHealth(playerid, 100.00);
+
+		if(GetPlayerMoney(playerid) >= 500)
+	    {
+	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
+	    	GivePlayerMoney(playerid, -500);
+		}
 
 		return 1;
 	}
@@ -1507,6 +1555,20 @@ public OnPlayerDeath(playerid, killerid, reason)
       	DisablePlayerRaceCheckpoint(playerid);
 
       	return 1;
+	}
+	else
+	{
+		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
+		SetPlayerHealth(playerid, 100.00);
+
+		if(GetPlayerMoney(playerid) >= 500)
+	    {
+	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
+	    	GivePlayerMoney(playerid, -500);
+		}
 	}
 	return 1;
 }
@@ -1525,14 +1587,14 @@ public ProcessGameTime(playerid)
 
 public MapIcon(playerid)
 {
-    SetPlayerMapIcon(playerid, 50, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
-    SetPlayerMapIcon(playerid, 51, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
-    SetPlayerMapIcon(playerid, 52, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
-    SetPlayerMapIcon(playerid, 53, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
+    SetPlayerMapIcon(playerid, 2, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
+    SetPlayerMapIcon(playerid, 3, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
+    SetPlayerMapIcon(playerid, 4, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
+    SetPlayerMapIcon(playerid, 5, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
     //PostosDeGasolina
     for (new a = 0; a < sizeof(PostosDeGasolina); a++)
 	{
-		SetPlayerMapIcon(playerid, (54+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
+		SetPlayerMapIcon(playerid, (5+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
 	}
 	// Empresas
 	new empresaInfo[100];
@@ -1542,35 +1604,35 @@ public MapIcon(playerid)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Burger Shot{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 2.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Cluckin' Bell{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 3.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Loja de utilitário{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 4.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Pizzaria{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Clothes{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (54+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 	}
@@ -1654,18 +1716,18 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 	if(PlayerDados[playerid][gasolina] == 0)
 	{
-		return SendClientMessage(playerid,COR_ERRO,"| INFO | A Gasolina Deste carro acabou chame o Guincho");
+		SendClientMessage(playerid,COR_ERRO,"| INFO | A Gasolina Deste carro acabou chame o Guincho");
 	}
 
-	if(profissaoCarregandoOJG[playerid])
+	else if(profissaoCarregandoOJG[playerid])
 	{
 		SendClientMessage(playerid, COR_WARNING, "| INFO | Você perdeu o objeto que estava segurando na mão. Porque entrou no veículo!"); 
 		profissaoCarregandoOJG[playerid] = false;
 		DisablePlayerCheckpoint(playerid);
-		RemovePlayerAttachedObject(playerid, 2);
-		return 1;		
+		RemovePlayerAttachedObject(playerid, 2);		
 	}
-	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veiculo '{B5B5B5}/partida{FFFFFF}' - ou aperte o butão '{B5B5B5}Y{FFFFFF}'"); 
+
+	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veículo '{B5B5B5}/Partida{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'"); 
 	return 1;
 }
 
@@ -1893,14 +1955,55 @@ public OnPlayerEnterCheckpoint(playerid)
 
 	if(Checkpoint == CheckAgencia)
 	{
-    	ShowPlayerDialog(playerid, DialogMenuAgencia, DIALOG_STYLE_LIST, "Agência de Empregos", "{FFFFFF}Classe » {38b170}Honestas\n{FFFFFF}Classe » {8bcffa}Transporte\n{FFFFFF}Classe » {218ffd}Policia\n{FFFFFF}Classe » {847c7f}Governo", "Selecionar", "Fechar");
+    	return ShowPlayerDialog(playerid, DialogMenuAgencia, DIALOG_STYLE_LIST, "Agência de Empregos", "{FFFFFF}Classe » {38b170}Honestas\n{FFFFFF}Classe » {8bcffa}Transporte\n{FFFFFF}Classe » {218ffd}Policia\n{FFFFFF}Classe » {847c7f}Governo", "Selecionar", "Fechar");
 	}
-    if(Checkpoint == CPAutoEscola )
+	// Auto Escola
+    else if(Checkpoint == CPAutoEscola )
     {
-    	ShowPlayerDialog(playerid, DialogAutoEscola, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	return ShowPlayerDialog(playerid, DialogAutoEscola, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
     }
-
-    if(profissaoCarregandoOJG[playerid])
+    // Well stacked pizza
+    else if(Checkpoint == CheckPizza )
+    {
+    	return ShowPlayerDialog(playerid, DialogPizza, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    }
+    // Cluckin' bell
+    else if(Checkpoint == CheckCluckin )
+    {
+    	return ShowPlayerDialog(playerid, DialogCluckinBell, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    }
+    // Burger shot
+    else if(Checkpoint == CheckBurgerShot )
+    {
+    	return ShowPlayerDialog(playerid, DialogBurgerShot, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    }
+    // Didier
+    else if(Checkpoint == CheckDidier )
+    {
+    	return ShowPlayerDialog(playerid, DialogDidier, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    }
+    // Loja de utilitários
+    else if(Checkpoint == CheckUtilitarios )
+    {
+    	new string[952];
+		strcat(string, "Opções\t{008000}Preço\n");
+		strcat(string, "Galão de Combustível\t{008000}R$ 500\n");
+		strcat(string, "1 Kit Reparo\t{008000}R$ 900\n");
+		strcat(string, "Celular\t{008000}R$ 1.000\n");
+		strcat(string, "GPS\t{008000}R$ 1.500\n");
+		strcat(string, "Capacete\t{008000}R$ 2.500\n");
+		strcat(string, "Óculos\t{008000}R$ 2.800\n");
+		strcat(string, "Boné\t{008000}R$ 3.000\n");
+		strcat(string, "Gorro\t{008000}R$ 3.100\n");
+		strcat(string, "Trava para veículos\t{008000}R$ 4.500\n");
+		strcat(string, "Arara\t{008000}R$ 5.800\n");
+		strcat(string, "Pedágio automatico\t{008000}R$ 8.000\n");
+		strcat(string, "Relógio UP\t{008000}R$ 20.000\n");
+		strcat(string, "Crédito para SMS\t{f44542}»»\n");
+		strcat(string, "Venda de produtos\t{f44542}»»");
+    	return ShowPlayerDialog(playerid, DialogMercado, DIALOG_STYLE_TABLIST_HEADERS, "Loja » Utilitários", string, "Selecionar", "Voltar");
+    }
+    else if(profissaoCarregandoOJG[playerid])
     {
 	    if(PlayerDados[playerid][Profissao] == Gari)
 	    {
@@ -1933,6 +2036,8 @@ public OnPlayerEnterCheckpoint(playerid)
 
 	    	return 1;
 	    }
+
+	    return 1;
     }
 	return 1;
 }
@@ -2501,6 +2606,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     			DOF2_SaveFile();
     			SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
     	  		SpawnPlayer(playerid);
+    	  		StopAudioStreamForPlayer(playerid);
     			TogglePlayerSpectating(playerid, false);
     			Logado{playerid} = true;
     			setBasicInfoPlayer(playerid);
@@ -2527,6 +2633,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
 				    SetSpawnInfo(playerid, 0, 0, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"), 269.15, 0, 0, 0, 0, 0, 0);
 	  				SpawnPlayer(playerid);
+	  				StopAudioStreamForPlayer(playerid);
 				    TogglePlayerSpectating(playerid, false);
 				    UpdatePlayerFome(playerid);
 				    UpdatePlayerSede(playerid);
@@ -4018,6 +4125,10 @@ stock PegarConta(playerid)
 }
 stock SalvarDados(playerid)
 {
+	// Vida
+	GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+	DOF2_SetFloat(PegarConta(playerid), "Vida", PlayerDados[playerid][vida]);
+
     DOF2_SetInt(PegarConta(playerid), "Level", GetPlayerScore(playerid));
     DOF2_SetInt(PegarConta(playerid), "Dinheiro", GetPlayerMoney(playerid));
     DOF2_SetInt(PegarConta(playerid), "LevelProcurado", GetPlayerWantedLevel(playerid));
@@ -4079,6 +4190,7 @@ stock CarregarDados(playerid)
         if(DOF2_FileExists (PegarConta(playerid)))
         {
             // Info do Player
+            SetPlayerHealth(playerid, DOF2_GetFloat(PegarConta(playerid), "Vida"));
             SetPlayerScore(playerid, DOF2_GetInt(PegarConta(playerid), "Level"));
             GivePlayerMoney(playerid, DOF2_GetInt(PegarConta(playerid), "Dinheiro"));
             SetPlayerWantedLevel(playerid, DOF2_GetInt(PegarConta(playerid), "LevelProcurado"));
@@ -4183,8 +4295,8 @@ public UpdatePlayerFome(playerid) {
 		}
 		else if(PlayerDados[playerid][fome] <= 5)
 		{
-			GetPlayerHealth(playerid,vida[playerid]);
-			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
 			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete comer ou irá morrer de fome!");
 
 			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
@@ -4213,8 +4325,8 @@ public UpdatePlayerSede(playerid) {
 		}
 		else if(PlayerDados[playerid][sede] <= 5)
 		{
-			GetPlayerHealth(playerid,vida[playerid]);
-			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
 			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete beber qualquer coisa ou irá morrer de sede!");
 
 			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
@@ -4227,7 +4339,7 @@ public UpdatePlayerSede(playerid) {
 			UpdateTextDraw(playerid, 5);
 		}
 
-		timer_StatusSede[playerid] = SetTimerEx("UpdatePlayerSede", 120000, false, "i", playerid);
+		timer_StatusSede[playerid] = SetTimerEx("UpdatePlayerSede", 45000, false, "i", playerid);
 	}
 	return 1;
 }
@@ -4243,8 +4355,8 @@ public UpdatePlayerSaude(playerid) {
 		}
 		else if(PlayerDados[playerid][saude] <= 5)
 		{
-			GetPlayerHealth(playerid,vida[playerid]);
-			SetPlayerHealth(playerid,(vida[playerid] - 20.0) );
+			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
 			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até um hospital para realizar o tratamento, Porém essa doença não tem cura!");
 
 			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
@@ -4460,13 +4572,13 @@ stock motorcarro(playerid)
 		{
 			SetVehicleParamsEx(carro, VEHICLE_PARAMS_ON, VEHICLE_PARAMS_ON, alar, por, cap, porma, ob);
 			Motor[carro] = 1;
-			SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Ligado!");
+			SendClientMessage(playerid, 0xFFFFFFAA, "{50f442}| VEÍCULO | Veículo ligado!");
 		}
 		else if(Motor[carro] == 1)
 		{
 			SetVehicleParamsEx(carro, VEHICLE_PARAMS_OFF, VEHICLE_PARAMS_OFF, alar, por, cap, porma, ob);
 			Motor[carro] = 0;
-			SendClientMessage(playerid, 0xFFFFFFAA, "Veiculo {2F991A}Desligado!");
+			SendClientMessage(playerid, 0xFFFFFFAA, "{f44542}| INFO | Veículo desligado!");
 		}
 		return 1;
 	}
