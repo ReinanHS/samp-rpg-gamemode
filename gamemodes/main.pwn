@@ -229,8 +229,6 @@ new InAutoEscola[MAX_PLAYERS];
 new InAutoEscolaType[MAX_PLAYERS];
 new carroauto[MAX_PLAYERS];
 new carregado[MAX_PLAYERS] = 0;
-new Aviso[MAX_PLAYERS];
-new Log[256];
 
 new point[MAX_PLAYERS];
 new Float:AutoPointsTerrestre[16][3] = //Cordenadas dos Race Checkpoints
@@ -680,6 +678,8 @@ new profissaoCarregandoOJG[MAX_PLAYERS] = false;
 new respawntrailer;
 // Atores
 new Atores[6];
+//new Aviso[MAX_PLAYERS];
+new Log[256];
 //------------------------------------------------------------------------------
 
 #if defined GAMEMODE
@@ -721,6 +721,8 @@ public OnGameModeInit()
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
     UsePlayerPedAnims();
     ManualVehicleEngineAndLights();
+    // Player markers only visible to nearby players
+    ShowPlayerMarkers(PLAYER_MARKERS_MODE_STREAMED);
 
     //Texto da tela de login e registro
     Logo = TextDrawCreate(160.000000, 310.000000, "SKYLANDIA CIDADE VIDA REAL");
@@ -1269,16 +1271,21 @@ public OnPlayerRequestClass(playerid, classid)
 public OnPlayerConnect(playerid)
 {
 	PlayAudioStreamForPlayer(playerid, "https://vocaroo.com/media_command.php?media=s0z3Jzj3z9TN&command=download_mp3");
-    for(new a = 0; a < 100; a++)
+    
+   	for(new a = 0; a < 100; a++)
 	{
 		SendClientMessage(playerid, -1, " ");
 	}
+
     SendClientMessage(playerid, 0x0080FFAA, "| INFO | Aguarde... Carregando os dados!");
+    SetPlayerColor(playerid, 0xFF0000FF);
+    
     Logado{playerid} = false;
     profissaoUniforme[playerid] = false;
     profissaoCar[playerid] = false;
     profissaoCarregandoOJG[playerid] =false;
 
+    
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
     TextDrawShowForPlayer(playerid,site);
@@ -1515,6 +1522,8 @@ public OnPlayerSpawn(playerid)
     TogglePlayerSpectating(playerid, false);
     TogglePlayerControllable(playerid, true);
 
+    SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
+
     TextDrawHideForPlayer(playerid,Logo);
     TextDrawHideForPlayer(playerid,Versao);
     TextDrawHideForPlayer(playerid,site);
@@ -1702,54 +1711,11 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-    new AutoAviso[128];
- 	if(strfind(text, "puta", true) != -1 || strfind(text, "CÚ", true) != -1
-	|| strfind(text, ":7777", true) != -1
-	|| strfind(text, ":7800", true) != -1 || strfind(text, "cú", true) != -1
-	|| strfind(text, ":7795", true) != -1
-	|| strfind(text, ":7785", true) != -1
-    || strfind(text, ":8888", true) != -1 || strfind(text, "fdp", true) != -1
-	|| strfind(text, ":9999", true) != -1
-	|| strfind(text, ":1234", true) != -1 || strfind(text, "FDP", true) != -1
-    || strfind(text, ";7777", true) != -1 || strfind(text, "bvr", true) != -1
-	|| strfind(text, ";7800", true) != -1
-	|| strfind(text, ";7785", true) != -1
-    || strfind(text, ";7795", true) != -1
-	|| strfind(text, ";8888", true) != -1
-	|| strfind(text, ";9999", true) != -1
-    || strfind(text, ";1234", true) != -1
-	|| strfind(text, "bcv", true) != -1
-	|| strfind(text, "brv", true) != -1
-	|| strfind(text, "bvv", true) != -1
-    || strfind(text, "cvr", true) != -1
-	|| strfind(text, "bvi", true) != -1
-    || strfind(text, "bpl", true) != -1
-	|| strfind(text, "bmv", true) != -1
-	|| strfind(text, "brl", true) != -1
-	|| strfind(text, "stt", true) != -1
-	|| strfind(text, "mdb", true) != -1
-	|| strfind(text, "tssa", true) != -1
-    || strfind(text, "cu", true) != -1
-    || strfind(text, "CU", true) != -1 )
-	{
-		Aviso[playerid]++;
-
-		if(Aviso[playerid] <= 2)
-		{
-  			format(AutoAviso, sizeof(AutoAviso), "| INFO-SERVER | O Jogador %s Levou Um Aviso! ( Motivo: Palavras Inadequadas! ) [%d/03]", getName(playerid),Aviso[playerid]);
-   			SendClientMessageToAll(COR_WARNING, AutoAviso);
-   		}
-	 	if(Aviso[playerid] == 3)
-	 	{
-	  		format(AutoAviso, sizeof(AutoAviso), "| INFO-SERVER | O Jogador %s Foi Kickado ( Motivo: Limite de Avisos )",getName(playerid));
-	   		SendClientMessageToAll(COR_WARNING, AutoAviso);
-	   		SalvarDados(playerid);
-
-            Aviso[playerid] = 0;
-	    	Kick(playerid);
-		}
-    }
-	return 1;
+    new string[128];
+    format(string, sizeof(string),"%s[%d]: %s", getName(playerid), playerid, text);
+    SendClientMessageToAll(GetPlayerProfissaoCor(playerid), string); 
+    
+    return 0;
 }
 
 public OnPlayerCommandText(playerid, cmdtext[])
@@ -1777,7 +1743,6 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		RemovePlayerAttachedObject(playerid, 2);		
 	}
 
-	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veículo '{B5B5B5}/Partida{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'"); 
 	return 1;
 }
 
@@ -1814,6 +1779,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
+	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veículo '{B5B5B5}/Partida{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'"); 
     new car = GetPlayerVehicleID(playerid);//armazena na váriavel car o carro em q ele está.
     if(newstate == PLAYER_STATE_DRIVER)//se O Player entrar como motorista
 	{
@@ -3289,6 +3255,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     			}
     			else if(listitem == 1)
@@ -3308,6 +3275,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3331,6 +3299,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3354,6 +3323,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3377,6 +3347,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3400,6 +3371,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3423,6 +3395,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3446,6 +3419,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3469,6 +3443,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3492,6 +3467,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3515,6 +3491,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3538,6 +3515,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3561,6 +3539,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3593,6 +3572,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3616,6 +3596,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3639,6 +3620,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3662,6 +3644,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3685,6 +3668,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3708,6 +3692,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3731,6 +3716,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3754,6 +3740,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3777,6 +3764,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3800,6 +3788,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3823,6 +3812,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3855,6 +3845,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3878,6 +3869,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3901,6 +3893,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3924,6 +3917,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3947,6 +3941,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3970,6 +3965,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -3993,6 +3989,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4016,6 +4013,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4048,6 +4046,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4071,6 +4070,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4094,6 +4094,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4117,6 +4118,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -4140,6 +4142,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SendClientMessage(playerid, COR_SUCCESS, "Foi criado o Checkpoint do seu HQ em seu mapa..");
 
                         PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+                        SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
     				}
     				else
     				{
@@ -6271,6 +6274,167 @@ public UpdateTextDraw(playerid, textid) {
 	PlayerTextDrawShow(playerid, textStatusBar[playerid][textid]);
     return 1;
 }
+forward GetPlayerProfissaoCor(playerid);
+public GetPlayerProfissaoCor(playerid) {
+
+	if(PlayerDados[playerid][Profissao] == Desempregado)
+	{
+		return 0xFFFFFFAA;
+	}
+	// // Cores - Honestas
+	else if(PlayerDados[playerid][Profissao] == Gari)
+	{
+		return C_Gari;
+	}
+	else if(PlayerDados[playerid][Profissao] == PizzaBoy)
+	{
+		return C_PizzaBoy;
+	}
+	else if(PlayerDados[playerid][Profissao] == MotoBoy)
+	{
+		return C_MotoBoy;
+	}
+	else if(PlayerDados[playerid][Profissao] == Pescador)
+	{
+		return C_Pescador;
+	}
+	else if(PlayerDados[playerid][Profissao] == Mecanico)
+	{
+		return C_Mecanico;
+	}
+	else if(PlayerDados[playerid][Profissao] == Correios)
+	{
+		return C_Correios;
+	}
+	else if(PlayerDados[playerid][Profissao] == Fazendeiro)
+	{
+		return C_Fazendeiro;
+	}
+	else if(PlayerDados[playerid][Profissao] == AgenteFunerario)
+	{
+		return C_AgenteFunerario;
+	}
+	else if(PlayerDados[playerid][Profissao] == Fotografo)
+	{
+		return C_Fotografo;
+	}
+	else if(PlayerDados[playerid][Profissao] == Jornalista)
+	{
+		return C_Jornalista;
+	}
+	else if(PlayerDados[playerid][Profissao] == Meteorologista)
+	{
+		return C_Meteorologista;
+	}
+	else if(PlayerDados[playerid][Profissao] == Advogador)
+	{
+		return C_Advogador;
+	}
+	else if(PlayerDados[playerid][Profissao] == Paramedico)
+	{
+		return C_Paramedico;
+	}
+	//	Tranportes
+	else if(PlayerDados[playerid][Profissao] == MotoTaxi)
+	{
+		return C_MotoTaxi;
+	}
+	else if(PlayerDados[playerid][Profissao] == Entregador)
+	{
+		return C_Entregador;
+	}
+	else if(PlayerDados[playerid][Profissao] == Taxistas)
+	{
+		return C_Taxistas;
+	}
+	else if(PlayerDados[playerid][Profissao] == MotoristaOnibus)
+	{
+		return C_MotoristaOnibus;
+	}
+	else if(PlayerDados[playerid][Profissao] == Transportador)
+	{
+		return C_Transportador;
+	}
+	else if(PlayerDados[playerid][Profissao] == Maquinista)
+	{
+		return C_Maquinista;
+	}
+	else if(PlayerDados[playerid][Profissao] == Petroleiro)
+	{
+		return C_Petroleiro;
+	}
+	else if(PlayerDados[playerid][Profissao] == Concreteiro)
+	{
+		return C_Concreteiro;
+	}
+	else if(PlayerDados[playerid][Profissao] == TaxiAereo)
+	{
+		return C_TaxiAereo;
+	}
+	else if(PlayerDados[playerid][Profissao] == Piloto)
+	{
+		return C_Piloto;
+	}
+	else if(PlayerDados[playerid][Profissao] == MotoristacarroForte)
+	{
+		return C_MotoristacarroForte;
+	}
+	// Policias
+	else if(PlayerDados[playerid][Profissao] == PMilitar)
+	{
+		return C_PMilitar;
+	}
+	else if(PlayerDados[playerid][Profissao] == PFederal)
+	{
+		return C_PFederal;
+	}
+	else if(PlayerDados[playerid][Profissao] == PRodoviaria)
+	{
+		return C_PRodoviaria;
+	}
+	else if(PlayerDados[playerid][Profissao] == Delegado)
+	{
+		return C_Delegado;
+	}
+	else if(PlayerDados[playerid][Profissao] == FBI)
+	{
+		return C_FBI;
+	}
+	else if(PlayerDados[playerid][Profissao] == CIA)
+	{
+		return C_CIA;
+	}
+	else if(PlayerDados[playerid][Profissao] == SWAT)
+	{
+		return C_SWAT;
+	}
+	else if(PlayerDados[playerid][Profissao] == Interpol)
+	{
+		return C_Interpol;
+	}
+	// Governo
+	else if(PlayerDados[playerid][Profissao] == Bombeiro)
+	{
+		return C_Bombeiro;
+	}
+	else if(PlayerDados[playerid][Profissao] == Corregedoria)
+	{
+		return C_Corregedoria;
+	}
+	else if(PlayerDados[playerid][Profissao] == Marinha)
+	{
+		return C_Marinha;
+	}
+	else if(PlayerDados[playerid][Profissao] == Exercito)
+	{
+		return C_Exercito;
+	}
+	else if(PlayerDados[playerid][Profissao] == Aeronautica)
+	{
+		return C_Aeronautica;
+	}
+	return 1;
+}
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
     if(!Logado{playerid}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Ainda Não Está Logado!");
@@ -6536,12 +6700,14 @@ CMD:descarregar(playerid)
 							if(gariCar[i][1] > 0)
 							{
 								new descarregarGari[100];
-								format(descarregarGari, sizeof(descarregarGari), "| INFO | você descarregou seu caminhão com %d sacolas de lixo e recebeu R$ %d", gariCar[i][1], (64*gariCar[i][1]) );
+								format(descarregarGari, sizeof(descarregarGari), "| INFO | Você descarregou seu caminhão com %d sacolas de lixo e recebeu R$ %d", gariCar[i][1], (64*gariCar[i][1]) );
 								SendClientMessage(playerid, COR_SUCCESS, descarregarGari);
 								GivePlayerMoney(playerid, (64*gariCar[i][1]) );
 								PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
 								gariCar[i][1] = 0;
-								RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+								//RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+								for( new a = 0; a < 5; a++) PlayerTextDrawHide(playerid, textProfissaoInfo[playerid][a]);
+
 								return 1;
 							}else return SendClientMessage(playerid, COR_ERRO, "ERRO | Seu caminhão está vazio!");
 						}//else return SendClientMessage(playerid, COR_ERRO, "ERRO | Esse caminhão de lixo pertence a outro jogador");
@@ -6740,7 +6906,7 @@ CMD:cp (playerid, params[])
 		{
 		    if(PlayerDados[i][Profissao] == PlayerDados[playerid][Profissao])
 		    {
-		        SendClientMessage(i, 0x25d969ff, str);
+		        SendClientMessage(i, GetPlayerProfissaoCor(playerid), str);
 		    }
 		}
 	}
