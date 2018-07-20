@@ -1970,27 +1970,91 @@ public OnPlayerEnterCheckpoint(playerid)
 	// Auto Escola
     else if(Checkpoint == CPAutoEscola )
     {
-    	return ShowPlayerDialog(playerid, DialogAutoEscola, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	new string[952];
+		strcat(string, "Categoria\t{ffd944}Situação\t{008000}Preço\n");
+
+		if(PlayerDados[playerid][HabT_1] == false) strcat(string, "Motocicleta\t{ff4744}Pendente\t{008000}$600\n");
+		else strcat(string, "Motocicleta\t{7df23e}Adquirida\t{008000}$600\n");
+
+		if(PlayerDados[playerid][HabT_2] == false) strcat(string, "Automóvel\t{ff4744}Pendente\t{008000}$1.400\n");
+		else strcat(string, "Automóvel\t{7df23e}Adquirida\t{008000}$1.400\n");
+
+		if(PlayerDados[playerid][HabT_3] == false) strcat(string, "Caminhão\t{ff4744}Pendente\t{008000}$2.400\n");
+		else strcat(string, "Caminhão\t{7df23e}Adquirida\t{008000}$2.400\n");
+
+		if(PlayerDados[playerid][HabN] == false) strcat(string, "Marítima\t{ff4744}Pendente\t{008000}$3.400\n");
+		else strcat(string, "Marítima\t{7df23e}Adquirida\t{008000}$3.400\n");
+
+		if(PlayerDados[playerid][HabA] == false) strcat(string, "Aérea\t{ff4744}Pendente\t{008000}$5.000\n");
+		else strcat(string, "Aérea\t{7df23e}Adquirida\t{008000}$5.000\n");
+
+    	return ShowPlayerDialog(playerid, DialogAutoEscola, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", string, "Selecionar", "Voltar");
     }
     // Well stacked pizza
     else if(Checkpoint == CheckPizza )
     {
-    	return ShowPlayerDialog(playerid, DialogPizza, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	new string[952];
+		strcat(string, "Cardápio\t{008000}Preço\n");
+		strcat(string, "Pizza a Moda Especial\t{008000}R$ 4\n");
+		strcat(string, "Pizza Família Viesti\t{008000}R$ 8\n");
+		strcat(string, "Pizza de Frango\t{008000}R$ 11\n");
+		strcat(string, "Pizza Calabresa Paulista\t{008000}R$ 15\n");
+		strcat(string, "Pizza de Pepperone\t{008000}R$ 9\n");
+		strcat(string, "Pizza Palestra\t{008000}R$ 20\n");
+		strcat(string, "Pizza Portuguesa\t{008000}R$ 52\n");
+		strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+		strcat(string, "Água de coco\t{008000}R$ 4\n");
+		strcat(string, "H2O\t{008000}R$ 6\n");
+		strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+		strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+		strcat(string, "Dolly guarana\t{008000}R$ 1");
+    	return ShowPlayerDialog(playerid, DialogPizza, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {ffd944}Well Stacked Pizza Co", string, "Selecionar", "Voltar");
     }
     // Cluckin' bell
     else if(Checkpoint == CheckCluckin )
     {
-    	return ShowPlayerDialog(playerid, DialogCluckinBell, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	new string[952];
+		strcat(string, "Cardápio\t{008000}Preço\n");
+		strcat(string, "Sorvete\t{008000}R$ 4\n");
+		strcat(string, "Chocolate proteico\t{008000}R$ 8\n");
+		strcat(string, "Salada de frutas frescas\t{008000}R$ 11\n");
+		strcat(string, "Bolo Integral\t{008000}R$ 15\n");
+		strcat(string, "Creme de abacate\t{008000}R$ 9\n");
+		strcat(string, "Torta mousse de chocolate\t{008000}R$ 20\n");
+		strcat(string, "Mousse de chocolate\t{008000}R$ 52\n");
+		strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+		strcat(string, "Água de coco\t{008000}R$ 4\n");
+		strcat(string, "H2O\t{008000}R$ 6\n");
+		strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+		strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+		strcat(string, "Dolly guarana\t{008000}R$ 1");
+    	return ShowPlayerDialog(playerid, DialogCluckinBell, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {ff4f23}Cluckin' Bell", string, "Selecionar", "Voltar");
     }
     // Burger shot
     else if(Checkpoint == CheckBurgerShot )
     {
-    	return ShowPlayerDialog(playerid, DialogBurgerShot, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	new string[952];
+		strcat(string, "Cardápio\t{008000}Preço\n");
+		strcat(string, "Pastel de Queijo Mussarela\t{008000}R$ 4\n");
+		strcat(string, "Snack\t{008000}R$ 8\n");
+		strcat(string, "X-Salada\t{008000}R$ 11\n");
+		strcat(string, "X-Burger\t{008000}R$ 15\n");
+		strcat(string, "X-Frango\t{008000}R$ 9\n");
+		strcat(string, "Churrasco com queijo\t{008000}R$ 20\n");
+		strcat(string, "Lombo Canadense\t{008000}R$ 52\n");
+		strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+		strcat(string, "Água de coco\t{008000}R$ 4\n");
+		strcat(string, "H2O\t{008000}R$ 6\n");
+		strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+		strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+		strcat(string, "Dolly guarana\t{008000}R$ 1");
+    	return ShowPlayerDialog(playerid, DialogBurgerShot, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {5aff23}Burger Shot", string, "Selecionar", "Voltar");
     }
     // Didier
     else if(Checkpoint == CheckDidier )
     {
-    	return ShowPlayerDialog(playerid, DialogDidier, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
+    	return SendClientMessage(playerid, COR_ERRO, "Em breve");
+    	//return ShowPlayerDialog(playerid, DialogDidier, DIALOG_STYLE_TABLIST_HEADERS, "AUTO ESCOLA » Habilitações", "Categoria\t{008000}Preço\nMotocicleta\t{008000}$600,00\nAutomóvel\t{008000}$1400,00\nCaminhão\t{008000}$2400,00", "Selecionar", "Voltar");
     }
     // Loja de utilitários
     else if(Checkpoint == CheckUtilitarios )
@@ -4354,6 +4418,861 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     }
                 }
             }    
+            return 1;
+        }
+        case DialogPizza:
+        {
+            if(response){
+
+                if(listitem == 0){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza a Moda Especial");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 1){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza Família Viesti");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 2){
+                    if(GetPlayerMoney(playerid) < 11) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza de Frango");
+                        GivePlayerMoney(playerid, -11);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 3){
+                    if(GetPlayerMoney(playerid) < 15) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza Calabresa Paulista");
+                        GivePlayerMoney(playerid, -15);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 15) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);                
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 15;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 4){
+                    if(GetPlayerMoney(playerid) < 9) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza de Pepperone");
+                        GivePlayerMoney(playerid, -9);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 5){
+                    if(GetPlayerMoney(playerid) < 20) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza Palestra");
+                        GivePlayerMoney(playerid, -20);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 30) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 30;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 6){
+                    if(GetPlayerMoney(playerid) < 52) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Pizza Portuguesa");
+                        GivePlayerMoney(playerid, -52);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 50) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 50;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 7){
+                    new string[952];
+					strcat(string, "Cardápio\t{008000}Preço\n");
+					strcat(string, "Pizza a Moda Especial\t{008000}R$ 4\n");
+					strcat(string, "Pizza Família Viesti\t{008000}R$ 8\n");
+					strcat(string, "Pizza de Frango\t{008000}R$ 11\n");
+					strcat(string, "Pizza Calabresa Paulista\t{008000}R$ 15\n");
+					strcat(string, "Pizza de Pepperone\t{008000}R$ 9\n");
+					strcat(string, "Pizza Palestra\t{008000}R$ 20\n");
+					strcat(string, "Pizza Portuguesa\t{008000}R$ 52\n");
+					strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+					strcat(string, "Água de coco\t{008000}R$ 4\n");
+					strcat(string, "H2O\t{008000}R$ 6\n");
+					strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+					strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+					strcat(string, "Dolly guarana\t{008000}R$ 1");
+			    	return ShowPlayerDialog(playerid, DialogPizza, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {ffd944}Well Stacked Pizza Co", string, "Selecionar", "Voltar");
+                }
+                else if(listitem == 8){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Água de coco");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 9){
+                    if(GetPlayerMoney(playerid) < 6) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo H2O");
+                        GivePlayerMoney(playerid, -6);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 24) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Suco de frutas {e33ef2}delicioso!");
+                        GivePlayerMoney(playerid, -24);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        PlayerDados[playerid][sede] = 100;
+                        ApplyAnimation(playerid, "BAR", "dnk_stndF_loop", 4.1, 0, 1, 0, 0, 0, 0);
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Coca-Cola");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else{
+                    if(GetPlayerMoney(playerid) < 1) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Dolly guarana");
+                        GivePlayerMoney(playerid, -1);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 3) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 3;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+            }
+            return 1;
+        }
+        case DialogCluckinBell:
+        {
+            if(response){
+
+                if(listitem == 0){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Sorvete");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 1){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Chocolate proteico");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 2){
+                    if(GetPlayerMoney(playerid) < 11) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo uma Salada de frutas frescas");
+                        GivePlayerMoney(playerid, -11);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 3){
+                    if(GetPlayerMoney(playerid) < 15) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Bolo Integral");
+                        GivePlayerMoney(playerid, -15);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 15) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);                
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 15;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 4){
+                    if(GetPlayerMoney(playerid) < 9) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Creme de abacate");
+                        GivePlayerMoney(playerid, -9);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 5){
+                    if(GetPlayerMoney(playerid) < 20) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Torta mousse de chocolate");
+                        GivePlayerMoney(playerid, -20);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 30) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 30;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 6){
+                    if(GetPlayerMoney(playerid) < 52) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Mousse de chocolate");
+                        GivePlayerMoney(playerid, -52);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 50) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 50;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 7){
+                    new string[952];
+					strcat(string, "Cardápio\t{008000}Preço\n");
+					strcat(string, "Sorvete\t{008000}R$ 4\n");
+					strcat(string, "Chocolate proteico\t{008000}R$ 8\n");
+					strcat(string, "Salada de frutas frescas\t{008000}R$ 11\n");
+					strcat(string, "Bolo Integral\t{008000}R$ 15\n");
+					strcat(string, "Creme de abacate\t{008000}R$ 9\n");
+					strcat(string, "Torta mousse de chocolate\t{008000}R$ 20\n");
+					strcat(string, "Mousse de chocolate\t{008000}R$ 52\n");
+					strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+					strcat(string, "Água de coco\t{008000}R$ 4\n");
+					strcat(string, "H2O\t{008000}R$ 6\n");
+					strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+					strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+					strcat(string, "Dolly guarana\t{008000}R$ 1");
+					return ShowPlayerDialog(playerid, DialogCluckinBell, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {ff4f23}Cluckin' Bell", string, "Selecionar", "Voltar");
+                }
+                else if(listitem == 8){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Água de coco");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 9){
+                    if(GetPlayerMoney(playerid) < 6) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo H2O");
+                        GivePlayerMoney(playerid, -6);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 24) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Suco de frutas {e33ef2}delicioso!");
+                        GivePlayerMoney(playerid, -24);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        PlayerDados[playerid][sede] = 100;
+                        ApplyAnimation(playerid, "BAR", "dnk_stndF_loop", 4.1, 0, 1, 0, 0, 0, 0);
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Coca-Cola");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else{
+                    if(GetPlayerMoney(playerid) < 1) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Dolly guarana");
+                        GivePlayerMoney(playerid, -1);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 3) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 3;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+            }
+            return 1;
+        }
+        case DialogBurgerShot:
+        {
+            if(response){
+
+                if(listitem == 0){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Pastel de Queijo Mussarela");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 1){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Snack");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 2){
+                    if(GetPlayerMoney(playerid) < 11) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um X-Salada");
+                        GivePlayerMoney(playerid, -11);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 10) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 10;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 3){
+                    if(GetPlayerMoney(playerid) < 15) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um X-Burger");
+                        GivePlayerMoney(playerid, -15);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 15) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);                
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 15;
+							ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 4){
+                    if(GetPlayerMoney(playerid) < 9) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um X-Frango");
+                        GivePlayerMoney(playerid, -9);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 5) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 5;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 5){
+                    if(GetPlayerMoney(playerid) < 20) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Churrasco com queijo");
+                        GivePlayerMoney(playerid, -20);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 30) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 30;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 6){
+                    if(GetPlayerMoney(playerid) < 52) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está comendo um Lombo Canadense");
+                        GivePlayerMoney(playerid, -52);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][fome] + 50) > 100 ){
+                        	PlayerDados[playerid][fome] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][fome] = PlayerDados[playerid][fome] + 50;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Burger", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 7);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 7){
+                	new string[952];
+					strcat(string, "Cardápio\t{008000}Preço\n");
+					strcat(string, "Pastel de Queijo Mussarela\t{008000}R$ 4\n");
+					strcat(string, "Snack\t{008000}R$ 8\n");
+					strcat(string, "X-Salada\t{008000}R$ 11\n");
+					strcat(string, "X-Burger\t{008000}R$ 15\n");
+					strcat(string, "X-Frango\t{008000}R$ 9\n");
+					strcat(string, "Churrasco com queijo\t{008000}R$ 20\n");
+					strcat(string, "Lombo Canadense\t{008000}R$ 52\n");
+					strcat(string, "{ffd323}Cardápio de Bebidas\t»»\n");
+					strcat(string, "Água de coco\t{008000}R$ 4\n");
+					strcat(string, "H2O\t{008000}R$ 6\n");
+					strcat(string, "Suco de frutas\t{008000}R$ 24\n");
+					strcat(string, "Coca-Cola\t{008000}R$ 8\n");
+					strcat(string, "Dolly guarana\t{008000}R$ 1");
+			    	return ShowPlayerDialog(playerid, DialogBurgerShot, DIALOG_STYLE_TABLIST_HEADERS, "Empresa » {5aff23}Burger Shot", string, "Selecionar", "Voltar");
+                }
+                else if(listitem == 8){
+                    if(GetPlayerMoney(playerid) < 4) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Água de coco");
+                        GivePlayerMoney(playerid, -4);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 9){
+                    if(GetPlayerMoney(playerid) < 6) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo H2O");
+                        GivePlayerMoney(playerid, -6);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 24) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Suco de frutas {e33ef2}delicioso!");
+                        GivePlayerMoney(playerid, -24);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        PlayerDados[playerid][sede] = 100;
+                        ApplyAnimation(playerid, "BAR", "dnk_stndF_loop", 4.1, 0, 1, 0, 0, 0, 0);
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else if(listitem == 10){
+                    if(GetPlayerMoney(playerid) < 8) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo uma Coca-Cola");
+                        GivePlayerMoney(playerid, -8);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 5) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 5;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+                else{
+                    if(GetPlayerMoney(playerid) < 1) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você está bebendo um Dolly guarana");
+                        GivePlayerMoney(playerid, -1);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+
+                        if( (PlayerDados[playerid][sede] + 3) > 100 ){
+                        	PlayerDados[playerid][sede] = 100;
+                        	ApplyAnimation(playerid, "FOOD", "EAT_Vomit_P", 4.1, 0, 1, 0, 0, 0, 0);
+                        }else{
+                        	PlayerDados[playerid][sede] = PlayerDados[playerid][sede] + 3;
+                        	ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.1, 0, 1, 0, 0, 0, 0);
+                        }
+
+                        PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 5);
+
+                        return 1;
+                    }
+                }
+            }
             return 1;
         }
   
