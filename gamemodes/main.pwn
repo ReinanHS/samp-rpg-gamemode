@@ -543,6 +543,7 @@ enum pDados
         etanol,
         gnv,
         diesel,
+        npc,
         bool: vip 
 
 }
@@ -565,9 +566,19 @@ enum mInfo
     bool:Capacete,
     bool:Arara
 }
+
+enum rDados
+{
+	pSenha[100], email[100], sexo, idade
+}
+
+new PlayerRegister[MAX_PLAYERS][rDados];
+new PlayerAntiSpam[MAX_PLAYERS];
+
 new MercadoInfo[MAX_PLAYERS][mInfo];
 
 new PlayerDados[MAX_PLAYERS][pDados];
+
 new bool:Logado[MAX_PLAYERS char];
 new SenhaErrada[MAX_PLAYERS];
 new Str[210];
@@ -1240,8 +1251,8 @@ public OnGameModeExit()
 public OnPlayerRequestClass(playerid, classid)
 {
         TogglePlayerSpectating(playerid, true);
-		InterpolateCameraPos(playerid, 1392.9325, -1733.4246, 91.8287, 1112.7428, -1593.4954, 65.8049, 8000, CAMERA_CUT);
-		InterpolateCameraLookAt(playerid, 1393.7410, -1732.8302, 91.1735, 1113.0087, -1594.4611, 65.4747, 8000, CAMERA_CUT);
+		InterpolateCameraPos(playerid, 1607.6973, -1860.1537, 66.1458, 1706.4011, -1912.0708, 17.6263, 8000, CAMERA_CUT);
+		InterpolateCameraLookAt(playerid, 1607.6973, -1860.1537, 66.1458, 1706.4011, -1912.0708, 17.6263, 8000, CAMERA_CUT);
 
         new str[80];
 
@@ -1262,7 +1273,7 @@ public OnPlayerRequestClass(playerid, classid)
             SendClientMessage(playerid, 0x13A9F6AA, str);
             SendClientMessage(playerid, 0x13A9F6AA, "» Para ver os comandos do servidor Digite: /Ajuda Comandos");
             SendClientMessage(playerid, 0x808080AA, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 1.6 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
+            format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
             ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
         }
         return 1;
@@ -1281,6 +1292,7 @@ public OnPlayerConnect(playerid)
     SetPlayerColor(playerid, 0xFF0000FF);
     
     Logado{playerid} = false;
+    PlayerAntiSpam[playerid] = 0;
     profissaoUniforme[playerid] = false;
     profissaoCar[playerid] = false;
     profissaoCarregandoOJG[playerid] =false;
@@ -1518,7 +1530,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
-    SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+	SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
     TogglePlayerSpectating(playerid, false);
     TogglePlayerControllable(playerid, true);
 
@@ -1711,9 +1723,15 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-    new string[128];
-    format(string, sizeof(string),"%s[%d]: %s", getName(playerid), playerid, text);
-    SendClientMessageToAll(GetPlayerProfissaoCor(playerid), string); 
+    if(Logado{playerid} == true)
+    {
+    	new string[128];
+    	format(string, sizeof(string),"%s[%d]: %s", getName(playerid), playerid, text);
+    	SendClientMessageToAll(GetPlayerProfissaoCor(playerid), string); 
+    }else
+    {
+    	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está logado!");
+    }
     
     return 0;
 }
@@ -1778,11 +1796,11 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 }
 
 public OnPlayerStateChange(playerid, newstate, oldstate)
-{
-	SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veículo '{B5B5B5}/Partida{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'"); 
+{ 
     new car = GetPlayerVehicleID(playerid);//armazena na váriavel car o carro em q ele está.
     if(newstate == PLAYER_STATE_DRIVER)//se O Player entrar como motorista
 	{
+		SendClientMessage(playerid, COR_WARNING, "| INFO | Para ligar ou desligar o veículo '{B5B5B5}/Partida{FFFFFF}' ou '{B5B5B5}Y{FFFFFF}'");
 		// Petroleiro
     	for(new i = 0; i < sizeof(petroleiroCar); i ++)
 		{
@@ -3051,108 +3069,127 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	    case DialogRegistro:
 	    {
 	        if(!response) return Kick(playerid);
-	        if(response)
+	        else if(response)
 	        {
-	            if(strlen(inputtext) < 5 || strlen(inputtext) > 20)
+	        	if(PlayerAntiSpam[playerid] > 5)
+	        	{
+	        		SendClientMessage(playerid, COR_ERRO, "Você foi kikado por atingir o limite de tentativas!");	
+	        		return Kick(playerid);
+	        	}
+	            else if(strlen(inputtext) < 5 || strlen(inputtext) > 100)
 	            {
-                    SendClientMessage(playerid, 0xFF0000AA, "Sua senha deve conter entre 5 e 20 Caracteres");
+                    SendClientMessage(playerid, 0xFF0000AA, "| INFO | Sua senha deve conter entre 5 e 100 Caracteres");
 	                format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {FF0000}Não registrada{26AB0C}\n\nVersão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\nOBS: 5 a 20 Caracteres!", getName(playerid));
+	                
+	                PlayerAntiSpam[playerid] = PlayerAntiSpam[playerid] +1;
+
 	                return ShowPlayerDialog(playerid, DialogRegistro, DIALOG_STYLE_PASSWORD, "{FFA500}Registro", Str, "Registrar", "Sair");
+				}else
+				{
+					format(PlayerRegister[playerid][pSenha], 100, inputtext);/*Seta nesta variavel o inputtext digitado(Senha)*/ 
+                
+                	format(Str, sizeof(Str), "{FFA500}E-mail {FFFFFF}para recuperação de conta para prevenções futuras.\n\nDigite um e-mail válido e ativo e ativo:", getName(playerid));
+                	return ShowPlayerDialog(playerid, DialogEmail, DIALOG_STYLE_INPUT, "{FFA500}E-mail para recuperação.", Str, "Salvar", "");
 				}
-                DOF2_CreateFile(PegarConta(playerid));
-				DOF2_SetString(PegarConta(playerid),"Senha",inputtext);
-                DOF2_SetString(PegarConta(playerid),"Email","Nao Informado");
-                DOF2_SetString(PegarConta(playerid),"Sexo","Nao Informado");
-				DOF2_SaveFile();
-                format(Str, sizeof(Str), "{FFA500}E-mail {FFFFFF}para recuperação de conta para prevenções futuras.\n\nDigite um e-mail válido e ativo e ativo:", getName(playerid));
-                ShowPlayerDialog(playerid, DialogEmail, DIALOG_STYLE_INPUT, "{FFA500}E-mail para recuperação.", Str, "Salvar", "");
 			}
+
+			return 1;
 		}
         case DialogEmail:
 	    {
             if(!response) return Kick(playerid);
-	        if(response)
+	        else if(response)
 	        {
-	            if(strlen(inputtext) < 16 || strlen(inputtext) > 40)
+	        	if(PlayerAntiSpam[playerid] > 5)
+	        	{
+	        		SendClientMessage(playerid, COR_ERRO, "Você foi kikado por atingir o limite de tentativas!");	
+	        		return Kick(playerid);
+	        	}
+	            else if(strlen(inputtext) < 16 || strlen(inputtext) > 100)
 	            {
                     SendClientMessage(playerid, 0xFF0000AA, "Coloque um e-mail válido!");
+	                
 	                format(Str, sizeof(Str), "{FFA500}E-mail {FFFFFF}para recuperação de conta para prevenções futuras.\n\nDigite um e-mail válido e ativo e ativo:", getName(playerid));
                     ShowPlayerDialog(playerid, DialogEmail, DIALOG_STYLE_INPUT, "{FFA500}E-mail para recuperação.", Str, "Salvar", "");
+                    
+	                PlayerAntiSpam[playerid] = PlayerAntiSpam[playerid] +1;
+
                     return 0;
 				}
-				DOF2_SetString(PegarConta(playerid),"Email",inputtext);
-				DOF2_SaveFile();
-                ShowPlayerDialog(playerid, DialogSexo, DIALOG_STYLE_MSGBOX, "{FFA500}Selecione o seu Sexo", "{FFFFFF}Olá, informe-nos seu sexo.\nVocê é do sexo {3761ED}Masculino{37ED4C} {FFFFFF}ou {F20FF2}Feminino{FFFFFF}?", "Masculino", "Feminino");
-                return 1;
+				else
+				{
+					format(PlayerRegister[playerid][email], 100, inputtext);/*Seta nesta variavel o inputtext digitado(Email)*/ 
+                
+                	return ShowPlayerDialog(playerid, DialogSexo, DIALOG_STYLE_MSGBOX, "{FFA500}Selecione o seu Sexo", "{FFFFFF}Olá, informe-nos seu sexo.\nVocê é do sexo {3761ED}Masculino{37ED4C} {FFFFFF}ou {F20FF2}Feminino{FFFFFF}?", "Masculino", "Feminino");
+				}
 			}
+
+			return 1;
 		}
         case DialogSexo:
 	    {
-            if(response){
-    			SendClientMessage(playerid, 0xFFA500AA, "Ok, seu sexo é masculino.");
-                new InfoSenha[65];
-    			format(InfoSenha,sizeof(InfoSenha),"Conta registrada com sucesso!");
-    			SendClientMessage(playerid,0xFFA500AA,InfoSenha);
-    			DOF2_CreateFile(PegarConta(playerid));
-    			DOF2_SetString(PegarConta(playerid),"Sexo","Masculino");
-                DOF2_SetInt(PegarConta(playerid), "SkinAtual", 23);
-    			DOF2_SaveFile();
-    			SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-    	  		SpawnPlayer(playerid);
-    			TogglePlayerSpectating(playerid, false);
-
-    			Logado{playerid} = true;
-    			setBasicInfoPlayer(playerid);
-
-    			SendClientMessage(playerid,0xFFA500AA,"Registrado e Logado com sucesso!");
-    			GivePlayerMoney(playerid,1000);
+	    	if(response)
+            {
+            	PlayerRegister[playerid][sexo] = 1;
+            	criarConta(playerid);
+    			return 1;
             }
-		    else if(!response){
-                SendClientMessage(playerid, 0xFFA500AA, "Ok, seu sexo é feminino.");
-                new InfoSenha[65];
-    			format(InfoSenha,sizeof(InfoSenha),"Conta registrada com sucesso!");
-    			SendClientMessage(playerid,0xFFA500AA,InfoSenha);
-       			DOF2_CreateFile(PegarConta(playerid));
-    			DOF2_SetString(PegarConta(playerid),"Sexo","Masculino");
-                DOF2_SetInt(PegarConta(playerid), "SkinAtual", 56);
-    			DOF2_SaveFile();
-    			SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-    	  		SpawnPlayer(playerid);
-    	  		StopAudioStreamForPlayer(playerid);
-    			TogglePlayerSpectating(playerid, false);
-    			Logado{playerid} = true;
-    			setBasicInfoPlayer(playerid);
+            else if(!response)
+            {
+            	PlayerRegister[playerid][sexo] = 2;
+    			criarConta(playerid);
+            	return 1;
+            }
 
-    			SendClientMessage(playerid,0xFFA500AA,"Registrado e Logado com sucesso!");
-    			GivePlayerMoney(playerid,1000);
-           }
             return 1;
         }
 	    case DialogLogin:
 	    {
 	        if(!response) return Kick(playerid);
-	        if(response)
+	        else if(response)
 	        {
-	            if(!strlen(inputtext))
+	        	if(PlayerAntiSpam[playerid] > 5)
+	        	{
+	        		SendClientMessage(playerid, COR_ERRO, "Você foi kikado por atingir o limite de tentativas!");	
+	        		return Kick(playerid);
+	        	}
+	            else if(!strlen(inputtext))
 	            {
                     format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 1.6 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
+	                
+                    PlayerAntiSpam[playerid] = PlayerAntiSpam[playerid] +1;
+
 	                return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
 				}
 
-				if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha"), inputtext))
+				else if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha"), inputtext))
 				{
 				    CarregarDados(playerid);
+                    
                     SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
-				    SetSpawnInfo(playerid, 0, 0, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"), 269.15, 0, 0, 0, 0, 0, 0);
-	  				SpawnPlayer(playerid);
+				    SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"), 269.15, 0, 0, 0, 0, 0, 0);
+	  				
 	  				StopAudioStreamForPlayer(playerid);
+				    
 				    TogglePlayerSpectating(playerid, false);
+				    
 				    UpdatePlayerFome(playerid);
 				    UpdatePlayerSede(playerid);
 				    UpdatePlayerSaude(playerid);
 				    UpdatePlayerLevel(playerid);
+
 				    Logado{playerid} = true;
+
+				    new loginVIP[256];
+					format(loginVIP, sizeof(loginVIP), "{ca47ff}| VIP | O(A) Jogador(a) {ffffff}%s {ca47ff}VIP Acaba De Logar No Servidor!", getName(playerid));
+ 					if(PlayerDados[playerid][vip] == true) return SendClientMessageToAll(-1, loginVIP);
+
 				    SendClientMessage(playerid,-1,"Logado com sucesso!");
+
+				    format(Log, sizeof(Log), "O Jogador %s (%d) Logou No Servidor.", getName(playerid), playerid);
+					fileLog("Logins", Log);
+
+				    return SpawnPlayer(playerid);
 				}
 				else
 				{
@@ -3160,15 +3197,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    {
 				        SendClientMessage(playerid,COR_ERRO,"Você foi kickado por errar a senha 3 vezes!");
 				        SenhaErrada[playerid] = 0;
-				        Kick(playerid);
+				        return Kick(playerid);
 					}
 					else
 					{
 						SenhaErrada[playerid] ++;
 						new str[50];
+
 						format(str, sizeof(str), "Senha Incorreta [%d/3]: por favor digite uma senha para acessar", SenhaErrada[playerid]);
                         SendClientMessage(playerid, 0xFF0000AA, str);
-            			ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
+            			
+            			return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
 					}
 				}
 			}
@@ -6088,8 +6127,8 @@ stock setBasicInfoPlayer(playerid){
     PlayerDados[playerid][vip] = false;
 	PlayerDados[playerid][exp] = 0;
 
-	PlayerDados[playerid][segundoUP] = 10;
-	PlayerDados[playerid][minutoUP] = 0;
+	PlayerDados[playerid][segundoUP] = 59;
+	PlayerDados[playerid][minutoUP] = 9;
 
 	PlayerDados[playerid][saude] = 100;
 	PlayerDados[playerid][sono] = 100;
@@ -6205,7 +6244,7 @@ public UpdatePlayerStar(playerid) {
 		new string_star[15];
  
         format(string_star, sizeof (string_star), "%d", GetPlayerWantedLevel(playerid));
-        PlayerTextDrawSetString(playerid, textStatusBar[1][playerid], string_star);
+        PlayerTextDrawSetString(playerid, textStatusBar[playerid][1], string_star);
 
 		UpdateTextDraw(playerid, 1);
 	}
@@ -6506,6 +6545,45 @@ stock getVehicleName(vehicleid){
         }
         strcat(nameVeh, VehicleNames[vehmodel - 400]);
         return nameVeh;
+}
+
+stock criarConta(playerid)
+{
+	setBasicInfoPlayer(playerid);
+	TogglePlayerSpectating(playerid, false);
+	StopAudioStreamForPlayer(playerid);
+
+	DOF2_CreateFile(PegarConta(playerid));
+	DOF2_SetString(PegarConta(playerid),"Senha",PlayerRegister[playerid][pSenha]);
+	DOF2_SetString(PegarConta(playerid),"Email",PlayerRegister[playerid][email]);
+
+	if(PlayerRegister[playerid][sexo] == 1)
+	{
+	 	//SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
+	 	//SetPlayerSkin(playerid, 45);
+	 	DOF2_SetString(PegarConta(playerid),"Sexo","Masculino");
+	}
+	else
+	{
+		//SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
+		//SetPlayerSkin(playerid, 90);
+		DOF2_SetString(PegarConta(playerid),"Sexo","Feminino");
+	} 
+
+	DOF2_SaveFile();
+
+	new stringName[200];
+	format(stringName, sizeof(stringName), "» {FFFFFF}Registrado e Logado com sucesso! {298A08}%s{FFFFFF} seja bem vindo em nosso servidor!", getName(playerid));
+
+	SendClientMessage(playerid, 0xFFA500AA, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	SendClientMessage(playerid, COR_SUCCESS, stringName);
+	SendClientMessage(playerid, 0xFFA500AA, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    
+    PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+    
+    Logado{playerid} = true;
+
+    return SpawnPlayer(playerid);
 }
 
 stock CriarAtores()
@@ -7405,8 +7483,8 @@ CMD:setprocurado(playerid, params[])
         {
             return SendClientMessage(playerid,COR_ERRO,"Use: /setprocurado < ID do jogador > < Valor >");
         }
-        else if(valor < 0 || valor > 10){
-            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 10");
+        else if(valor < 0 || valor > 6){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O valor têm que ser entre 0 e 6");
         }
         else if(!IsPlayerConnected(id)){
         	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
@@ -7420,7 +7498,7 @@ CMD:setprocurado(playerid, params[])
         	new string_velo[15];
  
 	        format(string_velo, sizeof (string_velo), "%d", GetPlayerWantedLevel(id));
-	        PlayerTextDrawSetString(id, textStatusBar[1][id], string_velo);
+	        PlayerTextDrawSetString(id, textStatusBar[id][1], string_velo);
 
 			UpdateTextDraw(id, 1);
 
@@ -7661,6 +7739,21 @@ CMD:setadmin(playerid, params[])
 			format(Log, sizeof(Log), "O %s definiu o jogador %s como um membro da staff [/setadmin]", getName(playerid), getName(id));
 			fileLog("Admins", Log);
         }
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+	return 1;
+}
+
+CMD:jetpack(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
+	{
+        SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USEJETPACK);
+
+        format(Log, sizeof(Log), "%s [/jetpack]", getName(playerid));
+		fileLog("Admins", Log);
+
+		return 1;
     }
 	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
