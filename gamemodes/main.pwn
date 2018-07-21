@@ -522,7 +522,8 @@ enum pDados
         Admin,
         Profissao,
         exp,
-        ultimoLogin,
+        ultimoLogin[100],
+        playerIP[100],
         bool:trabalhando,
 		multas,
 		bool:HabN,
@@ -569,7 +570,7 @@ enum mInfo
 
 enum rDados
 {
-	pSenha[100], email[100], sexo, idade
+	pSenha[100], email[100], sexo
 }
 
 new PlayerRegister[MAX_PLAYERS][rDados];
@@ -581,7 +582,7 @@ new PlayerDados[MAX_PLAYERS][pDados];
 
 new bool:Logado[MAX_PLAYERS char];
 new SenhaErrada[MAX_PLAYERS];
-new Str[210];
+new Str[500];
 
 new Text:Logo;
 new Text:Versao;
@@ -1273,8 +1274,18 @@ public OnPlayerRequestClass(playerid, classid)
             SendClientMessage(playerid, 0x13A9F6AA, str);
             SendClientMessage(playerid, 0x13A9F6AA, "» Para ver os comandos do servidor Digite: /Ajuda Comandos");
             SendClientMessage(playerid, 0x808080AA, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
-            ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
+            
+            new string[952], stringLogin[100];
+			strcat(string, "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\n");
+			format(stringLogin, sizeof(stringLogin), "Conta: {4e42f4}%s{FFFFFF}\n", getName(playerid));
+			strcat(string, stringLogin);
+			strcat(string, "Status: {00FF00}Registrada\n");
+			format(stringLogin, sizeof(stringLogin), "{FFFFFF}\nÚltimo login: {f44542}%s{26AB0C}\n\n", DOF2_GetString( PegarConta( playerid ), "UltimoLogin"));
+			strcat(string, stringLogin);
+			strcat(string, "Versão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n");
+			strcat(string, "* Insira sua senha abaixo para logar: ");
+
+            ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", string, "Logar", "Sair");
         }
         return 1;
 }
@@ -1295,8 +1306,9 @@ public OnPlayerConnect(playerid)
     PlayerAntiSpam[playerid] = 0;
     profissaoUniforme[playerid] = false;
     profissaoCar[playerid] = false;
-    profissaoCarregandoOJG[playerid] =false;
+    profissaoCarregandoOJG[playerid] = false;
 
+    SetTimerEx("loginAntiAFK", 120000, false, "i", playerid);
     
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
@@ -3155,11 +3167,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        	}
 	            else if(!strlen(inputtext))
 	            {
-                    format(Str, sizeof(Str), "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\nConta: %s\nStatus: {00FF00}Registrada{26AB0C}\n\nVersão 1.6 {FFFFFF}- Não há notícias, fique atento ao fórum!\n* Insira sua senha abaixo para logar:", getName(playerid));
+                    new string[952], stringLogin[100];
+					strcat(string, "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\n");
+					format(stringLogin, sizeof(stringLogin), "Conta: {4e42f4}%s{FFFFFF}\n", getName(playerid));
+					strcat(string, stringLogin);
+					strcat(string, "Status: {00FF00}Registrada\n");
+					format(stringLogin, sizeof(stringLogin), "{FFFFFF}\nÚltimo login: {f44542}%s{26AB0C}\n\n", DOF2_GetString( PegarConta( playerid ), "UltimoLogin"));
+					strcat(string, stringLogin);
+					strcat(string, "Versão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n");
+					strcat(string, "* Insira sua senha abaixo para logar: ");
 	                
                     PlayerAntiSpam[playerid] = PlayerAntiSpam[playerid] +1;
 
-	                return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
+	                return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", string, "Logar", "Sair");
 				}
 
 				else if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha"), inputtext))
@@ -5975,7 +5995,9 @@ stock SalvarDados(playerid)
 
     DOF2_SetBool(PegarConta(playerid), "Vip", PlayerDados[playerid][vip]);
     DOF2_SetInt(PegarConta(playerid), "Exp", PlayerDados[playerid][exp]);
-    DOF2_SetString(PegarConta(playerid), "UltimoLogin", PlayerDados[playerid][ultimoLogin]);
+
+	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", PlayerDados[playerid][ultimoLogin]);
+	DOF2_SetString( PegarConta( playerid ), "IP", PlayerDados[playerid][playerIP]);    
 
     DOF2_SetInt(PegarConta(playerid), "Multas", PlayerDados[playerid][multas]);
 
@@ -6030,73 +6052,84 @@ stock SalvarDados(playerid)
     DOF2_SetInt(PegarConta(playerid), "Frutas", MercadoInfo[playerid][Frutas]);
 
     DOF2_SaveFile();
+
+    return 1;
 }
 stock CarregarDados(playerid)
 {
-        if(DOF2_FileExists (PegarConta(playerid)))
-        {
-            // Info do Player
-            SetPlayerHealth(playerid, DOF2_GetFloat(PegarConta(playerid), "Vida"));
-            SetPlayerScore(playerid, DOF2_GetInt(PegarConta(playerid), "Level"));
-            GivePlayerMoney(playerid, DOF2_GetInt(PegarConta(playerid), "Dinheiro"));
-            SetPlayerWantedLevel(playerid, DOF2_GetInt(PegarConta(playerid), "LevelProcurado"));
+    if(DOF2_FileExists (PegarConta(playerid)))
+    {
+        // Info do Player
+        SetPlayerHealth(playerid, DOF2_GetFloat(PegarConta(playerid), "Vida"));
+        SetPlayerScore(playerid, DOF2_GetInt(PegarConta(playerid), "Level"));
+        GivePlayerMoney(playerid, DOF2_GetInt(PegarConta(playerid), "Dinheiro"));
+        SetPlayerWantedLevel(playerid, DOF2_GetInt(PegarConta(playerid), "LevelProcurado"));
 
-            PlayerDados[playerid][Admin] = DOF2_GetInt(PegarConta(playerid), "AdminLevel");
+        PlayerDados[playerid][Admin] = DOF2_GetInt(PegarConta(playerid), "AdminLevel");
 
-            PlayerDados[playerid][Profissao] = DOF2_GetInt(PegarConta(playerid), "Profissao");
-            PlayerDados[playerid][trabalhando] = DOF2_GetBool(PegarConta(playerid), "Trabalhando");
+        PlayerDados[playerid][Profissao] = DOF2_GetInt(PegarConta(playerid), "Profissao");
+        PlayerDados[playerid][trabalhando] = DOF2_GetBool(PegarConta(playerid), "Trabalhando");
 
-            PlayerDados[playerid][vip] = DOF2_GetBool(PegarConta(playerid), "Vip");
-            PlayerDados[playerid][exp] = DOF2_GetInt(PegarConta(playerid), "Exp");
-
-
-            PlayerDados[playerid][multas] = DOF2_GetBool(PegarConta(playerid), "Multas");
-			PlayerDados[playerid][HabN] = DOF2_GetBool(PegarConta(playerid), "HabN");
-			PlayerDados[playerid][HabA] = DOF2_GetBool(PegarConta(playerid), "HabA");
-			PlayerDados[playerid][HabT_1] = DOF2_GetBool(PegarConta(playerid), "HabT_1");
-			PlayerDados[playerid][HabT_2] = DOF2_GetBool(PegarConta(playerid), "HabT_2");
-			PlayerDados[playerid][HabT_3] = DOF2_GetBool(PegarConta(playerid), "HabT_3");
-
-			PlayerDados[playerid][TaPreso] = DOF2_GetBool(PegarConta(playerid), "TaPreso");
-			PlayerDados[playerid][MinPreso] = DOF2_GetInt(PegarConta(playerid), "MinPreso");
-			PlayerDados[playerid][SegPreso] = DOF2_GetInt(PegarConta(playerid), "SegPreso");
-
-			PlayerDados[playerid][segundoUP] = DOF2_GetInt(PegarConta(playerid), "SegundoUP");
-			PlayerDados[playerid][minutoUP] = DOF2_GetInt(PegarConta(playerid), "MinutoUP");
-			PlayerDados[playerid][saude] = DOF2_GetInt(PegarConta(playerid), "Saude");
-			PlayerDados[playerid][sono] = DOF2_GetInt(PegarConta(playerid), "Sono");
-			PlayerDados[playerid][sede] = DOF2_GetInt(PegarConta(playerid), "Sede");
-			PlayerDados[playerid][fome] = DOF2_GetInt(PegarConta(playerid), "Fome");
-
-            PlayerDados[playerid][gasolina] = DOF2_GetInt(PegarConta(playerid), "Gasolina");
-            PlayerDados[playerid][etanol] = DOF2_GetInt(PegarConta(playerid), "Etanol");
-            PlayerDados[playerid][gnv] = DOF2_GetInt(PegarConta(playerid), "GNV");
-            PlayerDados[playerid][diesel] = DOF2_GetInt(PegarConta(playerid), "Diesel");
+        PlayerDados[playerid][vip] = DOF2_GetBool(PegarConta(playerid), "Vip");
+        PlayerDados[playerid][exp] = DOF2_GetInt(PegarConta(playerid), "Exp");
 
 
-            // Mercado
-            MercadoInfo[playerid][Celular] = DOF2_GetBool(PegarConta(playerid), "Celular");
-            MercadoInfo[playerid][PedagioSemPagar] = DOF2_GetBool(PegarConta(playerid), "Pedagio");
-            MercadoInfo[playerid][GPS] = DOF2_GetBool(PegarConta(playerid), "GPS");
-            MercadoInfo[playerid][Capacete] = DOF2_GetBool(PegarConta(playerid), "Capacete");
-            MercadoInfo[playerid][Oculos] = DOF2_GetBool(PegarConta(playerid), "Oculos");
-            MercadoInfo[playerid][Bone] = DOF2_GetBool(PegarConta(playerid), "Bone");
-            MercadoInfo[playerid][Gorro] = DOF2_GetBool(PegarConta(playerid), "Gorro");
-            MercadoInfo[playerid][Arara] = DOF2_GetBool(PegarConta(playerid), "Arara");
-            MercadoInfo[playerid][RelogioUP] = DOF2_GetBool(PegarConta(playerid), "RelogioUP");
-            MercadoInfo[playerid][KitReparo] = DOF2_GetInt(PegarConta(playerid), "KitReparo");
-            MercadoInfo[playerid][GalaoDeCombustivel] = DOF2_GetInt(PegarConta(playerid), "GalaoDeCombustivel");
-            MercadoInfo[playerid][TravaEletica] = DOF2_GetInt(PegarConta(playerid), "TravaEletica");
-            MercadoInfo[playerid][CreditoSMS] = DOF2_GetInt(PegarConta(playerid), "CreditoSMS");
+        PlayerDados[playerid][multas] = DOF2_GetBool(PegarConta(playerid), "Multas");
+		PlayerDados[playerid][HabN] = DOF2_GetBool(PegarConta(playerid), "HabN");
+		PlayerDados[playerid][HabA] = DOF2_GetBool(PegarConta(playerid), "HabA");
+		PlayerDados[playerid][HabT_1] = DOF2_GetBool(PegarConta(playerid), "HabT_1");
+		PlayerDados[playerid][HabT_2] = DOF2_GetBool(PegarConta(playerid), "HabT_2");
+		PlayerDados[playerid][HabT_3] = DOF2_GetBool(PegarConta(playerid), "HabT_3");
 
-            MercadoInfo[playerid][Peixes] = DOF2_GetInt(PegarConta(playerid), "Peixes");
-            MercadoInfo[playerid][Fotos] = DOF2_GetInt(PegarConta(playerid), "Fotos");
-            MercadoInfo[playerid][Frutas] = DOF2_GetInt(PegarConta(playerid), "Frutas");
-            // Posição do jogador
-            iPosX[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosX");
-            iPosY[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosY");
-            iPosZ[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosZ");
-        }
+		PlayerDados[playerid][TaPreso] = DOF2_GetBool(PegarConta(playerid), "TaPreso");
+		PlayerDados[playerid][MinPreso] = DOF2_GetInt(PegarConta(playerid), "MinPreso");
+		PlayerDados[playerid][SegPreso] = DOF2_GetInt(PegarConta(playerid), "SegPreso");
+
+		PlayerDados[playerid][segundoUP] = DOF2_GetInt(PegarConta(playerid), "SegundoUP");
+		PlayerDados[playerid][minutoUP] = DOF2_GetInt(PegarConta(playerid), "MinutoUP");
+		PlayerDados[playerid][saude] = DOF2_GetInt(PegarConta(playerid), "Saude");
+		PlayerDados[playerid][sono] = DOF2_GetInt(PegarConta(playerid), "Sono");
+		PlayerDados[playerid][sede] = DOF2_GetInt(PegarConta(playerid), "Sede");
+		PlayerDados[playerid][fome] = DOF2_GetInt(PegarConta(playerid), "Fome");
+
+        PlayerDados[playerid][gasolina] = DOF2_GetInt(PegarConta(playerid), "Gasolina");
+        PlayerDados[playerid][etanol] = DOF2_GetInt(PegarConta(playerid), "Etanol");
+        PlayerDados[playerid][gnv] = DOF2_GetInt(PegarConta(playerid), "GNV");
+        PlayerDados[playerid][diesel] = DOF2_GetInt(PegarConta(playerid), "Diesel");
+
+
+        // Mercado
+        MercadoInfo[playerid][Celular] = DOF2_GetBool(PegarConta(playerid), "Celular");
+        MercadoInfo[playerid][PedagioSemPagar] = DOF2_GetBool(PegarConta(playerid), "Pedagio");
+        MercadoInfo[playerid][GPS] = DOF2_GetBool(PegarConta(playerid), "GPS");
+        MercadoInfo[playerid][Capacete] = DOF2_GetBool(PegarConta(playerid), "Capacete");
+        MercadoInfo[playerid][Oculos] = DOF2_GetBool(PegarConta(playerid), "Oculos");
+        MercadoInfo[playerid][Bone] = DOF2_GetBool(PegarConta(playerid), "Bone");
+        MercadoInfo[playerid][Gorro] = DOF2_GetBool(PegarConta(playerid), "Gorro");
+        MercadoInfo[playerid][Arara] = DOF2_GetBool(PegarConta(playerid), "Arara");
+        MercadoInfo[playerid][RelogioUP] = DOF2_GetBool(PegarConta(playerid), "RelogioUP");
+        MercadoInfo[playerid][KitReparo] = DOF2_GetInt(PegarConta(playerid), "KitReparo");
+        MercadoInfo[playerid][GalaoDeCombustivel] = DOF2_GetInt(PegarConta(playerid), "GalaoDeCombustivel");
+        MercadoInfo[playerid][TravaEletica] = DOF2_GetInt(PegarConta(playerid), "TravaEletica");
+        MercadoInfo[playerid][CreditoSMS] = DOF2_GetInt(PegarConta(playerid), "CreditoSMS");
+
+        MercadoInfo[playerid][Peixes] = DOF2_GetInt(PegarConta(playerid), "Peixes");
+        MercadoInfo[playerid][Fotos] = DOF2_GetInt(PegarConta(playerid), "Fotos");
+        MercadoInfo[playerid][Frutas] = DOF2_GetInt(PegarConta(playerid), "Frutas");
+        // Posição do jogador
+        iPosX[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosX");
+        iPosY[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosY");
+        iPosZ[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosZ");
+
+        new Dia, Mes, Ano, Hora, Minuto, Segundo;
+		gettime(Hora, Minuto, Segundo);
+		getdate(Ano, Mes, Dia);
+
+		GetPlayerIp(playerid, PlayerDados[playerid][playerIP], 100);
+		format(PlayerDados[playerid][ultimoLogin], 100, "%02d/%02d/%02d - %02d:%02d:%02d", Dia, Mes, Ano, Hora, Minuto, Segundo);
+    }
+
+    return 1;
 }
 //------------------------------------------------------------------------------
 forward ServerInit();
@@ -6511,6 +6544,16 @@ public UpdatePlayerVelocimetro(playerid) {
         }
         return 1;
 }
+forward loginAntiAFK(playerid);
+public loginAntiAFK(playerid)
+{
+	if(Logado{playerid} == false)
+	{
+		return Kick(playerid);
+	}
+
+	return 1;
+}
 stock ShowPlayerVelocimetro(playerid) {
         if ( PlayerVelocimetro[playerid] ) {
             return 0;
@@ -6546,7 +6589,6 @@ stock getVehicleName(vehicleid){
         strcat(nameVeh, VehicleNames[vehmodel - 400]);
         return nameVeh;
 }
-
 stock criarConta(playerid)
 {
 	setBasicInfoPlayer(playerid);
@@ -6559,16 +6601,26 @@ stock criarConta(playerid)
 
 	if(PlayerRegister[playerid][sexo] == 1)
 	{
-	 	//SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-	 	//SetPlayerSkin(playerid, 45);
+	 	SetSpawnInfo(playerid, 0, 45, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
 	 	DOF2_SetString(PegarConta(playerid),"Sexo","Masculino");
+	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 45);
 	}
 	else
 	{
-		//SetSpawnInfo(playerid, 0, 0, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-		//SetPlayerSkin(playerid, 90);
+		SetSpawnInfo(playerid, 0, 90, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
 		DOF2_SetString(PegarConta(playerid),"Sexo","Feminino");
-	} 
+	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 90);
+	}
+
+	new Dia, Mes, Ano, Hora, Minuto, Segundo, pIP[30], Registro[100];
+	gettime(Hora, Minuto, Segundo);
+	getdate(Ano, Mes, Dia);
+	GetPlayerIp(playerid, pIP, sizeof(pIP));
+	format(Registro, sizeof(Registro), "%02d/%02d/%02d - %02d:%02d:%02d", Dia, Mes, Ano, Hora, Minuto, Segundo);
+
+	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", Registro);
+	DOF2_SetString( PegarConta( playerid ), "Registrado", Registro);
+	DOF2_SetString( PegarConta( playerid ), "IP", pIP); 
 
 	DOF2_SaveFile();
 
@@ -6582,6 +6634,9 @@ stock criarConta(playerid)
     PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
     
     Logado{playerid} = true;
+
+    format(Log, sizeof(Log), "%s - Nova Conta Registrada.", getName(playerid));
+    fileLog("Registros", Log);
 
     return SpawnPlayer(playerid);
 }
