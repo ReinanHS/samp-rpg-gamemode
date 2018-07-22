@@ -217,8 +217,8 @@
 #define RETIRAR_KM  50                            //- A Cada 16 KM ,retirar 1 de gasolina
 
 // GPS
-#define GPS_ID		1
-#define GPS_ICON	53
+#define GPS_ID		0
+#define GPS_ICON	41
 
 //------------------------------------------------------------------------------
 
@@ -599,6 +599,17 @@ new Float:hospitaisPos[8][3] =
 	{-2204.038574, -2309.516113, 31.375000} // MakeABigLove Local: Angel Pine
 };
 
+new Float:departamentoPoliciaPos[7][3] =
+{
+	{1555.500122, -1675.565673, 16.195312}, // MakeABigLove Local: Pershing Square
+	{626.965209, -571.652954, 17.920680}, // MakeABigLove Local: Dillimore
+	{-217.843124, 979.190307, 19.504125}, // MakeABigLove Local: Fort Carson
+	{2287.153808, 2432.367919, 10.820312}, // MakeABigLove Local: Roca Escalante
+	{-1392.028198, 2646.041748, 55.978725}, // MakeABigLove Local: El Quebrados
+	{-1605.574462, 710.279846, 13.867187}, // MakeABigLove Local: Downtown
+	{-2161.425781, -2384.718994, 30.895843} // MakeABigLove Local: Angel Pine
+};
+
 new Text:Logo;
 new Text:Versao;
 new Text:site;
@@ -731,7 +742,7 @@ public OnGameModeInit()
     format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
 	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
-	SendRconCommand(Password);
+	//SendRconCommand(Password);
 	SetGameModeText(Gamemode);
 	SendRconCommand(Language);
 
@@ -997,6 +1008,7 @@ public OnGameModeInit()
     AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
     AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
     AddStaticPickup(1318,23,372.3253,-133.5240,1001.4922);// Well stacked pizza
+    AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);// Departamento de Polícia
     // Gari
     AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
     /*              3D TEXTS                               */
@@ -1015,6 +1027,8 @@ public OnGameModeInit()
     Create3DTextLabel("{30e551}Pizzaria\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,372.3253,-133.5240,1001.4922,15,0);
     // 24/7
     Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7
+    // Departamento de Polícia Saida
+    Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,246.7384,62.3266,1003.6406,15,0);//Saida Departamento de Polícia
     // Petroleiro
     Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
@@ -1786,14 +1800,14 @@ public ProcessGameTime(playerid)
 
 public MapIcon(playerid)
 {
-    SetPlayerMapIcon(playerid, 2, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
-    SetPlayerMapIcon(playerid, 3, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
-    SetPlayerMapIcon(playerid, 4, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
-    SetPlayerMapIcon(playerid, 5, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
+    SetPlayerMapIcon(playerid, 1, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
+    SetPlayerMapIcon(playerid, 2, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
+    SetPlayerMapIcon(playerid, 3, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
+    SetPlayerMapIcon(playerid, 4, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
     //PostosDeGasolina
     for (new a = 0; a < sizeof(PostosDeGasolina); a++)
 	{
-		SetPlayerMapIcon(playerid, (5+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
+		SetPlayerMapIcon(playerid, (4+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
 	}
 	// Empresas
 	new empresaInfo[100];
@@ -1803,35 +1817,35 @@ public MapIcon(playerid)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Burger Shot{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 2.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Cluckin' Bell{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 3.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Loja de utilitário{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else if(empresasPos[a][3] == 4.0)
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Pizzaria{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 		else
 		{
 			format(empresaInfo, sizeof(empresaInfo), "{30e551}Clothes{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
 			empresasText[a] = Create3DTextLabel(empresaInfo ,0x008080FF,empresasPos[a][0], empresasPos[a][1], empresasPos[a][2],23.0,0);
-			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
+			SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
 	}
@@ -1840,9 +1854,18 @@ public MapIcon(playerid)
 	for (new a = 0; a < sizeof(hospitaisPos); a++)
 	{
 		format(hospitalInfo, sizeof(hospitalInfo), "{30e551}Hospital\n{FFFFFF}Dono: {45d136}Governo{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
-		CreatePickup(1240, 23, hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2], 0);
+		AddStaticPickup(1240, 23, hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2]);
 		hospitalText[a] = Create3DTextLabel(hospitalInfo ,0x008080FF,hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2],23.0,0);
-		SetPlayerMapIcon(playerid, (5+(sizeof(PostosDeGasolina)+sizeof(hospitaisPos))+a), hospitaisPos[a][0],hospitaisPos[a][1],hospitaisPos[a][2], 22, 0, MAPICON_LOCAL);
+		SetPlayerMapIcon(playerid, 66+a, hospitaisPos[a][0],hospitaisPos[a][1],hospitaisPos[a][2], 22, 0, MAPICON_LOCAL);
+	}
+	// Departamento de Polícia
+	for (new a = 0; a < sizeof(departamentoPoliciaPos); a++)
+	{
+		AddStaticPickup(1247, 23, departamentoPoliciaPos[a][0], departamentoPoliciaPos[a][1], departamentoPoliciaPos[a][2]);
+
+		hospitalText[a] = Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Pressione a techa 'F'", 0x008080FF, departamentoPoliciaPos[a][0], departamentoPoliciaPos[a][1], departamentoPoliciaPos[a][2],23.0,0);
+		
+		SetPlayerMapIcon(playerid, 66+a, departamentoPoliciaPos[a][0],departamentoPoliciaPos[a][1],departamentoPoliciaPos[a][2], 30, 0, MAPICON_LOCAL);
 	}
 
 	return 1;
@@ -3084,8 +3107,17 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
         	return 1;
         }
+        // Departamento de Polícia
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 246.7384,62.3266,1003.6406))
+        {
+           	SetPlayerInterior(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+        	return 1;
+        }
         else
         {
+        	// Empresas
         	for (new a = 0; a < sizeof(empresasPos); a++)
 			{
 				if(IsPlayerInRangeOfPoint(playerid, 2.0, empresasPos[a][0],empresasPos[a][1],empresasPos[a][2]))
@@ -3125,6 +3157,18 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		        		SetPlayerPos(playerid, 161.4121,-97.1048,1001.8047);
 						return 1;
 					}
+		        }
+			}
+
+			// Departamento de polícia
+			for (new a = 0; a < sizeof(departamentoPoliciaPos); a++)
+			{
+				if(IsPlayerInRangeOfPoint(playerid, 2.0, departamentoPoliciaPos[a][0], departamentoPoliciaPos[a][1], departamentoPoliciaPos[a][2]))
+				{
+					GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+		        	SetPlayerInterior(playerid, 6);
+		        	SetPlayerPos(playerid, 246.7384,62.3266,1003.6406);
+					return 1;	
 		        }
 			}
         }
