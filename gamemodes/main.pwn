@@ -224,7 +224,6 @@
 
 //------------------------- { - VARIÁVEIS - } ----------------------------------
 
-
 new InAutoEscola[MAX_PLAYERS];
 new InAutoEscolaType[MAX_PLAYERS];
 new carroauto[MAX_PLAYERS];
@@ -545,6 +544,7 @@ enum pDados
         gnv,
         diesel,
         npc,
+        skin,
         bool: vip 
 
 }
@@ -583,6 +583,21 @@ new PlayerDados[MAX_PLAYERS][pDados];
 new bool:Logado[MAX_PLAYERS char];
 new SenhaErrada[MAX_PLAYERS];
 new Str[500];
+
+new bool:PlayerMorreu[MAX_PLAYERS];
+new Text3D:hospitalText[8];
+
+new Float:hospitaisPos[8][3] =
+{
+	{2034.108520, -1401.669921, 17.294197}, // MakeABigLove Local: Jefferson
+	{1172.077392, -1323.334106, 15.402966}, // MakeABigLove Local: Market
+	{1241.435180, 326.044067, 19.755510}, // MakeABigLove Local: Montgomery
+	{1584.040893, 1769.003662, 10.820312}, // MakeABigLove Local: Las Venturas Airport
+	{-320.173339, 1048.234008, 20.340259}, // MakeABigLove Local: Fort Carson
+	{-1514.768554, 2519.104736, 56.070312}, // MakeABigLove Local: El Quebrados
+	{-2655.028320, 640.163757, 14.454549}, // MakeABigLove Local: Santa Flora
+	{-2204.038574, -2309.516113, 31.375000} // MakeABigLove Local: Angel Pine
+};
 
 new Text:Logo;
 new Text:Versao;
@@ -714,7 +729,7 @@ public OnGameModeInit()
     format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
 	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
-	//SendRconCommand(Password);
+	SendRconCommand(Password);
 	SetGameModeText(Gamemode);
 	SendRconCommand(Language);
 
@@ -1542,26 +1557,94 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
-	SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
-    TogglePlayerSpectating(playerid, false);
-    TogglePlayerControllable(playerid, true);
+	if(PlayerMorreu[playerid] == true)
+	{
+		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerHealth(playerid, 100.00);
 
-    SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
+		if(GetPlayerMoney(playerid) >= 500)
+	    {
+	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
+	    	GivePlayerMoney(playerid, -500);
+		}
 
-    TextDrawHideForPlayer(playerid,Logo);
-    TextDrawHideForPlayer(playerid,Versao);
-    TextDrawHideForPlayer(playerid,site);
-    TextDrawHideForPlayer(playerid,Rodape);
+		PlayerMorreu[playerid] = false;
+		profissaoUniforme[playerid] = false;
 
-    // Status
-    for (new a = 0; a < sizeof(textStatus); a++){ TextDrawShowForPlayer(playerid, textStatus[a]); }
-    for( new a = 0; a < 8; a++) PlayerTextDrawShow(playerid, textStatusBar[playerid][a]);
+		return 1;
+	}
+	else
+	{
+		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+	    TogglePlayerSpectating(playerid, false);
+	    TogglePlayerControllable(playerid, true);
+
+	    SetPlayerColor(playerid, GetPlayerProfissaoCor(playerid));
+
+	    TextDrawHideForPlayer(playerid,Logo);
+	    TextDrawHideForPlayer(playerid,Versao);
+	    TextDrawHideForPlayer(playerid,site);
+	    TextDrawHideForPlayer(playerid,Rodape);
+
+	    // Status
+	    for (new a = 0; a < sizeof(textStatus); a++){ TextDrawShowForPlayer(playerid, textStatus[a]); }
+	    for( new a = 0; a < 8; a++) PlayerTextDrawShow(playerid, textStatusBar[playerid][a]);
+	}
 
 	return 1;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
+
+	// Market
+	if(PlayerToPoint(playerid, 1000.0, 1172.077392, -1323.334106, 15.402966))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[1][0], hospitaisPos[1][1], hospitaisPos[1][2], 180, 0, 0, 0, 0, 0, 0); // Seta posição de spawn nova, no caso o Hospital
+	}
+	// Jefferson
+	else if(PlayerToPoint(playerid, 1000.0, 2034.108520, -1401.669921, 17.294197))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[0][0], hospitaisPos[0][1], hospitaisPos[0][2], 180, 0, 0, 0, 0, 0, 0);
+	}
+	// Montgomery
+	else if(PlayerToPoint(playerid, 900.0, 1241.435180, 326.044067, 19.755510))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[2][0], hospitaisPos[2][1], hospitaisPos[2][2], 180, 0, 0, 0, 0, 0, 0);
+	}
+	// Las Venturas Airport
+	else if(PlayerToPoint(playerid, 1000.0, 1584.040893, 1769.003662, 10.820312))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[3][0], hospitaisPos[3][1], hospitaisPos[3][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+	// Fort Carson
+	else if(PlayerToPoint(playerid, 800.0, -320.173339, 1048.234008, 20.340259))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[4][0], hospitaisPos[4][1], hospitaisPos[4][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+	// El Quebrados
+	else if(PlayerToPoint(playerid, 800.0, -1514.768554, 2519.104736, 56.070312))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[5][0], hospitaisPos[5][1], hospitaisPos[5][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+	// Santa Flora
+	else if(PlayerToPoint(playerid, 1000.0, -2655.028320, 640.163757, 14.454549))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[6][0], hospitaisPos[6][1], hospitaisPos[6][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+	// Angel Pine
+	else if(PlayerToPoint(playerid, 1000.0, -2204.038574, -2309.516113, 31.375000))
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[7][0], hospitaisPos[7][1], hospitaisPos[7][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+	// Market
+	else 
+	{
+		SetSpawnInfo(playerid, 0, PlayerDados[playerid][skin], hospitaisPos[1][0], hospitaisPos[1][1], hospitaisPos[1][2], 180, 0, 0, 0, 0, 0, 0); 
+	}
+
 	if(MorreuFome[playerid] == true)
 	{
 		PlayerDados[playerid][fome] = 2;
@@ -1570,17 +1653,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
 		UpdateTextDraw(playerid, 7);
 
-		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
-		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
-		SetPlayerHealth(playerid, 100.00);
-
-		if(GetPlayerMoney(playerid) >= 500)
-	    {
-	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
-	    	GivePlayerMoney(playerid, -500);
-		}
+		PlayerMorreu[playerid] = true;
 
 		return 1;
 	}
@@ -1592,17 +1665,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
 		UpdateTextDraw(playerid, 5);
 
-		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
-		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
-		SetPlayerHealth(playerid, 100.00);
-
-		if(GetPlayerMoney(playerid) >= 500)
-	    {
-	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
-	    	GivePlayerMoney(playerid, -500);
-		}
+		PlayerMorreu[playerid] = true;
 
 		return 1;
 	}
@@ -1614,11 +1677,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
 		UpdateTextDraw(playerid, 3);
 
-		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
-		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
-		SetPlayerHealth(playerid, 100.00);
+		PlayerMorreu[playerid] = true;
 
 		if(GetPlayerMoney(playerid) >= 500)
 	    {
@@ -1641,17 +1700,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	else
 	{
-		GameTextForPlayer(playerid, "~r~Morreu!", 5000, 3);
-		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerPos(playerid, 1182.2429,-1323.9015,13.5799);
-		SetPlayerHealth(playerid, 100.00);
-
-		if(GetPlayerMoney(playerid) >= 500)
-	    {
-	    	SendClientMessage(playerid, COR_WARNING, "| AVISO | Foram Retirados $500 Do Seu Banco Para Pagar O Hospital!");
-	    	GivePlayerMoney(playerid, -500);
-		}
+		PlayerMorreu[playerid] = true;
 	}
 	return 1;
 }
@@ -1718,6 +1767,15 @@ public MapIcon(playerid)
 			SetPlayerMapIcon(playerid, (5+sizeof(PostosDeGasolina)+a), empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
 			AddStaticPickup(1318,23, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2]);
 		}
+	}
+	new hospitalInfo[100];
+	// hospitais
+	for (new a = 0; a < sizeof(hospitaisPos); a++)
+	{
+		format(hospitalInfo, sizeof(hospitalInfo), "{30e551}Hospital\n{FFFFFF}Dono: {45d136}Governo{FFFFFF}( ID: %d )\nPressione a techa 'F'", a);
+		CreatePickup(1240, 23, hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2], 0);
+		hospitalText[a] = Create3DTextLabel(hospitalInfo ,0x008080FF,hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2],23.0,0);
+		SetPlayerMapIcon(playerid, (5+(sizeof(PostosDeGasolina)+sizeof(hospitaisPos))+a), hospitaisPos[a][0],hospitaisPos[a][1],hospitaisPos[a][2], 22, 0, MAPICON_LOCAL);
 	}
 
 	return 1;
@@ -6072,6 +6130,7 @@ stock CarregarDados(playerid)
 
         PlayerDados[playerid][vip] = DOF2_GetBool(PegarConta(playerid), "Vip");
         PlayerDados[playerid][exp] = DOF2_GetInt(PegarConta(playerid), "Exp");
+        PlayerDados[playerid][skin] = DOF2_GetInt(PegarConta(playerid), "SkinAtual");
 
 
         PlayerDados[playerid][multas] = DOF2_GetBool(PegarConta(playerid), "Multas");
@@ -7219,6 +7278,43 @@ CMD:abastecer(playerid)
 	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está em um posto de gasolina!");
     return 1;
 }
+
+/*===============[ SMS ]==============*/
+CMD:sms(playerid, params[])
+{
+	if(MercadoInfo[playerid][Celular] == false) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não tem um celular!");
+	else if(MercadoInfo[playerid][CreditoSMS] <= 0) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não tem créditos suficientes para enviar essa mensagem!");
+	else
+	{
+		new id, smsText[150];
+	    if(sscanf(params, "is", id, smsText))
+	    {
+	        return SendClientMessage(playerid,COR_ERRO,"Use: /sms < ID do jogador > < Mensagem >");
+	    }
+	    else if(!IsPlayerConnected(id))
+	    {
+	    	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+	    }
+	    else if(MercadoInfo[id][Celular] == false)
+	    {
+	    	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não tem um celular!");	
+	    }
+	    else
+	    {
+	    	SendClientMessage(id, COR_WARNING, smsText);
+	    	
+	    	GameTextForPlayer(id, "Mensagem recebida", 5000, 1);
+	    	PlayerPlaySound(id,1057,0.0,0.0,0.0);
+	    	
+	    	GameTextForPlayer(playerid, "Mensagem enviada", 5000, 1);
+	    	PlayerPlaySound(playerid,3211056,0.0,0.0,0.0);
+
+	    	MercadoInfo[playerid][CreditoSMS] = MercadoInfo[playerid][CreditoSMS] -1;
+	    	
+	    }
+	}
+    return 1;
+}
 /*===================[ Admins ]================*/
 
 CMD:admins (playerid)
@@ -7587,7 +7683,7 @@ CMD:tp(playerid, params[])
         new id, valor;
         if(sscanf(params,"ii", id, valor))
         {
-            return SendClientMessage(playerid,COR_ERRO,"Use: /tp < ID do jogador > < ID do jogador >");
+            return SendClientMessage(playerid,COR_ERRO,"Use: /tp < ID do jogador > < Seu ID >");
         }
         else if(!IsPlayerConnected(id) || !IsPlayerConnected(valor)){
             return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
@@ -7599,7 +7695,7 @@ CMD:tp(playerid, params[])
         	new Float:X, Float:Y, Float:Z;
         	GetPlayerPos(id, Float:X, Float:Y, Float:Z);
 
-			SetPlayerPos(valor, X, Y, Z);        	
+			SetPlayerPos(valor, (X-2), Y, Z);        	
 
             format(string,sizeof(string),"Você teletransportou até o jogador %s!",getName(id));
             SendClientMessage(playerid, COR_SUCCESS, string);
@@ -7807,6 +7903,27 @@ CMD:jetpack(playerid, params[])
 
         format(Log, sizeof(Log), "%s [/jetpack]", getName(playerid));
 		fileLog("Admins", Log);
+
+		return 1;
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+	return 1;
+}
+
+CMD:criarhospital(playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
+	{
+        new Float:X, Float:Y, Float:Z;
+        GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+
+        Create3DTextLabel("{f44242}Hospital", 0x008080FF, X, Y, Z, 40.0, 0, 0);
+
+        new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
+		GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+
+        format(Log, sizeof(Log), "{%f, %f, %f}, // %s Local: %s", X, Y, Z, getName(playerid), Zona);
+		fileLog("hospital", Log);
 
 		return 1;
     }
