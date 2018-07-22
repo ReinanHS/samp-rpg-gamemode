@@ -605,6 +605,8 @@ new Text:site;
 new Text:Rodape;
 
 new Text:textVelocimetro[5];
+// Tempo Preso
+new PlayerText:textPreso[MAX_PLAYERS][5];
 // Status
 new Text:textStatus[14];
 new PlayerText:textStatusBar[MAX_PLAYERS][8];
@@ -1519,6 +1521,71 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawSetPreviewModel(playerid, textProfissaoInfo[playerid][4], 408);
 	PlayerTextDrawSetPreviewRot(playerid, textProfissaoInfo[playerid][4], 0.000000, 0.000000, 90.000000, 1.000000);
 	PlayerTextDrawSetPreviewVehCol(playerid, textProfissaoInfo[playerid][4], 1, 1);
+
+	// Tempo Preso
+	textPreso[playerid][0] = CreatePlayerTextDraw(playerid, 6.150228, 296.799896, "box");
+	PlayerTextDrawLetterSize(playerid, textPreso[playerid][0], 0.000000, 2.343268);
+	PlayerTextDrawTextSize(playerid, textPreso[playerid][0], 90.008934, 0.000000);
+	PlayerTextDrawAlignment(playerid, textPreso[playerid][0], 1);
+	PlayerTextDrawColor(playerid, textPreso[playerid][0], -1);
+	PlayerTextDrawUseBox(playerid, textPreso[playerid][0], 1);
+	PlayerTextDrawBoxColor(playerid, textPreso[playerid][0], 693277580);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][0], 0);
+	PlayerTextDrawSetOutline(playerid, textPreso[playerid][0], 0);
+	PlayerTextDrawBackgroundColor(playerid, textPreso[playerid][0], 255);
+	PlayerTextDrawFont(playerid, textPreso[playerid][0], 1);
+	PlayerTextDrawSetProportional(playerid, textPreso[playerid][0], 1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][0], 0);
+
+	textPreso[playerid][1] = CreatePlayerTextDraw(playerid, 7.950226, 298.500000, "box");
+	PlayerTextDrawLetterSize(playerid, textPreso[playerid][1], 0.000000, 1.905433);
+	PlayerTextDrawTextSize(playerid, textPreso[playerid][1], 88.250267, 0.000000);
+	PlayerTextDrawAlignment(playerid, textPreso[playerid][1], 1);
+	PlayerTextDrawColor(playerid, textPreso[playerid][1], -1);
+	PlayerTextDrawUseBox(playerid, textPreso[playerid][1], 1);
+	PlayerTextDrawBoxColor(playerid, textPreso[playerid][1], 1587281754);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][1], 0);
+	PlayerTextDrawSetOutline(playerid, textPreso[playerid][1], 0);
+	PlayerTextDrawBackgroundColor(playerid, textPreso[playerid][1], 255);
+	PlayerTextDrawFont(playerid, textPreso[playerid][1], 1);
+	PlayerTextDrawSetProportional(playerid, textPreso[playerid][1], 1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][1], 0);
+
+	textPreso[playerid][2] = CreatePlayerTextDraw(playerid, 26.791032, 295.883209, "00:00");
+	PlayerTextDrawLetterSize(playerid, textPreso[playerid][2], 0.520998, 2.289999);
+	PlayerTextDrawAlignment(playerid, textPreso[playerid][2], 1);
+	PlayerTextDrawColor(playerid, textPreso[playerid][2], -1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][2], 0);
+	PlayerTextDrawSetOutline(playerid, textPreso[playerid][2], 0);
+	PlayerTextDrawBackgroundColor(playerid, textPreso[playerid][2], 255);
+	PlayerTextDrawFont(playerid, textPreso[playerid][2], 2);
+	PlayerTextDrawSetProportional(playerid, textPreso[playerid][2], 1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][2], 0);
+
+	textPreso[playerid][3] = CreatePlayerTextDraw(playerid, -2.257085, 291.949920, "");
+	PlayerTextDrawLetterSize(playerid, textPreso[playerid][3], 0.000000, 0.000000);
+	PlayerTextDrawTextSize(playerid, textPreso[playerid][3], 36.000000, 30.000000);
+	PlayerTextDrawAlignment(playerid, textPreso[playerid][3], 1);
+	PlayerTextDrawColor(playerid, textPreso[playerid][3], -1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][3], 0);
+	PlayerTextDrawSetOutline(playerid, textPreso[playerid][3], 0);
+	PlayerTextDrawBackgroundColor(playerid, textPreso[playerid][3], 0);
+	PlayerTextDrawFont(playerid, textPreso[playerid][3], 5);
+	PlayerTextDrawSetProportional(playerid, textPreso[playerid][3], 0);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][3], 0);
+	PlayerTextDrawSetPreviewModel(playerid, textPreso[playerid][3], 19804);
+	PlayerTextDrawSetPreviewRot(playerid, textPreso[playerid][3], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textPreso[playerid][4] = CreatePlayerTextDraw(playerid, 48.317123, 277.384155, "Tempo_Presor~n~");
+	PlayerTextDrawLetterSize(playerid, textPreso[playerid][4], 0.230001, 1.570000);
+	PlayerTextDrawAlignment(playerid, textPreso[playerid][4], 2);
+	PlayerTextDrawColor(playerid, textPreso[playerid][4], -1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][4], 0);
+	PlayerTextDrawSetOutline(playerid, textPreso[playerid][4], 1);
+	PlayerTextDrawBackgroundColor(playerid, textPreso[playerid][4], 255);
+	PlayerTextDrawFont(playerid, textPreso[playerid][4], 2);
+	PlayerTextDrawSetProportional(playerid, textPreso[playerid][4], 1);
+	PlayerTextDrawSetShadow(playerid, textPreso[playerid][4], 0);
 
     MapIcon(playerid);
 	return 1;
@@ -3263,6 +3330,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
  					if(PlayerDados[playerid][vip] == true) return SendClientMessageToAll(-1, loginVIP);
 
 				    SendClientMessage(playerid,-1,"Logado com sucesso!");
+
+				    if(PlayerDados[playerid][TaPreso] == true)
+				    {
+				    	for (new i = 0; i < 5; i++) PlayerTextDrawShow(playerid, textPreso[playerid][i]);
+				    	SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+				    }
 
 				    format(Log, sizeof(Log), "O Jogador %s (%d) Logou No Servidor.", getName(playerid), playerid);
 					fileLog("Logins", Log);
@@ -6243,24 +6316,32 @@ forward UpdatePlayerFome(playerid);
 public UpdatePlayerFome(playerid) {
 	if(IsPlayerConnected(playerid)){
 
-		if(PlayerDados[playerid][fome] <= 0)
+		if(PlayerDados[playerid][TaPreso] == false)
 		{
-			SetPlayerHealth(playerid, 0);
-            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de fome!");
-            MorreuFome[playerid] = true;
+			if(PlayerDados[playerid][fome] <= 0)
+			{
+				SetPlayerHealth(playerid, 0);
+	            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de fome!");
+	            MorreuFome[playerid] = true;
+			}
+			else if(PlayerDados[playerid][fome] <= 5)
+			{
+				GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+				SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
+				SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete comer ou irá morrer de fome!");
+
+				PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+			}
+
+			if(PlayerDados[playerid][fome] > 0){
+				PlayerDados[playerid][fome] = PlayerDados[playerid][fome] -1;
+
+				PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
+				UpdateTextDraw(playerid, 7);
+			}
 		}
-		else if(PlayerDados[playerid][fome] <= 5)
+		else
 		{
-			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
-			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
-			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete comer ou irá morrer de fome!");
-
-			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
-		}
-
-		if(PlayerDados[playerid][fome] > 0){
-			PlayerDados[playerid][fome] = PlayerDados[playerid][fome] -1;
-
 			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][7], ( 566.607299 + ( (64.90 * PlayerDados[playerid][fome] ) / 100 ) ), 0.000000);
 			UpdateTextDraw(playerid, 7);
 		}
@@ -6273,24 +6354,32 @@ forward UpdatePlayerSede(playerid);
 public UpdatePlayerSede(playerid) {
 	if(IsPlayerConnected(playerid)){
 
-		if(PlayerDados[playerid][sede] <= 0)
+		if(PlayerDados[playerid][TaPreso] == false)
 		{
-			SetPlayerHealth(playerid, 0);
-            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de sede!");
-            MorreuSede[playerid] = true;
+			if(PlayerDados[playerid][sede] <= 0)
+			{
+				SetPlayerHealth(playerid, 0);
+	            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu de sede!");
+	            MorreuSede[playerid] = true;
+			}
+			else if(PlayerDados[playerid][sede] <= 5)
+			{
+				GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+				SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
+				SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete beber qualquer coisa ou irá morrer de sede!");
+
+				PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+			}
+
+			if(PlayerDados[playerid][sede] > 0){
+				PlayerDados[playerid][sede] = PlayerDados[playerid][sede] -1;
+
+				PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
+				UpdateTextDraw(playerid, 5);
+			}
 		}
-		else if(PlayerDados[playerid][sede] <= 5)
+		else
 		{
-			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
-			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
-			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até a lanchonete beber qualquer coisa ou irá morrer de sede!");
-
-			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
-		}
-
-		if(PlayerDados[playerid][sede] > 0){
-			PlayerDados[playerid][sede] = PlayerDados[playerid][sede] -1;
-
 			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][5], ( 566.607299 + ( (64.90 * PlayerDados[playerid][sede] ) / 100 ) ), 0.000000);
 			UpdateTextDraw(playerid, 5);
 		}
@@ -6303,24 +6392,31 @@ forward UpdatePlayerSaude(playerid);
 public UpdatePlayerSaude(playerid) {
 	if(IsPlayerConnected(playerid)){
 
-		if(PlayerDados[playerid][saude] <= 0)
+		if(PlayerDados[playerid][TaPreso] == false)
 		{
-			SetPlayerHealth(playerid, 0);
-            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu pois você portador da AIDS!");
-            MorreuSaude[playerid] = true;
-		}
-		else if(PlayerDados[playerid][saude] <= 5)
+			if(PlayerDados[playerid][saude] <= 0)
+			{
+				SetPlayerHealth(playerid, 0);
+	            SendClientMessage(playerid, 0xFF0000FF, "| INFO | Você morreu pois você portador da AIDS!");
+	            MorreuSaude[playerid] = true;
+			}
+			else if(PlayerDados[playerid][saude] <= 5)
+			{
+				GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
+				SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
+				SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até um hospital para realizar o tratamento, Porém essa doença não tem cura!");
+
+				PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
+			}
+
+			if(PlayerDados[playerid][saude] > 0){
+				PlayerDados[playerid][saude] = PlayerDados[playerid][saude] -1;
+
+				PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
+				UpdateTextDraw(playerid, 3);
+			}
+		}else
 		{
-			GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
-			SetPlayerHealth(playerid,(PlayerDados[playerid][vida] - 20.0) );
-			SendClientMessage(playerid, 0xFF0000FF,"| INFO | Vá até um hospital para realizar o tratamento, Porém essa doença não tem cura!");
-
-			PlayerPlaySound(playerid,1135,0.0,0.0,0.0);
-		}
-
-		if(PlayerDados[playerid][saude] > 0){
-			PlayerDados[playerid][saude] = PlayerDados[playerid][saude] -1;
-
 			PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
 			UpdateTextDraw(playerid, 3);
 		}
@@ -6566,16 +6662,107 @@ public GetPlayerProfissaoCor(playerid) {
 	}
 	return 1;
 }
+forward AtualizarPreso(playerid);
+public AtualizarPreso(playerid) {
+	if(IsPlayerConnected(playerid))
+	{
+		if(PlayerDados[playerid][TaPreso] == true)
+		{
+			PlayerDados[playerid][SegPreso] = PlayerDados[playerid][SegPreso] -1;
+			SetPlayerHealth(playerid, 100.00);
+
+			if(PlayerDados[playerid][MinPreso] <= 0 && PlayerDados[playerid][SegPreso] <= 0)
+			{
+				PlayerDados[playerid][TaPreso] = false;
+			}
+			else if(PlayerDados[playerid][SegPreso] <= 0)
+			{
+				PlayerDados[playerid][SegPreso] = 60;
+				PlayerDados[playerid][MinPreso] = PlayerDados[playerid][MinPreso] -1;
+			}
+
+			new tempoPresor[15];
+ 
+	        format(tempoPresor, sizeof (tempoPresor), "%d:%d", PlayerDados[playerid][MinPreso], PlayerDados[playerid][SegPreso]);
+	        if(PlayerDados[playerid][SegPreso] < 10){
+	        	format(tempoPresor, sizeof (tempoPresor), "%d:0%d", PlayerDados[playerid][MinPreso], PlayerDados[playerid][SegPreso]);
+	        }
+	        PlayerTextDrawSetString(playerid, textPreso[playerid][2], tempoPresor);
+
+			PlayerTextDrawHide(playerid, textPreso[playerid][2]);
+			PlayerTextDrawShow(playerid, textPreso[playerid][2]);
+
+			SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+		}
+		else
+		{
+			for (new i = 0; i < 5; i++) PlayerTextDrawHide(playerid, textPreso[playerid][i]);
+			SoltarPlayer(playerid);
+		}
+	}
+	return 1;
+}
+forward PrenderPlayer(playerid, minutos, segundos);
+public PrenderPlayer(playerid, minutos, segundos) {
+	if(IsPlayerConnected(playerid))
+	{
+		SetPlayerPos(playerid, 264.0296,78.3700,1001.03910);
+	    SetPlayerInterior(playerid, 6);
+
+	    PlayerDados[playerid][SegPreso] = segundos;
+	    PlayerDados[playerid][MinPreso] = minutos;
+	    PlayerDados[playerid][TaPreso] = true;
+	    PlayerDados[playerid][exp] = 0;
+
+	    SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+
+	    GameTextForPlayer(playerid, "~r~Preso!", 2000, 3);
+		ResetPlayerWeapons(playerid);
+		SetPlayerWantedLevel(playerid, 0);
+
+		PlayerTextDrawSetString(playerid, textPreso[playerid][2], "10:00");
+
+		for (new i = 0; i < 5; i++) PlayerTextDrawHide(playerid, textPreso[playerid][i]);
+		for (new i = 0; i < 5; i++) PlayerTextDrawShow(playerid, textPreso[playerid][i]);
+
+		return SendClientMessage(playerid, COR_ERRO, "| AVISO | Você foi preso e perdeu todo o seu xp. Chame um advogado para soltar você da cadeia!");
+	}
+	return 1;
+}
+forward SoltarPlayer(playerid);
+public SoltarPlayer(playerid) {
+	if(IsPlayerConnected(playerid))
+	{
+		SetPlayerPos(playerid, 268.2242,77.3183,1001.0391);
+		SetPlayerInterior(playerid, 6);
+
+	    PlayerDados[playerid][SegPreso] = 0;
+	    PlayerDados[playerid][MinPreso] = 0;
+	    PlayerDados[playerid][TaPreso] = false;
+
+	    GameTextForPlayer(playerid, "~y~Solto!", 2000, 3);
+		ResetPlayerWeapons(playerid);
+
+		SetPlayerWantedLevel(playerid, 0);
+		UpdatePlayerStar(playerid);
+
+
+
+		PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+
+		return SendClientMessage(playerid, -1, "{4286f4}| Departamento de Polícia | Você foi solto! Porém, caso você volte a cometer crimes novamente. Você sera preso de novo!");
+	}
+	return 1;
+}
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
     if(!Logado{playerid}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Ainda Não Está Logado!");
-
-	if(!success)
+	else if(!success)
 	{
 		new string[256];
 		format(string, sizeof(string), "| ERRO | O Comando %s Não Existe!.",cmdtext);
 		PlayerPlaySound(playerid, 1055, 0, 0, 0);
-		SendClientMessage(playerid, COR_ERRO, string);
+		return SendClientMessage(playerid, COR_ERRO, string);
 	}
 	return 1;
 }
@@ -7055,7 +7242,7 @@ CMD:level (playerid)
 CMD:profissao (playerid)
 {
 	if(PlayerDados[playerid][Profissao] == Desempregado) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Está Desempregado! Vá Até Uma Agência de Empregos!");
-
+	else if(PlayerDados[playerid][TaPreso] == true) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso!");	
 	else if(PlayerDados[playerid][Profissao] == Gari)
 	{
 	    new str[1280];
@@ -7089,6 +7276,7 @@ CMD:profissao (playerid)
 CMD:cp (playerid, params[])
 {
 	if(PlayerDados[playerid][Profissao] == Desempregado) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você É Desempregado!");
+	else if(PlayerDados[playerid][TaPreso] == true) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso!");	
 	new texto[256], str[256];
 	if(sscanf(params, "s[256]", texto)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Cp [ Texto ]");
 	format(str, sizeof(str), "| Chat Profissão | %s[%i]: %s", getName(playerid), playerid, texto);
@@ -7389,6 +7577,10 @@ CMD:givecar(playerid, params[])
         else if(car < 400 || car >611){
             return SendClientMessage(playerid, COR_ERRO, "| ERROR | Não pode ir abaixo de 400 ou acima de 611");
         }
+        else if(PlayerDados[playerid][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso!");	
+        }
         else
         {
             if(Vehicle[playerid] != 0)
@@ -7502,6 +7694,10 @@ CMD:setfome(playerid, params[])
         else if(!IsPlayerConnected(id)){
         	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
         }
+        else if(PlayerDados[playerid][TaPreso] == true || PlayerDados[id][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso ou o jogador está preso!");	
+        }
         else
         {
         	new string[128];
@@ -7547,6 +7743,10 @@ CMD:setsede(playerid, params[])
         }
         else if(!IsPlayerConnected(id)){
         	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else if(PlayerDados[playerid][TaPreso] == true || PlayerDados[id][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso ou o jogador está preso!");	
         }
         else
         {
@@ -7594,6 +7794,10 @@ CMD:setsaude(playerid, params[])
         else if(!IsPlayerConnected(id)){
         	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
         }
+        else if(PlayerDados[playerid][TaPreso] == true || PlayerDados[id][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso ou o jogador está preso!");	
+        }
         else
         {
         	new string[128];
@@ -7639,6 +7843,10 @@ CMD:setprocurado(playerid, params[])
         }
         else if(!IsPlayerConnected(id)){
         	return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else if(PlayerDados[playerid][TaPreso] == true || PlayerDados[id][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso ou o jogador está preso!");	
         }
         else
         {
@@ -7687,6 +7895,10 @@ CMD:tp(playerid, params[])
         }
         else if(!IsPlayerConnected(id) || !IsPlayerConnected(valor)){
             return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");	
+        }
+        else if(PlayerDados[playerid][TaPreso] == true || PlayerDados[id][TaPreso] == true)
+        {
+        	return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso ou o jogador está preso!");	
         }
         else
         {
@@ -7910,24 +8122,109 @@ CMD:jetpack(playerid, params[])
 	return 1;
 }
 
-CMD:criarhospital(playerid, params[])
+CMD:criardp(playerid, params[])
 {
 	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
 	{
         new Float:X, Float:Y, Float:Z;
         GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
 
-        Create3DTextLabel("{f44242}Hospital", 0x008080FF, X, Y, Z, 40.0, 0, 0);
+        Create3DTextLabel("{f44242}DP", 0x008080FF, X, Y, Z, 40.0, 0, 0);
 
         new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
 		GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
 
         format(Log, sizeof(Log), "{%f, %f, %f}, // %s Local: %s", X, Y, Z, getName(playerid), Zona);
-		fileLog("hospital", Log);
+		fileLog("dps", Log);
 
 		return 1;
     }
 	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+	return 1;
+}
+
+/*=================[ Prender ]==============*/
+
+CMD:prender (playerid, params[])
+{
+	new pID, Tempo, Motivo[256], texto[256];
+
+	if(IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 1)
+	{
+		if(sscanf(params, "uis[256]", pID, Tempo, Motivo))
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Prender [ ID ][ Minutos ][ Motivo ]");
+		} 
+		else if(pID == INVALID_PLAYER_ID) 
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+		}
+		else if(!IsPlayerConnected(pID) || Logado{pID} == false) 
+		{ 
+			return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");
+		}
+		else if(Tempo <= 0 || Tempo > 60){
+            return SendClientMessage(playerid, COR_ERRO, "| ERROR | O Tempo têm que ser entre 1 e 60 minutos!");
+        }
+        else
+        {
+        	format(texto, sizeof(texto), "| INFO-SERVER | %s Prendeu %s Por %i Minuto(s)! ( Motivo: %s )", getName(playerid), getName(pID), Tempo, Motivo);
+			SendClientMessageToAll(COR_ERRO, texto);
+
+			PlayerDados[playerid][MinPreso] = Tempo-1;
+			PlayerDados[playerid][TaPreso] = true;
+
+			PrenderPlayer(pID, Tempo-1, 59);
+
+			format(Log, sizeof(Log), "%s Prendeu %s Por %i Minutos ( Motivo: %s )", getName(playerid), getName(pID), Tempo, Motivo);
+			fileLog("Prender", Log);
+
+			return 1;
+        }
+	}
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+	
+	return 1;
+}
+
+/*==================[ Soltar ]===============*/
+CMD:soltar (playerid, params[])
+{
+	new pID, texto[200];
+
+	if(IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 1)
+	{
+		if(sscanf(params, "u", pID))
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /soltar [ ID ]");
+		} 
+		else if(pID == INVALID_PLAYER_ID) 
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+		}
+		else if(!IsPlayerConnected(pID) || Logado{pID} == false) 
+		{ 
+			return SendClientMessage(playerid, COR_ERRO, "| ERROR | O jogador não está online!");
+		}
+        else
+        {
+        	format(texto, sizeof(texto), "| INFO-SERVER | %s Soltou %s da cadeia!", getName(playerid), getName(pID));
+			SendClientMessageToAll(COR_ERRO, texto);
+
+			PlayerDados[playerid][MinPreso] = 0;
+			PlayerDados[playerid][SegPreso] = 0;
+			PlayerDados[playerid][TaPreso] = false;
+
+			SoltarPlayer(pID);
+
+			format(Log, sizeof(Log), "%s Soltou %s Da Cadeia!", getName(playerid), getName(pID));
+			fileLog("Soltar", Log);
+
+			return 1;
+        }
+	}
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+	
 	return 1;
 }
 
