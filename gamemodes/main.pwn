@@ -583,8 +583,33 @@ new PlayerDados[MAX_PLAYERS][pDados];
 new bool:Logado[MAX_PLAYERS char];
 new SenhaErrada[MAX_PLAYERS];
 new Str[500];
-
 new bool:PlayerMorreu[MAX_PLAYERS];
+
+enum cDados
+{
+	Dono[100],
+	Amigo[100],
+	bool:Trancado,
+	bool:Garagem,
+	bool:Venda,
+	Valor,
+	Level,
+	MaxLevel,
+	Comidas,
+	Bebidas,
+	KitMedico,
+	InteriorID,
+	Float:intX,
+	Float:intY,
+	Float:intZ,
+	Float:PosX,
+	Float:PosY,
+	Float:PosZ
+}
+
+new CasasDados[18][cDados];
+new Text3D:casasText[18];
+
 new Text3D:hospitalText[8];
 
 new Float:hospitaisPos[8][3] =
@@ -715,6 +740,8 @@ new bool:HQ[MAX_PLAYERS] = false;
 new bool:profissaoUniforme[MAX_PLAYERS] = false;
 new profissaoCar[MAX_PLAYERS] = false;
 new profissaoCarregandoOJG[MAX_PLAYERS] = false;
+new bool:profissaoDescarregar[MAX_PLAYERS] = false;
+new profissaoCapapidate[MAX_PLAYERS];
 new respawntrailer;
 // Atores
 new Atores[6];
@@ -755,7 +782,14 @@ public OnGameModeInit()
     if(fexist("/Contas/")) print("A pasta Contas foi encontrada!"), print("Sistema De Login carregado com sucesso!");
     else print("A pasta Contas não foi encontrada!"), SendRconCommand("exit");
 
-	//AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
+    if(fexist("/Casas/")) print("A pasta Casas foi encontrada!"), print("Sistema De Casas carregado com sucesso!");
+    else print("A pasta Casas não foi encontrada!"), SendRconCommand("exit");
+
+    if(fexist("/Logs/")) print("A pasta Logs foi encontrada!"), print("Sistema De Logs carregado com sucesso!");
+    else print("A pasta Logs não foi encontrada!"), SendRconCommand("exit");
+
+    // Carregar Casas
+    loadCasas();
 
     DisableInteriorEnterExits(); // desativar entradas em lojas/casas ( pikcups amarelos ) do jogo normal
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
@@ -1265,7 +1299,7 @@ public OnGameModeExit()
 		}
 	}
 
-
+	SalvaCasas();
     DOF2_Exit();
     TextDrawDestroy(Logo);
     TextDrawDestroy(Versao);
@@ -1867,7 +1901,33 @@ public MapIcon(playerid)
 		
 		SetPlayerMapIcon(playerid, 66+a, departamentoPoliciaPos[a][0],departamentoPoliciaPos[a][1],departamentoPoliciaPos[a][2], 30, 0, MAPICON_LOCAL);
 	}
+	// Casas
+	new CasaTextInfo[200];
+	for (new a = 0; a < sizeof(CasasDados); a++)
+	{
+		AddStaticPickup(1239, 23, CasasDados[a][PosX], CasasDados[a][PosY], CasasDados[a][PosZ]);
 
+		if(CasasDados[a][Venda] == true)
+		{
+			format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF} Esta casa está a venda\nValor: {8be54b}%d\n{f44242}Casa Trancada", CasasDados[a][Dono], a, CasasDados[a][Valor]);
+			casasText[a] = Create3DTextLabel(CasaTextInfo, 0x008080FF, CasasDados[a][PosX], CasasDados[a][PosY], CasasDados[a][PosZ],10.0,0);
+			SetPlayerMapIcon(playerid, 73+a, CasasDados[a][PosX], CasasDados[a][PosY], CasasDados[a][PosZ], 31, 0, MAPICON_LOCAL);
+		}
+		else
+		{
+			if(CasasDados[a][Trancado] == true)
+			{
+				format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF}Valor: {8be54b}%d\n{FFFFFF}Level: %d/%d\n{f44242}Casa Trancada", CasasDados[a][Dono], a, CasasDados[a][Valor], CasasDados[a][Level], CasasDados[a][MaxLevel]);
+			}
+			else
+			{
+				format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF}Valor: {8be54b}%d\n{FFFFFF}Level: {4e4be5}%d", CasasDados[a][Dono], a, CasasDados[a][Valor], CasasDados[a][Level]);
+			}
+			casasText[a] = Create3DTextLabel(CasaTextInfo, 0x008080FF, CasasDados[a][PosX], CasasDados[a][PosY], CasasDados[a][PosZ],10.0,0);
+			SetPlayerMapIcon(playerid, 73+a, CasasDados[a][PosX], CasasDados[a][PosY], CasasDados[a][PosZ], 32, 0, MAPICON_LOCAL);
+		}
+
+	}
 	return 1;
 }
 
@@ -2040,7 +2100,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
  
 				    format(string_profissaoInfo, sizeof (string_profissaoInfo), "(%d/30)", gariCar[i][1]);
 				    PlayerTextDrawSetString(playerid, textProfissaoInfo[playerid][2], string_profissaoInfo);
-
+				    PlayerTextDrawSetPreviewModel(playerid, textProfissaoInfo[playerid][4], 408);
 				    PlayerTextDrawTextSize(playerid, textProfissaoInfo[playerid][1], ( 6 + ( (124 * gariCar[i][1] ) / 30 ) ), 0.000000);
 
 					for( new a = 0; a < 5; a++) PlayerTextDrawShow(playerid, textProfissaoInfo[playerid][a]);
@@ -2090,16 +2150,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
 				}
-			}
-		}
-		// PizzaBoy 
-		for(new i = 0; i < sizeof(pizzaBoyCar); i ++)
-		{
-			if(car == pizzaBoyCar[i])
-			{
-		    	if(PlayerDados[playerid][Profissao] != PizzaBoy)
-		    	{
-					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um PizzaBoy, e não pode dirigir esse veiculo..");
+				else if(!profissaoUniforme[playerid]){
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de PizzaBoy, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
@@ -6153,6 +6205,10 @@ stock PegarConta(playerid)
 {
         static Arquivo[33]; format(Arquivo, sizeof(Arquivo), "Contas/%s.ini", getName(playerid)); return Arquivo;
 }
+stock PegarCasa(casaid)
+{
+        static Arquivo[33]; format(Arquivo, sizeof(Arquivo), "Casas/%d.ini", casaid); return Arquivo;
+}
 stock SalvarDados(playerid)
 {
 	// Vida
@@ -6750,6 +6806,62 @@ forward PrenderPlayer(playerid, minutos, segundos);
 public PrenderPlayer(playerid, minutos, segundos) {
 	if(IsPlayerConnected(playerid))
 	{
+		// Pershing Square
+		if(PlayerToPoint(playerid, 1000.0, 1555.500122, -1675.565673, 16.195312))
+		{
+			iPosX[playerid] = 1555.500122;
+        	iPosY[playerid] = -1675.565673;
+        	iPosZ[playerid] = 16.195312;
+		}
+		// Dillimore
+		else if(PlayerToPoint(playerid, 1000.0, 626.965209, -571.652954, 17.920680))
+		{
+			iPosX[playerid] = 626.965209;
+        	iPosY[playerid] = -571.652954;
+        	iPosZ[playerid] = 17.920680;
+		}
+		// Fort Carson
+		else if(PlayerToPoint(playerid, 1000.0, -217.843124, 979.190307, 19.504125))
+		{
+			iPosX[playerid] = -217.843124;
+        	iPosY[playerid] = 979.190307;
+        	iPosZ[playerid] = 19.504125;
+		}
+		// Roca Escalante
+		else if(PlayerToPoint(playerid, 1000.0, 2287.153808, 2432.367919, 10.820312))
+		{
+			iPosX[playerid] = 2287.153808;
+        	iPosY[playerid] = 2432.367919;
+        	iPosZ[playerid] = 10.820312;
+		}
+		// El Quebrados
+		else if(PlayerToPoint(playerid, 900.0, -1392.028198, 2646.041748, 55.978725))
+		{
+			iPosX[playerid] = -1392.028198;
+        	iPosY[playerid] = 2646.041748;
+        	iPosZ[playerid] = 55.978725;
+		}
+		// Downtown
+		else if(PlayerToPoint(playerid, 1000.0, -1605.574462, 710.279846, 13.867187))
+		{
+			iPosX[playerid] = -1605.574462;
+        	iPosY[playerid] = 710.279846;
+        	iPosZ[playerid] = 13.867187;
+		}
+		// Angel Pine
+		else if(PlayerToPoint(playerid, 1000.0, -2161.425781, -2384.718994, 30.895843))
+		{
+			iPosX[playerid] = -2161.425781;
+        	iPosY[playerid] = -2384.718994;
+        	iPosZ[playerid] = 30.895843;
+		}
+		else
+		{
+			iPosX[playerid] = 1555.500122;
+        	iPosY[playerid] = -1675.565673;
+        	iPosZ[playerid] = 16.195312;
+		}
+
 		SetPlayerPos(playerid, 264.0296,78.3700,1001.03910);
 	    SetPlayerInterior(playerid, 6);
 
@@ -6762,7 +6874,6 @@ public PrenderPlayer(playerid, minutos, segundos) {
 
 	    GameTextForPlayer(playerid, "~r~Preso!", 2000, 3);
 		ResetPlayerWeapons(playerid);
-		SetPlayerWantedLevel(playerid, 0);
 
 		PlayerTextDrawSetString(playerid, textPreso[playerid][2], "10:00");
 
@@ -6840,6 +6951,17 @@ public loginAntiAFK(playerid)
 	if(Logado{playerid} == false)
 	{
 		return Kick(playerid);
+	}
+
+	return 1;
+}
+forward profissaoDescarregarTempo(playerid);
+public profissaoDescarregarTempo(playerid)
+{
+	if(profissaoDescarregar[playerid] == false)
+	{
+		profissaoDescarregar[playerid] = true;
+		return 1;
 	}
 
 	return 1;
@@ -6957,6 +7079,61 @@ stock CriarAtores()
 
     return 1;
 }
+
+stock loadCasas()
+{
+	for (new casaid = 0; casaid < sizeof(CasasDados); casaid++)
+	{
+		if(DOF2_FileExists (PegarCasa(casaid)))
+    	{
+    		format(CasasDados[casaid][Dono], 100, "%s ", DOF2_GetString(PegarCasa(casaid),"Dono"));
+    		format(CasasDados[casaid][Amigo], 100, "%s", DOF2_GetString(PegarCasa(casaid),"Amigo"));
+			CasasDados[casaid][Trancado] = DOF2_GetBool(PegarCasa(casaid),"Trancado");
+			CasasDados[casaid][Garagem] = DOF2_GetBool(PegarCasa(casaid),"Garagem");
+			CasasDados[casaid][Venda] = DOF2_GetBool(PegarCasa(casaid),"Venda");
+			CasasDados[casaid][Valor] = DOF2_GetInt(PegarCasa(casaid),"Valor");
+			CasasDados[casaid][Level] = DOF2_GetInt(PegarCasa(casaid),"Level");
+			CasasDados[casaid][MaxLevel] = DOF2_GetInt(PegarCasa(casaid),"MaxLevel");
+			CasasDados[casaid][Comidas] = DOF2_GetInt(PegarCasa(casaid),"Comidas");
+			CasasDados[casaid][Bebidas] = DOF2_GetInt(PegarCasa(casaid),"Bebidas");
+			CasasDados[casaid][KitMedico] = DOF2_GetInt(PegarCasa(casaid),"KitMedico");
+			CasasDados[casaid][InteriorID] = DOF2_GetInt(PegarCasa(casaid),"InteriorID");
+			CasasDados[casaid][intX] = DOF2_GetFloat(PegarCasa(casaid),"intX");
+			CasasDados[casaid][intY] = DOF2_GetFloat(PegarCasa(casaid),"intY");
+			CasasDados[casaid][intZ] = DOF2_GetFloat(PegarCasa(casaid),"intZ");
+			CasasDados[casaid][PosX] = DOF2_GetFloat(PegarCasa(casaid),"PosX");
+			CasasDados[casaid][PosY] = DOF2_GetFloat(PegarCasa(casaid),"PosY");
+			CasasDados[casaid][PosZ] = DOF2_GetFloat(PegarCasa(casaid),"PosZ");
+    	}
+	}
+	return 1;
+}
+stock SalvaCasas()
+{
+	for (new casaid = 0; casaid < sizeof(CasasDados); casaid++)
+	{
+    	DOF2_SetString(PegarCasa(casaid),"Dono", CasasDados[casaid][Dono]);
+		DOF2_SetString(PegarCasa(casaid),"Amigo", CasasDados[casaid][Amigo]);
+		DOF2_SetBool(PegarCasa(casaid),"Trancado", CasasDados[casaid][Trancado]);
+		DOF2_SetBool(PegarCasa(casaid),"Garagem", CasasDados[casaid][Garagem]);
+		DOF2_SetBool(PegarCasa(casaid),"Venda", CasasDados[casaid][Venda]);
+		DOF2_SetInt(PegarCasa(casaid),"Valor", CasasDados[casaid][Valor]);
+		DOF2_SetInt(PegarCasa(casaid),"Level", CasasDados[casaid][Level]);
+		DOF2_SetInt(PegarCasa(casaid),"MaxLevel", CasasDados[casaid][MaxLevel]);
+		DOF2_SetInt(PegarCasa(casaid),"Comidas", CasasDados[casaid][Comidas]);
+		DOF2_SetInt(PegarCasa(casaid),"Bebidas", CasasDados[casaid][Bebidas]);
+		DOF2_SetInt(PegarCasa(casaid),"KitMedico", CasasDados[casaid][KitMedico]);
+		DOF2_SetInt(PegarCasa(casaid),"InteriorID", CasasDados[casaid][InteriorID]);
+		DOF2_SetFloat(PegarCasa(casaid),"intX", CasasDados[casaid][intX]);
+		DOF2_SetFloat(PegarCasa(casaid),"intY", CasasDados[casaid][intY]);
+		DOF2_SetFloat(PegarCasa(casaid),"intZ", CasasDados[casaid][intZ]);
+		DOF2_SetFloat(PegarCasa(casaid),"PosX", CasasDados[casaid][PosX]);
+		DOF2_SetFloat(PegarCasa(casaid),"PosY", CasasDados[casaid][PosY]);
+		DOF2_SetFloat(PegarCasa(casaid),"PosZ", CasasDados[casaid][PosZ]);
+		DOF2_SaveFile();
+	}
+	return 1;
+}
  
 stock GetVehicleSpeed(vehicleid)
 {
@@ -7033,6 +7210,14 @@ CMD:hq(playerid)
             PlayerPlaySound(playerid, 1057, 0 ,0, 0);
             HQ[playerid] = true;
         }
+        else if(PlayerDados[playerid][Profissao] == PizzaBoy)
+        {
+            SetPlayerMapIcon(playerid, GPS_ID, 2123.7219,-1786.7711,13.5547, GPS_ICON, 0, MAPICON_GLOBAL);
+            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
+
+            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+            HQ[playerid] = true;
+        }
         else if(PlayerDados[playerid][Profissao] == Petroleiro)
         {
             SetPlayerMapIcon(playerid, GPS_ID, 312.1143,1477.8135,8.8824, GPS_ICON, 0, MAPICON_GLOBAL);
@@ -7043,6 +7228,56 @@ CMD:hq(playerid)
         }
     }
     return 1;
+}
+/*==============[ Profissao ]=================*/
+CMD:profissao (playerid)
+{
+	if(PlayerDados[playerid][Profissao] == Desempregado) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Está Desempregado! Vá Até Uma Agência de Empregos!");
+	else if(PlayerDados[playerid][TaPreso] == true) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso!");	
+	else if(PlayerDados[playerid][Profissao] == Gari)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}GARI\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}GARI {c0c0c0}é procurando lixeiras por toda San Andreas!\n");
+	    strcat(str, "{c0c0c0}No HQ de Gari, Tem varios Caminhões, Os Quais Você Deve usar para coletar as sacolas de lixo!\n");
+	    strcat(str, "{c0c0c0}Quando a lixeira estiver com o {ffffff}/ColetarLixo {30e551}Verde {c0c0c0}significa que ali tem lixos para você coletar\n");
+	    strcat(str, "{c0c0c0}Porém, quando o {ffffff}/ColetarLixo{c0c0c0} estiver {f2543c}Vermelho {c0c0c0}significa que não tem mais lixos!\n");
+	    strcat(str, "{c0c0c0}Você receberá R$ 1920 para entregar 30 sacolas de lixo para o aterro sanitario!\n\n");
+	    strcat(str, "{ffffff}/ColetarLixo{c0c0c0} - Para coletar uma sacola de lixo próximo de você!\n");
+	    strcat(str, "{ffffff}/descarregar{c0c0c0} - Para você descarregar o Caminhão!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
+	    strcat(str, "{ffffff}/rotas{c0c0c0} - Lista das melhores rotas em San Andreas!");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+
+	else if(PlayerDados[playerid][Profissao] == PizzaBoy)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}PizzaBoy\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}PizzaBoy {c0c0c0}é seguir o checkpoint para você fazer sua entrega!\n");
+	    strcat(str, "{c0c0c0}No HQ de PizzaBoy, Tem varias motos, Os Quais Você Deve usar para fazer sua entrega!\n");
+	    strcat(str, "{c0c0c0}Quando não for disponibilizado nenhum outro checkpoint, regresse em seu HQ  e utilize novamente o comandos {FFFFFF}/PegarPizza\n");
+	    strcat(str, "{c0c0c0}Porém, se você sair do seu veículo enquanto estiver trabalhando (com um checkpoint ativo) você terá 60 segundos para entrar no seu veículo novamente!\n");
+	    strcat(str, "{c0c0c0}Os valores das entregas são aleatórios e das gorjetas também!\n\n");
+	    strcat(str, "{ffffff}/PegarPizza{c0c0c0} - Depois disso basta seguir o checkpoint para você fazer sua entrega!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
+	    strcat(str, "{ffffff}/uniforme{c0c0c0} - Para utilizar o uniforme da sua profissão!");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+
+	else if(PlayerDados[playerid][Profissao] == Petroleiro)
+	{
+	    new str[1280];
+	    strcat(str, "{FF0000}Transportador de Concretos:\n\n{c0c0c0}Você Trabalha Transportando Concretos Com Caminhões!\n\nNa Base De Transp. Concretos, Tem Os Caminhões, Os Quais Você Deve Usar Para Transportar As Cargas De Concreto!\nApós Entregar O Concreto, Você Recebera Uma Quantia Referente A Carga Selecionada.\n\n");
+	    strcat(str, "/Carregar - Para Selecionar A Carga A Ser Entregue\n/Descarregar - Para Descarregar A Carga Em Seu Destino\n/Cp - Chat Profissão\n\n{00FF04}Salario: $1800");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+	return 1;
 }
 CMD:uniforme(playerid)
 {
@@ -7061,7 +7296,28 @@ CMD:uniforme(playerid)
             {
             	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de Gari!");
             	profissaoUniforme[playerid] = false;
-            	SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));	
+            	SetPlayerSkin(playerid, PlayerDados[playerid][skin]);	
+            	return 1;
+         	}
+         }
+         else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área adequada para vestir o seu uniforme!");
+    }
+    else if(PlayerDados[playerid][Profissao] == PizzaBoy)
+    {
+        if(PlayerToPoint(playerid, 2.0, 2123.7219,-1786.7711,13.5547))
+        {
+            if(!profissaoUniforme[playerid])
+            {
+                SendClientMessage(playerid, COR_SUCCESS, "| INFO | Parabéns, vocé está utilizando o uniforme de PizzaBoy! Use /profissao para ver seus comandos");
+            	profissaoUniforme[playerid] = true;
+            	SetPlayerSkin(playerid, 155);	
+            	return 1;
+            }
+            else 
+            {
+            	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de PizzaBoy!");
+            	profissaoUniforme[playerid] = false;
+            	SetPlayerSkin(playerid, PlayerDados[playerid][skin]);	
             	return 1;
          	}
          }
@@ -7082,6 +7338,21 @@ CMD:rotas(playerid)
     else
     {
     	SendClientMessage(playerid, COR_ERRO, "ERRO | A sua profissão não tem uma rota específico!");	 
+    }
+    return 1;
+}
+CMD:pegarpizza(playerid)
+{
+    if(PlayerDados[playerid][Profissao] == PizzaBoy)
+    {
+       	SendClientMessage(playerid, -1, "{f4ce42}| Pizzaria | Você pegou pizzas, siga o checkpoint para entregar!");
+        profissaoCapapidate[playerid] = 10;
+        SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
+        return 1;
+    }
+    else
+    {
+    	SendClientMessage(playerid, COR_ERRO, "ERRO | Esse comando é exclusivo para entregadores de pizza!");	 
     }
     return 1;
 }
@@ -7280,39 +7551,6 @@ CMD:level (playerid)
 	new str[600];
 	format(str, sizeof(str), "{16d300}• Seu Level Atual É {0097FF}%d\n{17f300}• Seu EXP Atual É %d/10000\n\n{c0c0c0}Digite /AjudaLevel Para Mais Informações.\n", GetPlayerScore(playerid), PlayerDados[playerid][exp]);
 	ShowPlayerDialog(playerid, DialogScore, DIALOG_STYLE_MSGBOX, "{0097FF}Level", str, "OK", "");
-	return 1;
-}
-/*==============[ Profissao ]=================*/
-CMD:profissao (playerid)
-{
-	if(PlayerDados[playerid][Profissao] == Desempregado) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Está Desempregado! Vá Até Uma Agência de Empregos!");
-	else if(PlayerDados[playerid][TaPreso] == true) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você está preso!");	
-	else if(PlayerDados[playerid][Profissao] == Gari)
-	{
-	    new str[1280];
-	    strcat(str, "{9ACD32}GARI\n\n");
-	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}GARI {c0c0c0}é procurando lixeiras por toda San Andreas!\n");
-	    strcat(str, "{c0c0c0}No HQ de Gari, Tem varios Caminhões, Os Quais Você Deve usar para coletar as sacolas de lixo!\n");
-	    strcat(str, "{c0c0c0}Quando a lixeira estiver com o {ffffff}/ColetarLixo {30e551}Verde {c0c0c0}significa que ali tem lixos para você coletar\n");
-	    strcat(str, "{c0c0c0}Porém, quando o {ffffff}/ColetarLixo{c0c0c0} estiver {f2543c}Vermelho {c0c0c0}significa que não tem mais lixos!\n");
-	    strcat(str, "{c0c0c0}Você receberá R$ 1920 para entregar 30 sacolas de lixo para o aterro sanitario!\n\n");
-	    strcat(str, "{ffffff}/ColetarLixo{c0c0c0} - Para coletar uma sacola de lixo próximo de você!\n");
-	    strcat(str, "{ffffff}/descarregar{c0c0c0} - Para você descarregar o Caminhão!\n");
-	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
-	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
-	    strcat(str, "{ffffff}/rotas{c0c0c0} - Lista das melhores rotas em San Andreas!");
-	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
-		return 1;
-	}
-
-	else if(PlayerDados[playerid][Profissao] == Petroleiro)
-	{
-	    new str[1280];
-	    strcat(str, "{FF0000}Transportador de Concretos:\n\n{c0c0c0}Você Trabalha Transportando Concretos Com Caminhões!\n\nNa Base De Transp. Concretos, Tem Os Caminhões, Os Quais Você Deve Usar Para Transportar As Cargas De Concreto!\nApós Entregar O Concreto, Você Recebera Uma Quantia Referente A Carga Selecionada.\n\n");
-	    strcat(str, "/Carregar - Para Selecionar A Carga A Ser Entregue\n/Descarregar - Para Descarregar A Carga Em Seu Destino\n/Cp - Chat Profissão\n\n{00FF04}Salario: $1800");
-	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
-		return 1;
-	}
 	return 1;
 }
 /*==================[ ChatProfissao ]================*/
@@ -8166,20 +8404,20 @@ CMD:jetpack(playerid, params[])
 	return 1;
 }
 
-CMD:criardp(playerid, params[])
+CMD:criarcasa(playerid, params[])
 {
 	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
 	{
         new Float:X, Float:Y, Float:Z;
         GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
 
-        Create3DTextLabel("{f44242}DP", 0x008080FF, X, Y, Z, 40.0, 0, 0);
+        Create3DTextLabel("{f44242}Casa", 0x008080FF, X, Y, Z, 40.0, 0, 0);
 
         new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
 		GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
 
         format(Log, sizeof(Log), "{%f, %f, %f}, // %s Local: %s", X, Y, Z, getName(playerid), Zona);
-		fileLog("dps", Log);
+		fileLog("Casas", Log);
 
 		return 1;
     }
