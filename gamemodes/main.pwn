@@ -576,6 +576,8 @@ enum rDados
 
 new PlayerRegister[MAX_PLAYERS][rDados];
 new PlayerAntiSpam[MAX_PLAYERS];
+new PlayerInCasaID[MAX_PLAYERS];
+new bool:PlayerVoltaLocal[MAX_PLAYERS];
 
 new MercadoInfo[MAX_PLAYERS][mInfo];
 
@@ -1045,9 +1047,14 @@ public OnGameModeInit()
     AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
     AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
     AddStaticPickup(1318,23,372.3253,-133.5240,1001.4922);// Well stacked pizza
-    AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);// Departamento de Polícia
+    // Departamento de Polícia
+    AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);
+    // Casas
+    AddStaticPickup(1318,23, 318.7571,1114.4829,1083.8828); // Level 0
     // Gari
     AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
+    // PizzaBoy
+    AddStaticPickup(1210, 23, 2123.7219,-1786.7711,13.5547); // Pegar emprego
     /*              3D TEXTS                               */
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
@@ -1066,6 +1073,8 @@ public OnGameModeInit()
     Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7
     // Departamento de Polícia Saida
     Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,246.7384,62.3266,1003.6406,15,0);//Saida Departamento de Polícia
+    // Casas
+    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,318.7571,1114.4829,1083.8828,15,0);//Saida Casa Level 0
     // Petroleiro
     Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
@@ -1073,6 +1082,8 @@ public OnGameModeInit()
     Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
     // Gari
     Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
+    // PizzaBoy
+    Create3DTextLabel("{FFA500}PizzaBoy\n{FFFFFF}Digite /uniforme",0xFFA500AA,2123.7219,-1786.7711,13.5547,10.0,0);
     // Lixos pela cidade 
     for(new i = 0; i < sizeof(lixosLatasPos); i ++)
 	{
@@ -3170,6 +3181,15 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
         	return 1;
         }
+        // Casa Level 0
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 318.7571,1114.4829,1083.8828))
+        {
+           	SetPlayerInterior(playerid, 0);
+           	SetPlayerVirtualWorld(playerid, 0);
+        	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+        	PlayerInCasaID[playerid] = 0;
+        	return 1;
+        }
         else
         {
         	// Empresas
@@ -3226,6 +3246,54 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					return 1;	
 		        }
 			}
+			// Casas 
+			new string[150];
+			for(new i = 0; i < sizeof(CasasDados); i ++)
+			{
+				if(PlayerToPoint(playerid, 2.0, CasasDados[i][PosX], CasasDados[i][PosY], CasasDados[i][PosZ]))
+				{
+					if(CasasDados[i][Trancado])
+					{
+
+						if(CasasDados[i][donoID] == playerid || CasasDados[i][amigoID] == playerid)
+						{
+							PlayerInCasaID[playerid] = i;
+							SetPlayerVirtualWorld(playerid, i);
+							SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
+							SetPlayerPos(playerid, CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ]);
+
+							iPosX[playerid] = CasasDados[i][PosX];
+							iPosY[playerid] = CasasDados[i][PosY];
+							iPosZ[playerid] = CasasDados[i][PosZ];
+
+							format(string, sizeof(string), "| CASA | Bem Vindo(a) a Casa ID %d que pertence à %s.", i, CasasDados[i][Dono]);
+
+							SendClientMessage(playerid, COR_WARNING, string);
+							SendClientMessage(playerid, COR_ERRO, "{FFFFFF}| CASA | Para sair da casa digite '{B5B5B5}/SairCasa{FFFFFF}' ou pressione a tecla '{B5B5B5}F{FFFFFF}'");
+
+							return 1;
+						}else SendClientMessage(playerid, COR_ERRO, "| ERRO | Essa casa está trancada!");
+					}
+					else
+					{
+						PlayerInCasaID[playerid] = i;
+						SetPlayerVirtualWorld(playerid, i);
+						SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
+						SetPlayerPos(playerid, CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ]);
+
+						iPosX[playerid] = CasasDados[i][PosX];
+						iPosY[playerid] = CasasDados[i][PosY];
+						iPosZ[playerid] = CasasDados[i][PosZ];
+
+						format(string, sizeof(string), "| CASA | Bem Vindo(a) a Casa ID %d que pertence à %s.", i, CasasDados[i][Dono]);
+
+						SendClientMessage(playerid, COR_WARNING, string);
+						SendClientMessage(playerid, COR_ERRO, "{FFFFFF}| CASA | Para sair da casa digite '{B5B5B5}/SairCasa{FFFFFF}' ou pressione a tecla '{B5B5B5}F{FFFFFF}'");
+						return 1;
+					}
+				}
+			}
+
         }
         
     }
@@ -3439,15 +3507,31 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    // Casas
 				    for(new i = 0; i < sizeof(CasasDados); i ++)
 				    {
-				    	if(strfind(CasasDados[i][Dono], getName(playerid), true) != -1)
+				    	if(strfind(CasasDados[i][Dono], getName(playerid), true) != -1 && !PlayerDados[playerid][TaPreso])
 				    	{
 				    		CasasDados[i][donoID] = playerid;
-				    		return 1;	
+				    		PlayerVoltaLocal[playerid] = true;
+				    		PlayerInCasaID[playerid] = i;
+
+				    		SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
+				    		SetPlayerVirtualWorld(playerid, i);
+				    		SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
+				    		SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
+				    		
+				    		SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
 				    	}
-				    	else if(strfind(CasasDados[i][Amigo], getName(playerid), true) != -1)
+				    	else if(strfind(CasasDados[i][Amigo], getName(playerid), true) != -1 && !PlayerDados[playerid][TaPreso])
 				    	{
 				    		CasasDados[i][amigoID] = playerid;
-				    		return 1;	
+				    		PlayerVoltaLocal[playerid] = true;
+				    		PlayerInCasaID[playerid] = i;
+
+				    		SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
+				    		SetPlayerVirtualWorld(playerid, i);
+				    		SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
+				    		SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
+				    		
+				    		SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
 				    	}
 				    }
 
@@ -6781,6 +6865,16 @@ public GetPlayerProfissaoCor(playerid) {
 	}
 	return 1;
 }
+forward PlayerVoltaLocalStatus(playerid);
+public PlayerVoltaLocalStatus(playerid){
+	if(PlayerVoltaLocal[playerid] && IsPlayerConnected(playerid))
+	{
+		SendClientMessage(playerid, COR_ERRO, "{FFFFFF}| CASA | O comando {b7b7b7}/voltar {FFFFFF}foi bloqueado");
+	}
+
+	PlayerVoltaLocal[playerid] = false;
+	return 1;
+}
 forward AtualizarPreso(playerid);
 public AtualizarPreso(playerid) {
 	if(IsPlayerConnected(playerid))
@@ -7532,9 +7626,14 @@ CMD:entrarcasa(playerid)
 
 				if(CasasDados[i][donoID] == playerid || CasasDados[i][amigoID] == playerid)
 				{
+					PlayerInCasaID[playerid] = i;
 					SetPlayerVirtualWorld(playerid, i);
 					SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
 					SetPlayerPos(playerid, CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ]);
+
+					iPosX[playerid] = CasasDados[i][PosX];
+					iPosY[playerid] = CasasDados[i][PosY];
+					iPosZ[playerid] = CasasDados[i][PosZ];
 
 					format(string, sizeof(string), "| CASA | Bem Vindo(a) a Casa ID %d que pertence à %s.", i, CasasDados[i][Dono]);
 
@@ -7546,9 +7645,14 @@ CMD:entrarcasa(playerid)
 			}
 			else
 			{
+				PlayerInCasaID[playerid] = i;
 				SetPlayerVirtualWorld(playerid, i);
 				SetPlayerInterior(playerid, CasasDados[i][InteriorID]);
 				SetPlayerPos(playerid, CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ]);
+
+				iPosX[playerid] = CasasDados[i][PosX];
+				iPosY[playerid] = CasasDados[i][PosY];
+				iPosZ[playerid] = CasasDados[i][PosZ];
 
 				format(string, sizeof(string), "| CASA | Bem Vindo(a) a Casa ID %d que pertence à %s.", i, CasasDados[i][Dono]);
 
@@ -7559,6 +7663,32 @@ CMD:entrarcasa(playerid)
 		}
 	}	 
     return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não está próximo a porta!");
+}
+CMD:saircasa(playerid)
+{
+	// Casa Level 0
+	if(PlayerToPoint(playerid, 2.0, 318.7571,1114.4829,1083.8828))
+	{ 
+		SetPlayerInterior(playerid, 0);
+        SetPlayerVirtualWorld(playerid, 0);
+       	SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+        PlayerInCasaID[playerid] = 0;
+		return 1;
+	}
+    else return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não está próximo a porta!");
+}
+CMD:voltar(playerid)
+{
+	// Casa Level 0
+	if(PlayerVoltaLocal[playerid])
+	{ 
+		SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
+		SetPlayerPos(playerid, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"));
+		PlayerVoltaLocal[playerid] = false;
+
+		return 1;
+	}
+    else return SendClientMessage(playerid, COR_ERRO, "{FFFFFF}| CASA | O comando {b7b7b7}/voltar {FFFFFF}foi bloqueado");
 }
 
 CMD:pegarpizza(playerid)
