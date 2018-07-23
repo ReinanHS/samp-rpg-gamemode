@@ -1,0 +1,49 @@
+new Float:casas[18][3] =
+{
+	{1854.058227, -1914.262817, 15.256797}, // MakeABigLove Local: El Corona
+	{1872.297973, -1911.790161, 15.256797}, // MakeABigLove Local: El Corona
+	{1891.886108, -1914.395996, 15.256797}, // MakeABigLove Local: El Corona
+	{1913.362792, -1911.902587, 15.256797}, // MakeABigLove Local: El Corona
+	{1980.375610, -1718.811645, 17.030166}, // MakeABigLove Local: Idlewood
+	{2018.242309, -1703.346557, 14.234375}, // MakeABigLove Local: Idlewood
+	{2067.700927, -1628.871337, 14.206628}, // MakeABigLove Local: Idlewood
+	{2065.104003, -1703.641601, 14.148437}, // MakeABigLove Local: Idlewood
+	{2495.409423, -1691.139892, 14.765625}, // MakeABigLove Local: Ganton
+	{2486.498291, -1644.532226, 14.077178}, // MakeABigLove Local: Ganton
+	{2190.444335, -1470.534423, 25.914062}, // MakeABigLove Local: Jefferson
+	{725.536621, -1276.204833, 13.648437}, 	// MakeABigLove Local: Vinewood
+	{1410.981933, -920.843322, 38.421875}, 	// MakeABigLove Local: Mulholland
+	{1440.849609, -926.164001, 39.647666}, 	// MakeABigLove Local: Mulholland
+	{1468.609741, -906.181030, 54.835937}, 	// MakeABigLove Local: Mulholland Intersection
+	{1540.470947, -851.320007, 64.336059}, 	// MakeABigLove Local: Mulholland Intersection
+	{1535.030639, -800.131958, 72.849456}, 	// MakeABigLove Local: Mulholland Intersection
+	{1298.521850, -797.986694, 84.140625} 	// MakeABigLove Local: Mulholland
+
+};
+
+static Arquivo[33];
+//Teste
+for(new i = 0; i < sizeof(casas); i ++)
+{
+	format(Arquivo, sizeof(Arquivo), "Casas/%d.ini", i);
+	DOF2_CreateFile(Arquivo);
+	DOF2_SetString(Arquivo,"Dono", "Ninguém");
+	DOF2_SetString(Arquivo,"Amigo", "Ninguém");
+	DOF2_SetBool(Arquivo,"Trancado", true);
+	DOF2_SetBool(Arquivo,"Garagem", false);
+	DOF2_SetBool(Arquivo,"Venda", true);
+	DOF2_SetInt(Arquivo,"Valor", 100000);
+	DOF2_SetInt(Arquivo,"Level", 0);
+	DOF2_SetInt(Arquivo,"MaxLevel", 5);
+	DOF2_SetInt(Arquivo,"Comidas", 0);
+	DOF2_SetInt(Arquivo,"Bebidas", 0);
+	DOF2_SetInt(Arquivo,"KitMedico", 0);
+	DOF2_SetInt(Arquivo,"InteriorID", 5);
+	DOF2_SetFloat(Arquivo,"intX", 318.564971);
+	DOF2_SetFloat(Arquivo,"intY", 1118.209960);
+	DOF2_SetFloat(Arquivo,"intZ", 1083.882812);
+	DOF2_SetFloat(Arquivo,"PosX", casas[i][0]);
+	DOF2_SetFloat(Arquivo,"PosY", casas[i][1]);
+	DOF2_SetFloat(Arquivo,"PosZ", casas[i][2]);
+	DOF2_SaveFile();
+}

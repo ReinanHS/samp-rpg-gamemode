@@ -43,6 +43,7 @@
 #define 	DialogPizza					(26)	// Well stacked pizza
 #define 	DialogCreditoSMS			(27)	// Crédito para SMS
 #define 	DialogVendaProdutos			(28)	// Venda de produtos
+#define 	DialogImobiliaria			(29)	// Imobiliaria
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -604,7 +605,8 @@ enum cDados
 	Float:intZ,
 	Float:PosX,
 	Float:PosY,
-	Float:PosZ
+	Float:PosZ,
+	donoID,
 }
 
 new CasasDados[18][cDados];
@@ -3431,6 +3433,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    {
 				    	for (new i = 0; i < 5; i++) PlayerTextDrawShow(playerid, textPreso[playerid][i]);
 				    	SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+				    }
+
+				    // Casas
+				    for(new i = 0; i < sizeof(CasasDados); i ++)
+				    {
+				    	if(strfind(CasasDados[i][Dono], getName(playerid), true) != -1)
+				    	{
+				    		CasasDados[i][donoID] = playerid;
+				    		return 1;	
+				    	}
 				    }
 
 				    format(Log, sizeof(Log), "O Jogador %s (%d) Logou No Servidor.", getName(playerid), playerid);
@@ -7104,6 +7116,7 @@ stock loadCasas()
 			CasasDados[casaid][PosX] = DOF2_GetFloat(PegarCasa(casaid),"PosX");
 			CasasDados[casaid][PosY] = DOF2_GetFloat(PegarCasa(casaid),"PosY");
 			CasasDados[casaid][PosZ] = DOF2_GetFloat(PegarCasa(casaid),"PosZ");
+			CasasDados[casaid][donoID] = -1;
     	}
 	}
 	return 1;
@@ -7341,6 +7354,85 @@ CMD:rotas(playerid)
     }
     return 1;
 }
+CMD:infocasa(playerid)
+{
+	new string[952], trancadoValor[10], garagemValor[10];
+	for(new i = 0; i < sizeof(CasasDados); i ++)
+	{
+		if(PlayerToPoint(playerid, 2.0, CasasDados[i][PosX], CasasDados[i][PosY], CasasDados[i][PosZ]))
+		{
+
+			if(CasasDados[i][Trancado]) trancadoValor = "Sim";
+			else trancadoValor = "Não";
+
+			if(CasasDados[i][Garagem]) garagemValor = "Sim";
+			else garagemValor = "Não";			
+
+			format(string, sizeof(string), "Informações\t{008000}Valores\nID da Casa\t{008000}%d\nDono\t{008000}%s\nAmigo\t{008000}%s\nTrancado\t{008000}%s\nGaragem\t{008000}%s\nValor\t{008000}%d\nLevel\t{008000}%d\nMaxLevel\t{008000}%d", i, CasasDados[i][Dono], CasasDados[i][Amigo], trancadoValor, garagemValor, CasasDados[i][Valor], CasasDados[i][Level], CasasDados[i][MaxLevel]);
+			ShowPlayerDialog(playerid, DialogImobiliaria, DIALOG_STYLE_TABLIST_HEADERS, "Imobiliaria » Informação", string, "Selecionar", "Voltar");
+			return 1;
+		}
+	}	 
+    return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não está próximo a porta!");
+}
+CMD:comprarcasa(playerid)
+{
+	new string[100];
+	new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
+	for(new i = 0; i < sizeof(CasasDados); i ++)
+	{
+		if(CasasDados[i][donoID] == playerid) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você já tem uma casa!");
+		else if(PlayerToPoint(playerid, 2.0, CasasDados[i][PosX], CasasDados[i][PosY], CasasDados[i][PosZ]))
+		{
+			
+			if(CasasDados[i][Venda])
+			{
+				if(GetPlayerMoney(playerid) >= CasasDados[i][Valor])
+				{
+					CasasDados[i][Venda] = false;
+					format(string, sizeof(string), "%s", getName(playerid));
+					CasasDados[i][Dono] = string;
+					CasasDados[i][donoID] = playerid;
+
+					GivePlayerMoney(playerid, -CasasDados[i][Valor]);
+
+					format(string, sizeof(string), "{3bd31d}| Casa | %s parabéns pela compra do imóvel ID(%d)", getName(playerid), i);
+	
+					SendClientMessage(playerid, COR_SUCCESS, string); 
+
+					GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+
+					format(string, sizeof(string), "{f4cb42}| Imobiliaria | O jogador %s comprou uma casa no valor de R$ %d ID da Casa(%d) em %s", getName(playerid), CasasDados[i][Valor], i, Zona);
+	
+					SendClientMessageToAll(-1, string); 
+
+					new CasaTextInfo[200];
+					for(new id,a = GetMaxPlayers(); id < a; id++)
+					{
+						if(IsPlayerConnected(i))
+						{
+							if(CasasDados[a][Trancado] == true)
+							{
+								format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF}Valor: {8be54b}%d\n{FFFFFF}Level: %d/%d\n{f44242}Casa Trancada", getName(playerid), a, CasasDados[a][Valor], CasasDados[a][Level], CasasDados[a][MaxLevel]);
+							}
+							else
+							{
+								format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF}Valor: {8be54b}%d\n{FFFFFF}Level: {4e4be5}%d", getName(playerid), a, CasasDados[a][Valor], CasasDados[a][Level]);
+							}
+							Update3DTextLabelText(casasText[i], 0x008080FF, CasaTextInfo);
+							SetPlayerMapIcon(id, 73+i, CasasDados[i][PosX], CasasDados[i][PosY], CasasDados[i][PosZ], 32, 0, MAPICON_LOCAL);
+						}
+					}		
+					return 1;
+				}
+				else SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem dinheiro suficiente para comprar essa casa!");
+			}
+			else SendClientMessage(playerid, COR_ERRO, "| ERRO | Essa casa não está a venda!");
+		}
+	}	 
+    return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não está próximo a porta!");
+}
+
 CMD:pegarpizza(playerid)
 {
     if(PlayerDados[playerid][Profissao] == PizzaBoy)
