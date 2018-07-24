@@ -625,8 +625,8 @@ enum cDados
 	locadorID
 }
 
-new CasasDados[18][cDados];
-new Text3D:casasText[18];
+new CasasDados[44][cDados];
+new Text3D:casasText[44];
 
 new Text3D:hospitalText[8];
 
@@ -809,7 +809,7 @@ public OnGameModeInit()
     // Carregar Casas
     loadCasas();
     // Textos Informativos
-    //loadTextos();
+    loadTextos();
 
     DisableInteriorEnterExits(); // desativar entradas em lojas/casas ( pikcups amarelos ) do jogo normal
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
@@ -1065,7 +1065,8 @@ public OnGameModeInit()
     // Departamento de Polícia
     AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);
     // Casas
-    AddStaticPickup(1318,23, 318.7571,1114.4829,1083.8828); // Level 0
+    AddStaticPickup(1318,23, 266.5007,304.9220,999.1484); // Level 0
+    AddStaticPickup(1318,23, 1260.6431,-785.2915,1091.9063); // Level 0
     // Gari
     AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
     // PizzaBoy
@@ -1089,7 +1090,8 @@ public OnGameModeInit()
     // Departamento de Polícia Saida
     Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,246.7384,62.3266,1003.6406,15,0);//Saida Departamento de Polícia
     // Casas
-    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,318.7571,1114.4829,1083.8828,15,0);//Saida Casa Level 0
+    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,266.5007,304.9220,999.1484,15,0);//Saida Casa Level 0
+    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,1260.6431,-785.2915,1091.9063,15,28);//Saida Casa Level 0
     // Petroleiro
     Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
     Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
@@ -3198,14 +3200,47 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
         	return 1;
         }
         // Casa Level 0
-        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 318.7571,1114.4829,1083.8828))
-        {
-           	SetPlayerInterior(playerid, 0);
-           	SetPlayerVirtualWorld(playerid, 0);
-        	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX],CasasDados[PlayerInCasaID[playerid]][posY],CasasDados[PlayerInCasaID[playerid]][posZ]);
-        	PlayerInCasaID[playerid] = 0;
-        	return 1;
-        }
+		if(PlayerToPoint(playerid, 2.0, 243.7174,305.0346,999.1484))
+		{ 
+			SetPlayerInterior(playerid, 0);
+	        SetPlayerVirtualWorld(playerid, 0);
+	       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+	        PlayerInCasaID[playerid] = 0;
+			return 1;
+		}
+		// Casa Top 
+		else if(PlayerToPoint(playerid, 2.0, 2495.9338,-1692.0844,1014.7422))
+		{ 
+			SetPlayerInterior(playerid, 0);
+	        SetPlayerVirtualWorld(playerid, 0);
+	       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+	        PlayerInCasaID[playerid] = 0;
+			return 1;
+		}
+		else if(PlayerToPoint(playerid, 2.0, 2807.6116,-1174.7572,1025.5703))
+		{ 
+			SetPlayerInterior(playerid, 0);
+	        SetPlayerVirtualWorld(playerid, 0);
+	       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+	        PlayerInCasaID[playerid] = 0;
+			return 1;
+		}
+		else if(PlayerToPoint(playerid, 2.0, 2468.8430,-1698.2803,1013.5078))
+		{ 
+			SetPlayerInterior(playerid, 0);
+	        SetPlayerVirtualWorld(playerid, 0);
+	       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+	        PlayerInCasaID[playerid] = 0;
+			return 1;
+		}
+		else if(PlayerToPoint(playerid, 2.0, 318.5797,1114.4838,1083.8828))
+		{ 
+			SetPlayerInterior(playerid, 0);
+	        SetPlayerVirtualWorld(playerid, 0);
+	       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+	        PlayerInCasaID[playerid] = 0;
+			return 1;
+		}
         else
         {
         	// Empresas
@@ -7383,7 +7418,7 @@ stock loadTextos()
 	{
 		AddStaticPickup(1239, 23, CasasDados[a][posX], CasasDados[a][posY], CasasDados[a][posZ]);
 
-		if(CasasDados[a][venda] == true) format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}Ninguém ( ID: %d )\n{FFFFFF} Esta casa está a venda\nValor: {8be54b}%d\n{42cbf4}/ComprarCasa\n{f44242}Casa Trancada", a, CasasDados[a][valorCasa]);
+		if(CasasDados[a][venda] == true) format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}Ninguém ( ID: %d )\n{FFFFFF} Esta casa está a venda\nValor: {8be54b}%d\n{42cbf4}/ComprarCasa", a, CasasDados[a][valorCasa]);
 		else
 		{
 			if(CasasDados[a][trancado] == true) format(CasaTextInfo, sizeof(CasaTextInfo), "{FFFFFF}Dono: {f44242}%s ( ID: %d )\n{FFFFFF}Valor: {8be54b}%d\n{FFFFFF}Level: %d/%d\n{f44242}Casa Trancada", CasasDados[a][dono], a, CasasDados[a][valorCasa], CasasDados[a][level], CasasDados[a][maxLevel]);
@@ -7811,7 +7846,40 @@ CMD:entrarcasa(playerid)
 CMD:saircasa(playerid)
 {
 	// Casa Level 0
-	if(PlayerToPoint(playerid, 2.0, 318.7571,1114.4829,1083.8828))
+	if(PlayerToPoint(playerid, 2.0, 243.7174,305.0346,999.1484))
+	{ 
+		SetPlayerInterior(playerid, 0);
+        SetPlayerVirtualWorld(playerid, 0);
+       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+        PlayerInCasaID[playerid] = 0;
+		return 1;
+	}
+	// Casa Top 
+	else if(PlayerToPoint(playerid, 2.0, 2495.9338,-1692.0844,1014.7422))
+	{ 
+		SetPlayerInterior(playerid, 0);
+        SetPlayerVirtualWorld(playerid, 0);
+       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+        PlayerInCasaID[playerid] = 0;
+		return 1;
+	}
+	else if(PlayerToPoint(playerid, 2.0, 2807.6116,-1174.7572,1025.5703))
+	{ 
+		SetPlayerInterior(playerid, 0);
+        SetPlayerVirtualWorld(playerid, 0);
+       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+        PlayerInCasaID[playerid] = 0;
+		return 1;
+	}
+	else if(PlayerToPoint(playerid, 2.0, 2468.8430,-1698.2803,1013.5078))
+	{ 
+		SetPlayerInterior(playerid, 0);
+        SetPlayerVirtualWorld(playerid, 0);
+       	SetPlayerPos(playerid, CasasDados[PlayerInCasaID[playerid]][posX], CasasDados[PlayerInCasaID[playerid]][posY], CasasDados[PlayerInCasaID[playerid]][posZ]);
+        PlayerInCasaID[playerid] = 0;
+		return 1;
+	}
+	else if(PlayerToPoint(playerid, 2.0, 318.5797,1114.4838,1083.8828))
 	{ 
 		SetPlayerInterior(playerid, 0);
         SetPlayerVirtualWorld(playerid, 0);
