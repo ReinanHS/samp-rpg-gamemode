@@ -747,9 +747,11 @@ new
     mecanicoCar[10],
 	carroForteCar[13],
 	gariCar[4][2],
-	pescaCar[8],
+	pescaCar[12],
+	viatura[21],
 	transportadorCar[7],
 	pizzaBoyCar[10],
+	motoBoyCar[10],
 	entregadorCar[8],
 	motoTaxiCar[11],
     VeiculoPublico[37];
@@ -1455,6 +1457,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	else
 	{
+		profissaoCapapidate[playerid] = 0;
+		DisablePlayerRaceCheckpoint(playerid);
 		PlayerMorreu[playerid] = true;
 	}
 	return 1;
@@ -1562,11 +1566,21 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		RemovePlayerAttachedObject(playerid, 2);		
 	}
 
+	else if(PlayerDados[playerid][vip] == true || PlayerDados[playerid][Admin] > 4 || IsPlayerAdmin(playerid))
+	{
+		AddVehicleComponent(vehicleid, 1010); // Nitro
+	}
+
 	return 1;
 }
 
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
+	if(PlayerDados[playerid][vip] == true || PlayerDados[playerid][Admin] > 4 || IsPlayerAdmin(playerid))
+	{
+		RemoveVehicleComponent(vehicleid, 1010);
+	}
+
     if(carroauto[playerid] == vehicleid && InAutoEscola[playerid] == 1)
     {
         SendClientMessage(playerid,COR_ERRO,"| AUTO ESCOLA | Reprovado! Você saiu do veículo!");
@@ -1600,6 +1614,18 @@ public OnPlayerExitVehicle(playerid, vehicleid)
     else if(PlayerDados[playerid][Profissao] == PizzaBoy)
     {
     	if(profissaoCar[playerid] == 1 && GetVehicleModel(vehicleid) == 448 && profissaoCapapidate[playerid] > 0)
+    	{
+    		SendClientMessage(playerid, COR_ERRO, "| INFO | Você saiu do veículo da sua profissão durante o seu trabalho agora você tem 60 segundos para entrar no veículo novamente!");
+    		profissaoTempo[playerid] = 60;
+    		profissaoCar[playerid] = 0;
+    		SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+    		return 1;
+    	}
+    }
+    // MotoBoy
+    else if(PlayerDados[playerid][Profissao] == MotoBoy)
+    {
+    	if(profissaoCar[playerid] == 1 && GetVehicleModel(vehicleid) == 581 && profissaoCapapidate[playerid] > 0)
     	{
     		SendClientMessage(playerid, COR_ERRO, "| INFO | Você saiu do veículo da sua profissão durante o seu trabalho agora você tem 60 segundos para entrar no veículo novamente!");
     		profissaoTempo[playerid] = 60;
@@ -1718,6 +1744,27 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
 				}
+				else if(!profissaoUniforme[playerid])
+				{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de Policial, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
+				}
+			}
+		}
+		// PM
+		for(new i = 0; i < sizeof(viatura); i ++)
+		{
+			if(car == viatura[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] < 25  && PlayerDados[playerid][Profissao] > 32 )
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Policial, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
+				}
 			}
 		}
 		// Transportador
@@ -1752,6 +1799,27 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
 				}else
+				{
+					profissaoTempo[playerid] = 60;
+					profissaoCar[playerid] = 1;
+					ShowPlayerVelocimetro(playerid);
+					return 1;
+				}
+			}
+		}
+		// MotoBoy 
+		for(new i = 0; i < sizeof(motoBoyCar); i ++)
+		{
+			if(car == motoBoyCar[i])
+			{
+		    	if(PlayerDados[playerid][Profissao] != MotoBoy)
+		    	{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um MotoBoy, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
+				}
+				else
 				{
 					profissaoTempo[playerid] = 60;
 					profissaoCar[playerid] = 1;
@@ -2640,6 +2708,38 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			return SendClientMessage(playerid, COR_ERRO, "| Pizzaria | Volte para o seu HQ para pegar novas encomendas!");			
 		}
 	}
+	// MotoBoy 26,27,17,19,24,23,22,21,25,0,1,10
+	else if(PlayerDados[playerid][Profissao] == MotoBoy)
+	{
+		if(!profissaoDescarregar[playerid]) return SendClientMessage(playerid, COR_WARNING, "| Central | Você entregou a encomenda muito rapido espere um pouco!");
+		else if(GetVehicleModel(GetPlayerVehicleID(playerid)) != 581) return SendClientMessage(playerid, COR_ERRO, "| Central | Você não está em um veículo da sua profissão!");
+		else if(profissaoCar[playerid] == 1 && profissaoCapapidate[playerid] > 1)
+		{
+			profissaoDescarregar[playerid] = false;
+			profissaoCapapidate[playerid] = profissaoCapapidate[playerid] -1;
+			new valor = random(1000);
+			GivePlayerMoney(playerid, (valor+500) );
+
+			format(string, sizeof(string), "| Central | Você completou %d/10 entregas é ganhou %d por sua entrega!", profissaoCapapidate[playerid],(valor+500));
+			SendClientMessage(playerid, COR_WARNING, string);
+
+			valor = random(sizeof(empresasPos));
+
+			DisablePlayerRaceCheckpoint(playerid);
+			SetPlayerRaceCheckpoint(playerid, 0, empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], 10);
+			PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+
+			TogglePlayerControllable(playerid, false);
+			GameTextForPlayer(playerid, "~s~Entregando!", 5000, 5);
+			SetTimerEx("PlayerCompletarEntrega", 3000, false, "i", playerid);
+			SetTimerEx("profissaoDescarregarTempo", 10000, false, "i", playerid);
+			return 1;
+		}
+		else
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| Central | Volte para o seu HQ para pegar novas encomendas!");			
+		}
+	}
 	return 1;
 }
 
@@ -3104,7 +3204,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        	if(PlayerAntiSpam[playerid] > 5)
 	        	{
 	        		SendClientMessage(playerid, COR_ERRO, "Você foi kikado por atingir o limite de tentativas!");	
-	        		return Kick(playerid);
+	        		SetTimerEx("DelayedKick", 1000, false, "i", playerid);
+	        		return 1;
 	        	}
 	            else if(!strlen(inputtext))
 	            {
@@ -3216,7 +3317,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    {
 				        SendClientMessage(playerid,COR_ERRO,"Você foi kickado por errar a senha 3 vezes!");
 				        SenhaErrada[playerid] = 0;
-				        return Kick(playerid);
+				        SetTimerEx("DelayedKick", 1000, false, "i", playerid);
+				        return 1;
 					}
 					else
 					{
@@ -6629,7 +6731,7 @@ public ProfissaoCarExit(playerid)
 	new strTempo[100];
 	if(IsPlayerConnected(playerid))
 	{
-		if(PlayerDados[playerid][Profissao] == PizzaBoy)
+		if(PlayerDados[playerid][Profissao] == PizzaBoy || PlayerDados[playerid][Profissao] == MotoBoy)
 		{
 			if(profissaoCar[playerid] == 0 && profissaoCapapidate[playerid] > 0)
 			{
@@ -6914,6 +7016,12 @@ public PlayerCompletarEntrega(playerid)
 	TogglePlayerControllable(playerid, true);
 	return 1;
 }
+forward DelayedKick(playerid);
+public DelayedKick(playerid)
+{
+    Kick(playerid);
+    return 1;
+}
 stock ShowPlayerVelocimetro(playerid) {
         if ( PlayerVelocimetro[playerid] ) {
             return 0;
@@ -7084,6 +7192,10 @@ stock SalvaCasas()
 {
 	for (new casaid = 0; casaid < sizeof(CasasDados); casaid++)
 	{
+		if(!CasasDados[casaid][dono])
+		{
+			format(CasasDados[casaid][dono], 24, "Ninguem");
+		}
 		// Informações
     	DOF2_SetString(PegarCasa(casaid),"Dono", CasasDados[casaid][dono], "Informações");
 		DOF2_SetBool(PegarCasa(casaid),"Trancado", CasasDados[casaid][trancado], "Informações");
@@ -7266,7 +7378,19 @@ stock veiculosProfissao()
     pizzaBoyCar[8] = AddStaticVehicleEx(448,2106.7000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
     pizzaBoyCar[9] = AddStaticVehicleEx(448,2104.6001000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
 
-    
+    //MotoBoy
+    motoBoyCar[0] = AddStaticVehicleEx(581,963.7524,-1267.7596,16.5841,268.6289,75,1,120); // motoboy 
+	motoBoyCar[1] = AddStaticVehicleEx(581,963.6584,-1265.2836,16.5834,268.0715,75,1,120); // motoboy
+	motoBoyCar[2] = AddStaticVehicleEx(581,963.7573,-1263.5906,16.5852,266.7269,75,1,120); // motoboy
+	motoBoyCar[3] = AddStaticVehicleEx(581,963.6228,-1261.7261,16.5846,271.7933,75,1,120); // motoboy
+	motoBoyCar[4] = AddStaticVehicleEx(581,963.6193,-1260.2924,16.5805,270.6436,75,1,120); // motoboy
+	motoBoyCar[5] = AddStaticVehicleEx(581,963.6526,-1258.3898,16.5839,267.3995,75,1,120); // motoboy
+	motoBoyCar[6] = AddStaticVehicleEx(581,963.6770,-1256.5875,16.5808,268.7324,75,1,120); // motoboy
+	motoBoyCar[7] = AddStaticVehicleEx(581,984.4512,-1252.4226,16.5793,174.7123,75,1,120); // motoboy
+	motoBoyCar[8] = AddStaticVehicleEx(581,985.7520,-1252.4469,16.5823,177.9379,75,1,120); // motoboy
+	motoBoyCar[9] = AddStaticVehicleEx(581,987.9335,-1253.1625,16.5808,179.8583,75,1,120); // motoboy 
+
+
     transportadorCar[0] = AddStaticVehicleEx(403,2672.0000000,-2486.1001000,14.4000000,180.0000000,006,159,120); //Linerunner
     transportadorCar[1] = AddStaticVehicleEx(403,2671.8000000,-2466.8999000,14.3000000,180.0000000,058,139,120); //Linerunner
     transportadorCar[2] = AddStaticVehicleEx(403,2667.4004000,-2507.3994000,14.4000000,270.0000000,069,128,120); //Linerunner
@@ -7275,27 +7399,54 @@ stock veiculosProfissao()
     transportadorCar[5] = AddStaticVehicleEx(403,2605.6001000,-2507.3000000,14.4000000,270.0000000,024,123,120); //Linerunner
     transportadorCar[6] = AddStaticVehicleEx(403,2584.6006000,-2507.2998000,14.4000000,270.0000000,015,048,120); //Linerunner
 
-    AddStaticVehicleEx(435,2672.0000000,-2476.7000000,14.3000000,180.0000000,058,158,60); //Trailer 1
-    AddStaticVehicleEx(435,2671.8000000,-2457.5000000,14.3000000,180.0000000,006,085,60); //Trailer 1
-    AddStaticVehicleEx(435,2658.5000000,-2507.3999000,14.1000000,269.9950000,045,125,60); //Trailer 1
-    AddStaticVehicleEx(435,2638.3999000,-2507.3000000,14.1000000,269.9950000,063,054,60); //Trailer 1
-    AddStaticVehicleEx(435,2617.4004000,-2507.2998000,14.1000000,270.0000000,058,026,60); //Trailer 1
-    AddStaticVehicleEx(435,2595.8999000,-2507.3999000,14.1000000,270.0000000,128,169,60); //Trailer 1
-    AddStaticVehicleEx(435,2575.1001000,-2507.2000000,14.1000000,270.0000000,068,052,60); //Trailer 1
+    AddStaticVehicleEx(435,2672.0000000,-2476.7000000,14.3000000,180.0000000,058,158,120); //Trailer 1
+    AddStaticVehicleEx(435,2671.8000000,-2457.5000000,14.3000000,180.0000000,006,085,120); //Trailer 1
+    AddStaticVehicleEx(435,2658.5000000,-2507.3999000,14.1000000,269.9950000,045,125,120); //Trailer 1
+    AddStaticVehicleEx(435,2638.3999000,-2507.3000000,14.1000000,269.9950000,063,054,120); //Trailer 1
+    AddStaticVehicleEx(435,2617.4004000,-2507.2998000,14.1000000,270.0000000,058,026,120); //Trailer 1
+    AddStaticVehicleEx(435,2595.8999000,-2507.3999000,14.1000000,270.0000000,128,169,120); //Trailer 1
+    AddStaticVehicleEx(435,2575.1001000,-2507.2000000,14.1000000,270.0000000,068,052,120); //Trailer 1
 
-    pescaCar[0] = AddStaticVehicleEx(453,2640.3999000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[1] = AddStaticVehicleEx(453,2633.7000000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[2] = AddStaticVehicleEx(453,2626.7000000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[3] = AddStaticVehicleEx(453,2619.8999000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[4] = AddStaticVehicleEx(453,2613.0000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[5] = AddStaticVehicleEx(453,2606.5000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[0] = AddStaticVehicleEx(453,-2207.4204,2423.4253,-0.3261,45.5097,1,1, 120); // Barco pescador 1
+	pescaCar[1] = AddStaticVehicleEx(453,-2237.9941,2438.4094,-0.4156,223.5009,1,1, 120); // Barco pescador 2
+	pescaCar[2] = AddStaticVehicleEx(453,-2257.9482,2418.3459,-0.2254,224.7637,1,1, 120); // Barco pescador 3
+	pescaCar[3] = AddStaticVehicleEx(453,-2234.8643,2395.3953,-0.2846,46.2636,1,1, 120); // Barco pescador 4
+	pescaCar[4] = AddStaticVehicleEx(453,-2215.0444,2415.8115,-0.2281,45.4560,1,1, 120); // Barco pescador 5
+	pescaCar[5] = AddStaticVehicleEx(453,-2229.4580,2445.6484,-0.3800,227.1140,1,1, 120); // Barco pescador 6
+	pescaCar[6] = AddStaticVehicleEx(453,-2250.3552,2425.8960,-0.3987,222.1967,1,1, 120); // Barco pescador 7
+	pescaCar[7] = AddStaticVehicleEx(453,-2227.8508,2403.4043,-0.2836,46.5740,1,1, 120); // Barco pescador 8
+	pescaCar[8] = AddStaticVehicleEx(422,-2256.5710,2389.2595,4.9562,312.9273,148,148, 120); // Bobcat pescador 9
+	pescaCar[9] = AddStaticVehicleEx(422,-2260.7410,2394.0042,4.9553,312.4781,148,148, 120); // Bobcat pescador 10
+	pescaCar[10] = AddStaticVehicleEx(422,-2264.4448,2398.0110,4.9432,313.2853,148,148, 120); // Bobcat pescador 11
+	pescaCar[11] = AddStaticVehicleEx(422,-2268.8757,2402.6802,4.9349,314.0073,148,148, 120); // Bobcat pescador 12
 
-    gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
-    gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
-    gariCar[2][0] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
-    gariCar[3][0] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
+    gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,300); //Trashmaster
+    gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,300); //Trashmaster
+    gariCar[2][0] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,300); //Trashmaster
+    gariCar[3][0] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,300); //Trashmaster
+
+    // Viaturas DP LS
+	viatura[0] = AddStaticVehicleEx(596,1558.1119,-1605.8326,13.1033,180.8238,0,1,600); // viatura dp ls 1
+	viatura[1] = AddStaticVehicleEx(596,1561.8210,-1605.8667,13.1047,180.3843,0,1,600); // viatura dp ls 2
+	viatura[2] = AddStaticVehicleEx(596,1565.3944,-1605.7450,13.1037,180.2056,0,1,600); // viatura dp ls 3
+	viatura[3] = AddStaticVehicleEx(596,1569.0135,-1605.8746,13.1034,181.2268,0,1,600); // viatura dp ls 4
+	viatura[4] = AddStaticVehicleEx(596,1572.6030,-1605.9039,13.1033,181.7684,0,1,600); // viatura dp ls 5
+	viatura[5] = AddStaticVehicleEx(596,1576.1215,-1605.7856,13.1040,182.3815,0,1,600); // viatura dp ls 6
+	viatura[6] = AddStaticVehicleEx(523,1584.1996,-1604.2628,12.9536,181.7495,0,0,600); // viatura dp ls 7 - moto
+	viatura[7] = AddStaticVehicleEx(523,1587.0507,-1604.2052,12.9544,183.6524,0,0,600); // viatura dp ls 8 - moto
+	viatura[8] = AddStaticVehicleEx(523,1589.4807,-1604.1102,12.9537,181.9731,0,0,600); // viatura dp ls 9 - moto
+	viatura[9] = AddStaticVehicleEx(599,1604.5919,-1609.7139,13.7049,90.4758,0,1,600); // viatura dp ls 10 - ranger
+	viatura[10] = AddStaticVehicleEx(599,1604.6300,-1614.6051,13.7045,91.4718,0,1,600); // viatura dp ls 11 - ranger
+	viatura[11] = AddStaticVehicleEx(427,1591.4994,-1711.4248,5.5955,0.1057,0,0,600); // viatura dp ls 12 - sultan BOPE
+	viatura[12] = AddStaticVehicleEx(427,1587.5057,-1711.5482,5.5959,0.3783,0,0,600); // viatura dp ls 13 - sultan BOPE
+	viatura[13] = AddStaticVehicleEx(528,1583.5328,-1711.6041,5.5956,359.3382,0,0,600); // viatura dp ls 14 - sultan BOPE
+	viatura[14] = AddStaticVehicleEx(601,1578.4025,-1711.6660,5.5958,0.0833,0,0,600); // viatura dp ls 15 - sultan BOPE
+	viatura[15] = AddStaticVehicleEx(468,1601.4662,-1704.3680,5.4630,89.2752,0,1,600); // viatura dp ls 16 - NRG BOPE
+	viatura[16] = AddStaticVehicleEx(468,1601.3104,-1700.2389,5.4595,85.7073,0,1,600); // viatura dp ls 17 - NRG BOPE
+	viatura[17] = AddStaticVehicleEx(497,1564.9956,-1655.8180,28.5723,92.0743,0,1,600); // HELI DP LS
+	viatura[18] = AddStaticVehicleEx(497,1554.0763,-1643.5869,28.5869,91.8457,0,1,600); // HELI DP LS
+	viatura[19] = AddStaticVehicleEx(497,1566.9985,-1693.6095,28.5699,89.8686,0,1,600); // HELI DP LS
+	viatura[20] = AddStaticVehicleEx(497,1552.2993,-1707.2042,28.5827,85.7773,0,1,600); // HELI DP LS
 
     // Capacidade do carro de gari
     for(new i = 0; i < sizeof(gariCar); i ++) gariCar[i][1] = 0;
@@ -7770,6 +7921,22 @@ CMD:hq(playerid)
             PlayerPlaySound(playerid, 1057, 0 ,0, 0);
             HQ[playerid] = true;
         }
+        else if(PlayerDados[playerid][Profissao] == MotoBoy)
+        {
+            SetPlayerMapIcon(playerid, GPS_ID, 977.0563,-1273.2852,15.1108, GPS_ICON, 0, MAPICON_GLOBAL);
+            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
+
+            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+            HQ[playerid] = true;
+        }
+        else if(PlayerDados[playerid][Profissao] == Pescador)
+        {
+            SetPlayerMapIcon(playerid, GPS_ID, -2185.6106,2417.2522,5.1901, GPS_ICON, 0, MAPICON_GLOBAL);
+            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
+
+            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+            HQ[playerid] = true;
+        }
         else if(PlayerDados[playerid][Profissao] == Petroleiro)
         {
             SetPlayerMapIcon(playerid, GPS_ID, 312.1143,1477.8135,8.8824, GPS_ICON, 0, MAPICON_GLOBAL);
@@ -7817,6 +7984,36 @@ CMD:profissao (playerid)
 	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
 	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
 	    strcat(str, "{ffffff}/uniforme{c0c0c0} - Para utilizar o uniforme da sua profissão!");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+
+	else if(PlayerDados[playerid][Profissao] == MotoBoy)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}MotoBoy\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}MotoBoy {c0c0c0}é seguir o checkpoint para você fazer sua entrega!\n");
+	    strcat(str, "{c0c0c0}No HQ de MotoBoy, Tem varias motos, Os Quais Você Deve usar para fazer sua entrega!\n");
+	    strcat(str, "{c0c0c0}Quando não for disponibilizado nenhum outro checkpoint, regresse em seu HQ  e utilize novamente o comandos {FFFFFF}/PegarEntrega\n");
+	    strcat(str, "{c0c0c0}Porém, se você sair do seu veículo enquanto estiver trabalhando (com um checkpoint ativo) você terá 60 segundos para entrar no seu veículo novamente!\n");
+	    strcat(str, "{c0c0c0}Os valores das entregas são aleatórios e das gorjetas também!\n\n");
+	    strcat(str, "{ffffff}/PegarEntrega{c0c0c0} - Depois disso basta seguir o checkpoint para você fazer sua entrega!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
+
+	else if(PlayerDados[playerid][Profissao] == Pescador)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}Pescador\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}Pescador {c0c0c0}é trabalha Pescando Peixes Pelas Águas de San Andreas!\n");
+	    strcat(str, "{c0c0c0}Após Pegar Seus Peixes, Vá Vender No em uma Loja de Utilitários (/Gps)!\n");
+	    strcat(str, "{c0c0c0}Os numeros de peixes que você pesca são aleatórios!\n\n");
+	    strcat(str, "{ffffff}/Pescar{c0c0c0} - Inicia Pesca. (25s)!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
 	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
 		return 1;
 	}
@@ -8176,6 +8373,30 @@ CMD:pegarpizza(playerid)
 	        return 1;
     	}
     	else return SendClientMessage(playerid, -1, "{f4ce42}| Pizzaria | Você não está no veiculo da sua profissão!");
+    }
+    else
+    {
+    	SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para entregadores de pizza!");	 
+    }
+    return 1;
+}
+CMD:pegarentrega(playerid)
+{
+    if(PlayerDados[playerid][Profissao] == MotoBoy)
+    {
+    	if(!PlayerToPoint(playerid, 80.0, 987.9335,-1253.1625,16.5808)) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você tem que está próximo do seu HQ!");
+    	else if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 581)
+    	{
+    		new valor = random(sizeof(empresasPos));
+			profissaoCar[playerid] = 1;
+		   	SendClientMessage(playerid, -1, "{f4ce42}| Central | Você pegou pizzas, siga o checkpoint para entregar!");
+		    profissaoCapapidate[playerid] = 10;
+		    SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
+		    DisablePlayerRaceCheckpoint(playerid);
+		    SetPlayerRaceCheckpoint(playerid, 0, empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], 10);
+	        return 1;
+    	}
+    	else return SendClientMessage(playerid, -1, "{f4ce42}| Central | Você não está no veiculo da sua profissão!");
     }
     else
     {
@@ -9337,8 +9558,8 @@ CMD:kick (playerid, params[])
 			SendClientMessageToAll(-1, Mensagem);
 			format(Dialog, sizeof(Dialog), "{FF0000}Você Foi Kickado Pelo Adminstrador: %s\nMotivo: %s\n\nCaso Ache Que O Kick Foi Abuso De Comando,\nInforme Um Responsavel Ou Dono!",getName(playerid), Motivo);
 			ShowPlayerDialog(PlayerIDKickado, DialogKick, DIALOG_STYLE_MSGBOX, "{FF0000}Kickado!", Dialog, "OK", "");
-
-			Kick(PlayerIDKickado);	
+	
+			SetTimerEx("DelayedKick", 1000, false, "i", PlayerIDKickado);
 
 			format(Log, sizeof(Log), "O Administrador %s Kickou %s ( Motivo: %s )", getName(playerid), getName(PlayerIDKickado), Motivo);
 			fileLog("Kick", Log);
