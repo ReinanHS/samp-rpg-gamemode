@@ -1,17 +1,17 @@
-// This is a comment
-// uncomment the line below if you want to write a filterscript
-//#define FILTERSCRIPT
+/*===========================================[ • Skylandia RPG 2018 • ]=========================================*/
 
+/*=================================================[ INCLUDES ]==========================================================*/
 #include <a_samp>
 #include <a_zones>
 #include <DOF2>
 #include <zcmd>
 #include <sscanf2>
 #include <CpsTream>
+#include <streamer>
 
 //------------------------- { - DEFINIÇÕES - } ---------------------------------
 // Init Gamemode + configs
-#define SERVER_PASSWORD "sklyandia456123" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
+#define SERVER_PASSWORD "skylandiaadmin" // Senha aleatoria, só para evitar de alguém logar antes do servidor liberar.
 #define SERVER_GAMEMODE "Brasil RPG ® 2018"
 #define SERVER_LANGUAGE "Português - Brasil"
 //==========[ DIALOGS ]=======       ==[ IDs ]==
@@ -44,6 +44,7 @@
 #define 	DialogCreditoSMS			(27)	// Crédito para SMS
 #define 	DialogVendaProdutos			(28)	// Venda de produtos
 #define 	DialogImobiliaria			(29)	// Imobiliaria
+#define 	DialogKick					(30)	// Kick Info
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -227,6 +228,7 @@
 
 new InAutoEscola[MAX_PLAYERS];
 new InAutoEscolaType[MAX_PLAYERS];
+new InAutoEscolaTempo[MAX_PLAYERS];
 new carroauto[MAX_PLAYERS];
 new carregado[MAX_PLAYERS] = 0;
 
@@ -579,6 +581,7 @@ new PlayerAntiSpam[MAX_PLAYERS];
 new PlayerInCasaID[MAX_PLAYERS];
 new bool:PlayerVoltaLocal[MAX_PLAYERS];
 new profissaoTempo[MAX_PLAYERS];
+new bool:PlayerMultaTempo[MAX_PLAYERS];
 
 new MercadoInfo[MAX_PLAYERS][mInfo];
 
@@ -728,9 +731,6 @@ new Float:pPosZ[MAX_PLAYERS];
 new Float:iPosX[MAX_PLAYERS];
 new Float:iPosY[MAX_PLAYERS];
 new Float:iPosZ[MAX_PLAYERS];
-
-forward ProcessGameTime(playerid);
-forward MapIcon(playerid);
 //Checkpoints
 new CheckAgencia;
 new CPAutoEscola;
@@ -765,6 +765,35 @@ new respawntrailer;
 new Atores[6];
 //new Aviso[MAX_PLAYERS];
 new Log[256];
+new Text:DataC, Text:HoraC;
+new Float:radarPos[25][5] =
+{
+	{264.285827, -1422.747070, 11.770720, 117.954765, 90.0}, // ReinanHS Local: Rodeo
+	{1195.764160, -942.861694, 40.742568, 96.420578, 90.0}, // ReinanHS Local: Temple
+	{528.089172, -1723.032836, 10.528987, 85.620918, 90.0}, // ReinanHS Local: Santa Maria Beach
+	{632.362976, -1522.343017, 12.933951, 357.845062, 90.0}, // ReinanHS Local: Rodeo
+	{1032.489624, -2242.885498, 11.163574, 21.052808, 100.0}, // ReinanHS Local: Verdant Bluffs
+	{-126.292533, -1215.083862, 0.811596, 344.517852, 120.0}, // ReinanHS Local: Flint County
+	{-783.424194, -996.465332, 77.697257, 94.352676, 120.0}, // ReinanHS Local: Flint County
+	{-711.096679, -1533.118774, 54.874614, 356.761352, 90.0}, // ReinanHS Local: Flint County
+	{-1217.250488, -1788.861083, 46.917442, 36.907699, 100.0}, // ReinanHS Local: Whetstone
+	{-1904.130737, -817.281982, 42.953125, 4.968263, 120.0}, // ReinanHS Local: Foster Valley
+	{-1496.915649, 723.800354, 44.240676, 315.795257, 120.0}, // ReinanHS Local: Esplanade East
+	{-619.290039, 647.992309, 14.827327, 247.091125, 120.0}, // ReinanHS Local: Tierra Robada
+	{914.845703, 2601.462158, 8.457429, 247.091125, 120.0}, // ReinanHS Local: Las Venturas
+	{-45.659328, 2645.578613, 61.668342, 86.540092, 90.0}, // ReinanHS Local: Bone County
+	{-1506.746582, 2737.305908, 63.275451, 91.759941, 90.0}, // ReinanHS Local: El Quebrados
+	{-2646.741699, 2490.637939, 29.440971, 312.118804, 90.0}, // ReinanHS Local: Bayside
+	{-2479.927001, 2369.010986, 8.193243, 204.056945, 90.0}, // ReinanHS Local: Bayside
+	{-2681.561279, 1823.786743, 65.997497, 177.567138, 120.0}, // ReinanHS Local: Gant Bridge
+	{-2415.102294, 1099.766479, 53.827854, 255.692413, 120.0}, // ReinanHS Local: Juniper Hollow
+	{-496.257202, 277.533081, 0.241242, 270.628082, 120.0}, // ReinanHS Local: The Panopticon
+	{952.966064, 391.049682, 18.086530, 301.188842, 120.0}, // ReinanHS Local: Red County
+	{2099.587646, 314.923126, 32.334262, 91.629539, 120.0}, // ReinanHS Local: Red County
+	{1700.790771, -716.204772, 46.524208, 173.760543, 120.0}, // ReinanHS Local: Red County
+	{1324.465332, -1506.515502, 11.546875, 148.944351, 90.0}, // ReinanHS Local: Market
+	{2167.221191, -2565.501464, 11.546875, 174.679824, 100.0} // ReinanHS Local: Los Santos International
+};
 //------------------------------------------------------------------------------
 
 #if defined GAMEMODE
@@ -782,12 +811,14 @@ public OnGameModeInit()
 {
 	// Atores
 	CriarAtores();
+	// Tempo
+	ProcessGameTime();
     // Basic Config
     new Password[256],Gamemode[256],Language[256];
     format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
 	format(Password, sizeof(Password), "password %s", SERVER_PASSWORD);
 	format(Language, sizeof(Language), "language %s", SERVER_LANGUAGE);
-	//SendRconCommand(Password);
+	SendRconCommand(Password);
 	SetGameModeText(Gamemode);
 	SendRconCommand(Language);
 
@@ -810,6 +841,8 @@ public OnGameModeInit()
     loadCasas();
     // Textos Informativos
     loadTextos();
+    // Radar
+    createRadar();
 
     DisableInteriorEnterExits(); // desativar entradas em lojas/casas ( pikcups amarelos ) do jogo normal
     EnableStuntBonusForAll(0); // desativar stunt bonus ( grana por empinar, ficar maior tempo no ar, etc...)
@@ -817,296 +850,10 @@ public OnGameModeInit()
     ManualVehicleEngineAndLights();
     // Player markers only visible to nearby players
     ShowPlayerMarkers(PLAYER_MARKERS_MODE_STREAMED);
-
-    //Texto da tela de login e registro
-    Logo = TextDrawCreate(160.000000, 310.000000, "SKYLANDIA CIDADE VIDA REAL");
-    TextDrawBackgroundColor(Logo, 255);
-    TextDrawFont(Logo, 3);
-    TextDrawLetterSize(Logo, 0.700000, 5.000000);
-    TextDrawColor(Logo, -5963521);
-    TextDrawSetOutline(Logo, 1);
-    TextDrawSetProportional(Logo, 1);
-    TextDrawSetSelectable(Logo, 0);
-
-    Versao = TextDrawCreate(290.000000, 363.000000, "v0.0.1");
-    TextDrawBackgroundColor(Versao, 255);
-    TextDrawFont(Versao, 2);
-    TextDrawLetterSize(Versao, 0.600000, 2.000000);
-    TextDrawColor(Versao, -172935425);
-    TextDrawSetOutline(Versao, 1);
-    TextDrawSetProportional(Versao, 1);
-    TextDrawSetSelectable(Versao, 0);
-
-    site = TextDrawCreate(177.000000, 389.000000, "heavyhost.com.br");
-    TextDrawBackgroundColor(site, 255);
-    TextDrawFont(site, 2);
-    TextDrawLetterSize(site, 0.600000, 2.000000);
-    TextDrawColor(site, -421075201);
-    TextDrawSetOutline(site, 1);
-    TextDrawSetProportional(site, 1);
-    TextDrawSetSelectable(site, 0);
-
-    Rodape = TextDrawCreate(3.000000, 429.000000, "Skylandia Cidade Vida Real v0.0.1");
-    TextDrawBackgroundColor(Rodape, 255);
-    TextDrawFont(Rodape, 1);
-    TextDrawLetterSize(Rodape, 0.450000, 1.699998);
-    TextDrawColor(Rodape, -2686721);
-    TextDrawSetOutline(Rodape, 1);
-    TextDrawSetProportional(Rodape, 1);
-    TextDrawUseBox(Rodape, 1);
-    TextDrawBoxColor(Rodape, 269554431);
-    TextDrawTextSize(Rodape, 637.000000, -129.000000);
-    TextDrawSetSelectable(Rodape, 0);
-
-
-    // Status
-
-	textStatus[0] = TextDrawCreate(543.938537, 242.499938, "box");
-	TextDrawLetterSize(textStatus[0], 0.000000, 16.659065);
-	TextDrawTextSize(textStatus[0], 633.000000, 0.000000);
-	TextDrawAlignment(textStatus[0], 1);
-	TextDrawColor(textStatus[0], -1);
-	TextDrawUseBox(textStatus[0], 1);
-	TextDrawBoxColor(textStatus[0], 319555162);
-	TextDrawSetShadow(textStatus[0], 0);
-	TextDrawSetOutline(textStatus[0], 0);
-	TextDrawBackgroundColor(textStatus[0], -1378294017);
-	TextDrawFont(textStatus[0], 1);
-	TextDrawSetProportional(textStatus[0], 1);
-	TextDrawSetShadow(textStatus[0], 0);
-
-	textStatus[1] = TextDrawCreate(544.950195, 244.233551, "box");
-	TextDrawLetterSize(textStatus[1], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[1], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[1], 1);
-	TextDrawColor(textStatus[1], -1);
-	TextDrawUseBox(textStatus[1], 1);
-	TextDrawBoxColor(textStatus[1], 1246118721);
-	TextDrawSetShadow(textStatus[1], 0);
-	TextDrawSetOutline(textStatus[1], 0);
-	TextDrawBackgroundColor(textStatus[1], 255);
-	TextDrawFont(textStatus[1], 1);
-	TextDrawSetProportional(textStatus[1], 0);
-	TextDrawSetShadow(textStatus[1], 0);
-
-	textStatus[2] = TextDrawCreate(559.354797, 244.533126, "Status");
-	TextDrawLetterSize(textStatus[2], 0.400000, 1.600000);
-	TextDrawAlignment(textStatus[2], 1);
-	TextDrawColor(textStatus[2], -1);
-	TextDrawSetShadow(textStatus[2], 0);
-	TextDrawSetOutline(textStatus[2], 0);
-	TextDrawBackgroundColor(textStatus[2], 255);
-	TextDrawFont(textStatus[2], 2);
-	TextDrawSetProportional(textStatus[2], 1);
-	TextDrawSetShadow(textStatus[2], 0);
-
-	textStatus[3] = TextDrawCreate(544.950195, 269.835113, "box");
-	TextDrawLetterSize(textStatus[3], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[3], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[3], 1);
-	TextDrawColor(textStatus[3], -1);
-	TextDrawUseBox(textStatus[3], 1);
-	TextDrawBoxColor(textStatus[3], 1246118721);
-	TextDrawSetShadow(textStatus[3], 0);
-	TextDrawSetOutline(textStatus[3], 0);
-	TextDrawBackgroundColor(textStatus[3], 255);
-	TextDrawFont(textStatus[3], 1);
-	TextDrawSetProportional(textStatus[3], 0);
-	TextDrawSetShadow(textStatus[3], 0);
-
-	textStatus[4] = TextDrawCreate(544.950195, 293.336547, "box");
-	TextDrawLetterSize(textStatus[4], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[4], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[4], 1);
-	TextDrawColor(textStatus[4], -1);
-	TextDrawUseBox(textStatus[4], 1);
-	TextDrawBoxColor(textStatus[4], 1246118721);
-	TextDrawSetShadow(textStatus[4], 0);
-	TextDrawSetOutline(textStatus[4], 0);
-	TextDrawBackgroundColor(textStatus[4], 255);
-	TextDrawFont(textStatus[4], 1);
-	TextDrawSetProportional(textStatus[4], 0);
-	TextDrawSetShadow(textStatus[4], 0);
-
-	textStatus[5] = TextDrawCreate(544.950195, 317.138000, "box");
-	TextDrawLetterSize(textStatus[5], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[5], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[5], 1);
-	TextDrawColor(textStatus[5], -1);
-	TextDrawUseBox(textStatus[5], 1);
-	TextDrawBoxColor(textStatus[5], 1246118721);
-	TextDrawSetShadow(textStatus[5], 0);
-	TextDrawSetOutline(textStatus[5], 0);
-	TextDrawBackgroundColor(textStatus[5], 255);
-	TextDrawFont(textStatus[5], 1);
-	TextDrawSetProportional(textStatus[5], 0);
-	TextDrawSetShadow(textStatus[5], 0);
-
-	textStatus[6] = TextDrawCreate(544.950195, 341.139465, "box");
-	TextDrawLetterSize(textStatus[6], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[6], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[6], 1);
-	TextDrawColor(textStatus[6], -1);
-	TextDrawUseBox(textStatus[6], 1);
-	TextDrawBoxColor(textStatus[6], 1246118721);
-	TextDrawSetShadow(textStatus[6], 0);
-	TextDrawSetOutline(textStatus[6], 0);
-	TextDrawBackgroundColor(textStatus[6], 255);
-	TextDrawFont(textStatus[6], 1);
-	TextDrawSetProportional(textStatus[6], 0);
-	TextDrawSetShadow(textStatus[6], 0);
-
-	textStatus[7] = TextDrawCreate(544.950195, 364.840911, "box");
-	TextDrawLetterSize(textStatus[7], 0.000000, 1.886672);
-	TextDrawTextSize(textStatus[7], 631.745849, 0.000000);
-	TextDrawAlignment(textStatus[7], 1);
-	TextDrawColor(textStatus[7], -1);
-	TextDrawUseBox(textStatus[7], 1);
-	TextDrawBoxColor(textStatus[7], 1246118721);
-	TextDrawSetShadow(textStatus[7], 0);
-	TextDrawSetOutline(textStatus[7], 0);
-	TextDrawBackgroundColor(textStatus[7], 255);
-	TextDrawFont(textStatus[7], 1);
-	TextDrawSetProportional(textStatus[7], 0);
-	TextDrawSetShadow(textStatus[7], 0);
-
-	textStatus[8] = TextDrawCreate(593.058959, 384.866729, "Skylandia");
-	TextDrawLetterSize(textStatus[8], 0.259000, 0.899999);
-	TextDrawAlignment(textStatus[8], 2);
-	TextDrawColor(textStatus[8], -1);
-	TextDrawSetShadow(textStatus[8], 0);
-	TextDrawSetOutline(textStatus[8], 0);
-	TextDrawBackgroundColor(textStatus[8], 255);
-	TextDrawFont(textStatus[8], 2);
-	TextDrawSetProportional(textStatus[8], 1);
-	TextDrawSetShadow(textStatus[8], 0);
-
-	textStatus[9] = TextDrawCreate(533.472961, 256.816284, "");
-	TextDrawLetterSize(textStatus[9], 0.000000, 0.000000);
-	TextDrawTextSize(textStatus[9], 40.000000, 44.000000);
-	TextDrawAlignment(textStatus[9], 1);
-	TextDrawColor(textStatus[9], -1);
-	TextDrawSetShadow(textStatus[9], 0);
-	TextDrawSetOutline(textStatus[9], 0);
-	TextDrawBackgroundColor(textStatus[9], 0);
-	TextDrawFont(textStatus[9], 5);
-	TextDrawSetProportional(textStatus[9], 0);
-	TextDrawSetShadow(textStatus[9], 0);
-	TextDrawSetPreviewModel(textStatus[9], 19576);
-	TextDrawSetPreviewRot(textStatus[9], 0.000000, 0.000000, 0.000000, 1.000000);
-
-	textStatus[10] = TextDrawCreate(535.772399, 288.718231, "");
-	TextDrawLetterSize(textStatus[10], 0.000000, 0.000000);
-	TextDrawTextSize(textStatus[10], 37.000000, 27.000000);
-	TextDrawAlignment(textStatus[10], 1);
-	TextDrawColor(textStatus[10], -1);
-	TextDrawSetShadow(textStatus[10], 0);
-	TextDrawSetOutline(textStatus[10], 0);
-	TextDrawBackgroundColor(textStatus[10], 0);
-	TextDrawFont(textStatus[10], 5);
-	TextDrawSetProportional(textStatus[10], 0);
-	TextDrawSetShadow(textStatus[10], 0);
-	TextDrawSetPreviewModel(textStatus[10], 19570);
-	TextDrawSetPreviewRot(textStatus[10], 0.000000, 0.000000, 0.000000, 1.000000);
-
-	textStatus[11] = TextDrawCreate(539.671447, 306.319305, "");
-	TextDrawLetterSize(textStatus[11], 0.000000, 0.000000);
-	TextDrawTextSize(textStatus[11], 31.000000, 37.000000);
-	TextDrawAlignment(textStatus[11], 1);
-	TextDrawColor(textStatus[11], -1);
-	TextDrawSetShadow(textStatus[11], 0);
-	TextDrawSetOutline(textStatus[11], 0);
-	TextDrawBackgroundColor(textStatus[11], 0);
-	TextDrawFont(textStatus[11], 5);
-	TextDrawSetProportional(textStatus[11], 0);
-	TextDrawSetShadow(textStatus[11], 0);
-	TextDrawSetPreviewModel(textStatus[11], 11738);
-	TextDrawSetPreviewRot(textStatus[11], 0.000000, 0.000000, 0.000000, 1.000000);
-
-	textStatus[12] = TextDrawCreate(544.170349, 338.321258, "");
-	TextDrawLetterSize(textStatus[12], 0.000000, 0.000000);
-	TextDrawTextSize(textStatus[12], 24.000000, 23.000000);
-	TextDrawAlignment(textStatus[12], 1);
-	TextDrawColor(textStatus[12], -1);
-	TextDrawSetShadow(textStatus[12], 0);
-	TextDrawSetOutline(textStatus[12], 0);
-	TextDrawBackgroundColor(textStatus[12], 0);
-	TextDrawFont(textStatus[12], 5);
-	TextDrawSetProportional(textStatus[12], 0);
-	TextDrawSetShadow(textStatus[12], 0);
-	TextDrawSetPreviewModel(textStatus[12], 1247);
-	TextDrawSetPreviewRot(textStatus[12], 0.000000, 0.000000, 0.000000, 1.000000);
-
-	textStatus[13] = TextDrawCreate(545.470031, 363.222778, "");
-	TextDrawLetterSize(textStatus[13], 0.000000, 0.000000);
-	TextDrawTextSize(textStatus[13], 24.000000, 23.000000);
-	TextDrawAlignment(textStatus[13], 1);
-	TextDrawColor(textStatus[13], -1);
-	TextDrawSetShadow(textStatus[13], 0);
-	TextDrawSetOutline(textStatus[13], 0);
-	TextDrawBackgroundColor(textStatus[13], 0);
-	TextDrawFont(textStatus[13], 5);
-	TextDrawSetProportional(textStatus[13], 0);
-	TextDrawSetShadow(textStatus[13], 0);
-	TextDrawSetPreviewModel(textStatus[13], 1277);
-	TextDrawSetPreviewRot(textStatus[13], 0.000000, 0.000000, 30.000000, 1.000000);
-
-    /*              PICKUPS De lugares Publicos             */
-    AddStaticPickup(1318,23,1733.5103,-1912.0349,13.5620);// Entrada Da Agência de Empregos
-    AddStaticPickup(1318,23,390.7674,173.7650,1008.3828);// Saida Da Agência de Empregos
-    AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
-    AddStaticPickup(1318,23,1494.4420,1303.5804,1093.2891);// Saida Auto Escola (ID: 0)
-    // Empresas
-    AddStaticPickup(1318,23,-27.3571,-58.2683,1003.5469);// Saida Mercado 24/7 (ID: 0)
-    AddStaticPickup(1318,23,364.8353,-11.7157,1001.8516);// Cluckin' bell
-    AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
-    AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
-    AddStaticPickup(1318,23,372.3253,-133.5240,1001.4922);// Well stacked pizza
-    // Departamento de Polícia
-    AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);
-    // Casas
-    AddStaticPickup(1318,23, 266.5007,304.9220,999.1484); // Level 0
-    AddStaticPickup(1318,23, 1260.6431,-785.2915,1091.9063); // Level 0
-    // Gari
-    AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
-    // PizzaBoy
-    AddStaticPickup(1210, 23, 2123.7219,-1786.7711,13.5547); // Pegar emprego
-    /*              3D TEXTS                               */
-    Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
-    Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
-    // Auto Escola
-    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
-    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.4420,1303.5804,1093.2891,15,0);//Saida Mercado 24/7 (ID: All)
-    // Cluckin' bell
-    Create3DTextLabel("{30e551}Cluckin' bell\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,364.8353,-11.7157,1001.8516,15,0);
-    // Burger shot
-    Create3DTextLabel("{30e551}Burger shot\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,362.9280,-75.2216,1001.5078,15,0);
-    // Clothes
-    Create3DTextLabel("{30e551}Clothes\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,161.4121,-97.1048,1001.8047,15,0);
-    // Well stacked pizza
-    Create3DTextLabel("{30e551}Pizzaria\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,372.3253,-133.5240,1001.4922,15,0);
-    // 24/7
-    Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7
-    // Departamento de Polícia Saida
-    Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,246.7384,62.3266,1003.6406,15,0);//Saida Departamento de Polícia
-    // Casas
-    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,266.5007,304.9220,999.1484,15,0);//Saida Casa Level 0
-    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,1260.6431,-785.2915,1091.9063,15,28);//Saida Casa Level 0
-    // Petroleiro
-    Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
-    Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
-    Create3DTextLabel("{FF0000}Entrada",50,293.1352,1416.2681,10.6482,30,0);//Entrada - Petroleiro
-    Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
-    // Gari
-    Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
-    // PizzaBoy
-    Create3DTextLabel("{FFA500}PizzaBoy\n{FFFFFF}Digite /uniforme",0xFFA500AA,2123.7219,-1786.7711,13.5547,10.0,0);
-    // Lixos pela cidade 
-    for(new i = 0; i < sizeof(lixosLatasPos); i ++)
-	{
-		lixosLatasText[i] = Create3DTextLabel("{30e551}Lixeira 3/3:\n{FFFFFF}/coletarlixo",0x008080FF,lixosLatasPos[i][0],lixosLatasPos[i][1],lixosLatasPos[i][2],10.0,0);
-	}
-
+    // veículos Das Profissão
+    veiculosProfissao();
+    // Textos informativos
+	textosinformativos();
     //Checks
 	CheckAgencia = CPS_AddCheckpoint(363.0818,173.8653,1008.3828, 1.0, 50);// Local de pegar Profissão
     CPAutoEscola = CPS_AddCheckpoint(1490.9628,1305.9032,1093.2964,1.0,50);// Auto Escola
@@ -1116,195 +863,49 @@ public OnGameModeInit()
 	CheckDidier = CPS_AddCheckpoint(162.8003,-84.0606,1001.8047,1.0,50);// Didier
 	CheckUtilitarios = CPS_AddCheckpoint(-22.1867,-55.6953,1003.5469,1.0,50);// Loja de utilitários
 
-    // Veiculos de petoleiro
-    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,108,125,60); //Tanker
-	petroleiroCar[1] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,108,125,60); //Tanker
-	petroleiroCar[2] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,108,125,60); //Tanker
-	petroleiroCar[3] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,108,125,60); //Tanker
-	petroleiroCar[4] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,108,125,60); //Tanker
-	petroleiroCar[5] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,108,125,60); //Tanker
-	petroleiroCar[6] = AddStaticVehicleEx(514,308.7998000,1355.2002000,9.9000000,73.9930000,108,125,60); //Tanker
-	petroleiroCar[7] = AddStaticVehicleEx(514,307.3999900,1349.9000000,9.9000000,73.9930000,108,125,60); //Tanker
-	petroleiroCar[8] = AddStaticVehicleEx(514,305.3999900,1343.9000000,9.9000000,73.9930000,108,125,60); //Tanker
-	petroleiroCar[9] = AddStaticVehicleEx(514,331.5000000,1470.6000000,8.2000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[10] = AddStaticVehicleEx(514,334.0000000,1483.2002000,8.5000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[11] = AddStaticVehicleEx(514,333.2000100,1476.7000000,8.3000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[12] = AddStaticVehicleEx(514,330.6000100,1464.4000000,8.1000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[13] = AddStaticVehicleEx(514,329.7000100,1458.7000000,8.1000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[14] = AddStaticVehicleEx(514,327.9003900,1452.0000000,8.1000000,79.9910000,108,125,60); //Tanker
-	petroleiroCar[15] = AddStaticVehicleEx(514,304.3999900,1471.0000000,10.2000000,267.9900000,108,125,60); //Tanker
-	petroleiroCar[16] = AddStaticVehicleEx(514,306.2999900,1464.4000000,10.2000000,267.9900000,108,125,60); //Tanker
-
-    AddStaticVehicleEx(584,295.5000000,1440.4004000,11.5000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,296.0996100,1446.0996000,11.6000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,296.0000000,1452.3000000,11.6000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,295.2000100,1458.6000000,10.8000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,295.7998000,1464.7002000,11.5000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,294.7999900,1471.3000000,11.5000000,267.9950000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,330.5000000,1392.8000000,9.0000000,74.0000000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,329.0000000,1387.3000000,9.0000000,73.9980000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,327.6000100,1382.1000000,9.0000000,73.9980000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,324.8999900,1372.9000000,9.0000000,73.9980000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,323.3999900,1367.8000000,9.6000000,73.9930000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,321.5680500,1362.7539000,9.7997200,73.9930000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,318.9580100,1352.2363000,10.4462500,73.9930000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,317.3999900,1346.9000000,10.5000000,73.9980000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,314.2999900,1341.4000000,11.3000000,73.9930000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,344.2027900,1481.3641000,8.9986500,79.9910000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,343.2000100,1475.0000000,9.0000000,79.9910000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,341.7999900,1469.3000000,8.7000000,81.9910000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,340.2999900,1462.7000000,8.7000000,79.9910000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,339.5996100,1456.7002000,8.7000000,79.9910000,245,245,60); //Trailer 3
-    AddStaticVehicleEx(584,338.0000000,1450.4004000,8.7000000,79.9910000,245,245,60); //Trailer 3
-
-    // Taxi
-    taxiCar[0] = AddStaticVehicleEx(438,1802.4004000,-1908.0996000,13.7169400,87.9950000,006,000,120); //Cabbie
-    taxiCar[1] = AddStaticVehicleEx(420,1802.3000000,-1912.2000000,13.3000000,87.9950000,006,000,120); //Taxi
-    taxiCar[2] = AddStaticVehicleEx(420,1802.6000000,-1903.9000000,13.3000000,87.9950000,006,000,120); //Taxi
-    taxiCar[3] = AddStaticVehicleEx(438,1802.2002000,-1917.0000000,13.7169400,87.9950000,006,000,120); //Cabbie
-    taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,006,000,120); //Taxi
-    taxiCar[5] = AddStaticVehicleEx(438,1802.0000000,-1927.2998000,13.7169400,87.9950000,006,000,120); //Cabbie
-    taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.2998000,13.3000000,87.9950000,006,000,120); //Taxi
-    taxiCar[7] = AddStaticVehicleEx(438,1779.2002000,-1932.2998000,13.7169400,267.9950000,006,000,120); //Cabbie
-    taxiCar[8] = AddStaticVehicleEx(420,1779.2000000,-1927.2000000,13.3000000,267.9950000,006,000,120); //Taxi
-    taxiCar[9] = AddStaticVehicleEx(438,1779.4004000,-1922.0996000,13.7169400,267.9950000,006,000,120); //Cabbie
-
-    // Moto Taxi
-    motoTaxiCar[0] = AddStaticVehicleEx(586,1775.9000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[1] = AddStaticVehicleEx(586,1777.5000000,-1886.4000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[2] = AddStaticVehicleEx(586,1779.4000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[3] = AddStaticVehicleEx(586,1781.5000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[4] = AddStaticVehicleEx(586,1783.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[5] = AddStaticVehicleEx(586,1785.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[6] = AddStaticVehicleEx(586,1787.6000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[7] = AddStaticVehicleEx(586,1789.9000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[8] = AddStaticVehicleEx(586,1792.1000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[9] = AddStaticVehicleEx(586,1794.3000000,-1886.1000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    motoTaxiCar[10] = AddStaticVehicleEx(586,1796.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
-    
-    // Entregador de mercadorias
-    entregadorCar[0] = AddStaticVehicleEx(414,1766.4000000,-1691.5000000,13.6000000,180.0000000,241,243,120); //Mule
-    entregadorCar[1] = AddStaticVehicleEx(414,1771.1000000,-1691.5000000,13.6000000,180.0000000,200,052,120); //Mule
-    entregadorCar[2] = AddStaticVehicleEx(414,1775.8000000,-1691.5000000,13.6000000,179.9950000,006,058,120); //Mule
-    entregadorCar[3] = AddStaticVehicleEx(414,1780.6000000,-1691.5000000,13.6000000,179.9950000,025,098,120); //Mule
-    entregadorCar[4] = AddStaticVehicleEx(414,1786.1000000,-1691.5000000,13.6000000,179.9950000,100,068,120); //Mule
-    entregadorCar[5] = AddStaticVehicleEx(414,1791.6000000,-1691.6000000,13.6000000,179.9950000,005,108,120); //Mule
-    entregadorCar[6] = AddStaticVehicleEx(414,1797.2000000,-1691.6000000,13.6000000,179.9950000,058,250,120); //Mule
-    entregadorCar[7] = AddStaticVehicleEx(414,1804.3000000,-1691.7000000,13.6000000,179.9950000,009,115,120); //Mule
-
-    pizzaBoyCar[0] = AddStaticVehicleEx(448,2122.8999000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[1] = AddStaticVehicleEx(448,2121.0000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[2] = AddStaticVehicleEx(448,2119.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[3] = AddStaticVehicleEx(448,2117.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[4] = AddStaticVehicleEx(448,2115.3000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[5] = AddStaticVehicleEx(448,2113.2000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[6] = AddStaticVehicleEx(448,2111.1001000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[7] = AddStaticVehicleEx(448,2108.8000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[8] = AddStaticVehicleEx(448,2106.7000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-    pizzaBoyCar[9] = AddStaticVehicleEx(448,2104.6001000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
-
-    
-    transportadorCar[0] = AddStaticVehicleEx(403,2672.0000000,-2486.1001000,14.4000000,180.0000000,006,159,120); //Linerunner
-    transportadorCar[1] = AddStaticVehicleEx(403,2671.8000000,-2466.8999000,14.3000000,180.0000000,058,139,120); //Linerunner
-    transportadorCar[2] = AddStaticVehicleEx(403,2667.4004000,-2507.3994000,14.4000000,270.0000000,069,128,120); //Linerunner
-    transportadorCar[3] = AddStaticVehicleEx(403,2647.8999000,-2507.2000000,14.4000000,270.0000000,098,058,120); //Linerunner
-    transportadorCar[4] = AddStaticVehicleEx(403,2626.8000000,-2507.2000000,14.4000000,270.0000000,036,069,120); //Linerunner
-    transportadorCar[5] = AddStaticVehicleEx(403,2605.6001000,-2507.3000000,14.4000000,270.0000000,024,123,120); //Linerunner
-    transportadorCar[6] = AddStaticVehicleEx(403,2584.6006000,-2507.2998000,14.4000000,270.0000000,015,048,120); //Linerunner
-
-    AddStaticVehicleEx(435,2672.0000000,-2476.7000000,14.3000000,180.0000000,058,158,60); //Trailer 1
-    AddStaticVehicleEx(435,2671.8000000,-2457.5000000,14.3000000,180.0000000,006,085,60); //Trailer 1
-    AddStaticVehicleEx(435,2658.5000000,-2507.3999000,14.1000000,269.9950000,045,125,60); //Trailer 1
-    AddStaticVehicleEx(435,2638.3999000,-2507.3000000,14.1000000,269.9950000,063,054,60); //Trailer 1
-    AddStaticVehicleEx(435,2617.4004000,-2507.2998000,14.1000000,270.0000000,058,026,60); //Trailer 1
-    AddStaticVehicleEx(435,2595.8999000,-2507.3999000,14.1000000,270.0000000,128,169,60); //Trailer 1
-    AddStaticVehicleEx(435,2575.1001000,-2507.2000000,14.1000000,270.0000000,068,052,60); //Trailer 1
-
-    pescaCar[0] = AddStaticVehicleEx(453,2640.3999000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[1] = AddStaticVehicleEx(453,2633.7000000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[2] = AddStaticVehicleEx(453,2626.7000000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[3] = AddStaticVehicleEx(453,2619.8999000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[4] = AddStaticVehicleEx(453,2613.0000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[5] = AddStaticVehicleEx(453,2606.5000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-    pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
-
-    gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
-    gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
-    gariCar[2][0] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
-    gariCar[3][0] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
-
-    // Capacidade do carro de gari
-    for(new i = 0; i < sizeof(gariCar); i ++) gariCar[i][1] = 0;
-
-    carroForteCar[0] = AddStaticVehicleEx(428,612.5000000,-1305.6000000,14.9000000,8.0000000,006,006,120); //Securicar
-    carroForteCar[1] = AddStaticVehicleEx(428,607.7999900,-1306.1000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[2] = AddStaticVehicleEx(428,603.0999800,-1306.6000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[3] = AddStaticVehicleEx(428,598.7999900,-1306.9000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[4] = AddStaticVehicleEx(428,593.7999900,-1307.6000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[5] = AddStaticVehicleEx(428,587.9000200,-1308.5000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[6] = AddStaticVehicleEx(428,582.4000200,-1309.3000000,14.9000000,7.9980000,006,006,120); //Securicar
-    carroForteCar[7] = AddStaticVehicleEx(428,578.2000100,-1300.7000000,14.9000000,281.9980000,006,006,120); //Securicar
-    carroForteCar[8] = AddStaticVehicleEx(428,576.7999900,-1294.5000000,14.9000000,281.9970000,006,006,120); //Securicar
-    carroForteCar[9] = AddStaticVehicleEx(428,575.5999800,-1288.3000000,15.6000000,281.9970000,006,006,120); //Securicar
-    carroForteCar[10] = AddStaticVehicleEx(428,574.2999900,-1282.4000000,16.2000000,281.9970000,006,006,120); //Securicar
-    carroForteCar[11] = AddStaticVehicleEx(428,573.0999800,-1276.8000000,16.5000000,281.9970000,006,006,120); //Securicar
-    carroForteCar[12] = AddStaticVehicleEx(428,572.0000000,-1271.4000000,16.7000000,281.9970000,006,006,120); //Securicar
-
-    mecanicoCar[0] = AddStaticVehicleEx(525,-77.0000000,-1106.5000000,1.1000000,160.0000000,001,086,120); //Tow Truck
-    mecanicoCar[1] = AddStaticVehicleEx(525,-72.3000000,-1108.3000000,1.1000000,159.9990000,001,086,120); //Tow Truck
-    mecanicoCar[2] = AddStaticVehicleEx(525,-67.6000000,-1110.1000000,1.1000000,159.9990000,001,086,120); //Tow Truck
-    mecanicoCar[3] = AddStaticVehicleEx(525,-66.3000000,-1120.4000000,1.1000000,67.9990000,001,086,120); //Tow Truck
-    mecanicoCar[4] = AddStaticVehicleEx(525,-61.5000000,-1130.1000000,1.1000000,67.9940000,001,086,120); //Tow Truck
-    mecanicoCar[5] = AddStaticVehicleEx(525,-53.2000000,-1133.0000000,1.1000000,67.9940000,001,086,120); //Tow Truck
-    mecanicoCar[6] = AddStaticVehicleEx(525,-45.1000000,-1136.3000000,1.1000000,67.9940000,001,086,120); //Tow Truck
-    mecanicoCar[7] = AddStaticVehicleEx(525,-41.3000000,-1155.8000000,1.1000000,333.9940000,001,086,120); //Tow Truck
-    mecanicoCar[8] = AddStaticVehicleEx(525,-45.7000000,-1153.7000000,1.1000000,333.9900000,001,086,120); //Tow Truck
-    mecanicoCar[9] = AddStaticVehicleEx(525,-50.8000000,-1151.1000000,1.1000000,333.9900000,001,086,120); //Tow Truck
-
-    /*=========================[  VEICULO PUBLICOS ]============================*/
-
-	VeiculoPublico[0] = AddStaticVehicle(533,1177.2534,-1339.2512,13.6410,270.2252,166,166); // veiculo publico hosp LS
- 	VeiculoPublico[1] = AddStaticVehicle(533,1176.2803,-1308.2930,13.6276,268.5153,166,166); // veiculo publico 2 hops LS
- 	VeiculoPublico[2] = AddStaticVehicleEx(400,1836.5000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
- 	VeiculoPublico[3] = AddStaticVehicleEx(400,1840.0000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
-	VeiculoPublico[4] = AddStaticVehicle(533,2001.0774,-1413.2158,16.7013,178.6218,166,166); // veiculo puclico hosp groove LS
-	VeiculoPublico[5] = AddStaticVehicle(533,2033.3418,-1447.0807,16.9472,87.6349,166,166); // veiculo publico hosp groove LS
-	VeiculoPublico[6] = AddStaticVehicle(533,1316.0635,-1372.9760,13.3378,129.7551,166,166); // veiculo publico banco LS
-    VeiculoPublico[7] = AddStaticVehicle(533,2287.7800,-1683.8911,13.5867,359.7079,166,166); // veiculo publico Groove Street
-	VeiculoPublico[8] = AddStaticVehicle(533,356.7217,-1809.6923,4.2307,0.5768,166,166); // veiculo publico praia LS
-	VeiculoPublico[9] = AddStaticVehicle(533,695.2949,-473.2573,16.0451,268.3583,166,166); //
-	VeiculoPublico[10] = AddStaticVehicle(533,219.0612,-170.7969,1.2872,90.6037,166,166); //
-	VeiculoPublico[11] = AddStaticVehicle(533,-305.6332,1036.3745,19.3028,269.9891,166,166); //
-	VeiculoPublico[12] = AddStaticVehicle(533,-305.5352,1031.9607,19.3028,269.7962,166,166); //
-	VeiculoPublico[13] = AddStaticVehicle(533,-2241.1777,2357.1633,4.6886,41.3484,166,166); //
-	VeiculoPublico[14] = AddStaticVehicle(533,-2589.9038,622.2837,14.1683,270.9962,166,166); //
-	VeiculoPublico[15] = AddStaticVehicle(533,-2589.6951,627.7159,14.1683,270.0329,166,166); //
-	VeiculoPublico[16] = AddStaticVehicle(533,1602.1212,1839.6050,10.5294,0.5195,166,166); //
-	VeiculoPublico[17] = AddStaticVehicle(533,1597.8785,1839.6631,10.5294,1.2302,166,166); //
-	VeiculoPublico[18] = AddStaticVehicle(533,-2142.6628,-2258.1833,30.3376,51.8007,166,166); //
- 	VeiculoPublico[19] = AddStaticVehicle(533,-1525.2711,-2749.9724,48.2481,169.2007,166,166); //
-	VeiculoPublico[20] = AddStaticVehicle(533,-1530.1477,-2748.2825,48.2481,170.4409,166,166); //
-	VeiculoPublico[21] = AddStaticVehicle(533,-2093.9834,-84.1647,34.8732,1.0069,166,166); //
-	VeiculoPublico[22] = AddStaticVehicle(533,-1651.8678,1311.8181,6.7432,135.6502,166,166); //
-	VeiculoPublico[23] = AddStaticVehicle(533,-866.1396,1563.2594,24.2470,270.8895,166,166); //
-	VeiculoPublico[24] = AddStaticVehicle(533,-1525.4843,2525.2244,55.4696,0.9549,166,166); //
-	VeiculoPublico[25] = AddStaticVehicle(533,-225.8166,2594.8748,62.4122,0.3951,166,166); //
-	VeiculoPublico[26] = AddStaticVehicle(533,1422.3186,277.1342,19.2638,123.3392,166,166); //
-	VeiculoPublico[27] = AddStaticVehicle(533,2470.1538,-44.9585,26.1934,1.3549,166,166); //
-	VeiculoPublico[28] = AddStaticVehicle(533,1715.3514,1472.8787,10.4524,163.3114,166,166); //
-	VeiculoPublico[29] = AddStaticVehicle(533,1711.3990,1459.5245,10.4567,163.3424,166,166); //
-	VeiculoPublico[30] = AddStaticVehicle(533,2410.1479,2334.2329,10.5294,181.0676,166,166); //
-	VeiculoPublico[31] = AddStaticVehicle(533,2455.2422,1357.6515,10.5294,180.8293,166,166); //
-	VeiculoPublico[32] = AddStaticVehicle(533,1152.2407,1369.3727,10.3810,270.9418,166,166); //
-	VeiculoPublico[33] = AddStaticVehicle(533,-86.9006,1221.8394,19.4513,182.0488,166,166); //
-	VeiculoPublico[34] = AddStaticVehicle(533,-13.7728,-2519.3652,36.3645,30.2527,166,166); //
-	VeiculoPublico[35] = AddStaticVehicle(533,1536.0165,-1677.9349,13.0919,180.9664,166,166); //
-	VeiculoPublico[36] = AddStaticVehicle(562,2746.4739,-2459.2637,13.3080,271.7818,166,166); //
-
     //SetTimer("ServerInit", 1000, false);
-    //SetTimer("ProcessGameTime", 60000, true);
+    SetTimer("ProcessGameTime", 60000, true);
     SetTimer("UpdateLixeira", 900000, true);
+
+    CreateDynamicMapIcon(1733.5028, -1912.0034, 13.5620, 23, -1, -1, -1, -1, 400.0); //Agencia de empregos
+    CreateDynamicMapIcon(1833.7811, -1842.6208, 13.5781, 17, -1, -1, -1, -1, 400.0); //Mercados 24/7 (id: 0)
+    CreateDynamicMapIcon(1519.1331, -1453.9199, 14.2084, 36, -1, -1, -1, -1, 400.0); //Auto Escola (id: 0)
+    CreateDynamicMapIcon(231.8930, 1412.7786, 10.5859, 51, -1, -1, -1, -1, 400.0); //Petroleiro
+    //PostosDeGasolina
+    for (new a = 0; a < sizeof(PostosDeGasolina); a++)
+	{
+		CreateDynamicMapIcon(PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, -1, -1, -1, -1, 400.0);	
+	}
+	// Empresas
+	for (new a = 0; a < sizeof(empresasPos); a++)
+	{
+		if(empresasPos[a][3] == 1.0) CreateDynamicMapIcon(empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, -1, -1, -1, -1, 400.0);	
+		else if(empresasPos[a][3] == 2.0) CreateDynamicMapIcon(empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, -1, -1, -1, -1, 400.0);	
+		else if(empresasPos[a][3] == 3.0) CreateDynamicMapIcon(empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, -1, -1, -1, -1, 400.0);	
+		else if(empresasPos[a][3] == 4.0) CreateDynamicMapIcon(empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, -1, -1, -1, -1, 400.0);	
+		else CreateDynamicMapIcon(empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, -1, -1, -1, -1, 100.0);	
+	}
+	// hospitais
+	for (new a = 0; a < sizeof(hospitaisPos); a++)
+	{
+		CreateDynamicMapIcon(hospitaisPos[a][0],hospitaisPos[a][1],hospitaisPos[a][2], 22, -1, -1, -1, -1, 400.0);
+	}
+	// Departamento de Polícia
+	for (new a = 0; a < sizeof(departamentoPoliciaPos); a++)
+	{	
+		CreateDynamicMapIcon(departamentoPoliciaPos[a][0],departamentoPoliciaPos[a][1],departamentoPoliciaPos[a][2], 30, -1, -1, -1, -1, 400.0);
+	}
+	// Casas
+	for (new a = 0; a < sizeof(CasasDados); a++)
+	{
+		if(CasasDados[a][venda] == true) CreateDynamicMapIcon(CasasDados[a][posX], CasasDados[a][posY], CasasDados[a][posZ], 31, -1, -1, -1, -1, 400.0);
+		else CreateDynamicMapIcon(CasasDados[a][posX], CasasDados[a][posY], CasasDados[a][posZ], 32, -1, -1, -1, -1, 400.0);
+	}
+	// Radares
+	for (new a = 0; a < sizeof(radarPos); a++)
+	{
+		CreateDynamicMapIcon(radarPos[a][0], radarPos[a][1], radarPos[a][2], 34, -1, -1, -1, -1, 400.0);
+	}
 
     return 1;
 }
@@ -1403,6 +1004,7 @@ public OnPlayerConnect(playerid)
     profissaoUniforme[playerid] = false;
     profissaoCar[playerid] = false;
     profissaoCarregandoOJG[playerid] = false;
+    PlayerMultaTempo[playerid] = false;
 
     SetTimerEx("loginAntiAFK", 120000, false, "i", playerid);
     
@@ -1667,8 +1269,6 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawFont(playerid, textPreso[playerid][4], 2);
 	PlayerTextDrawSetProportional(playerid, textPreso[playerid][4], 1);
 	PlayerTextDrawSetShadow(playerid, textPreso[playerid][4], 0);
-
-    MapIcon(playerid);
 	return 1;
 }
 
@@ -1703,6 +1303,8 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(timer_StatusSaude[playerid]);
     KillTimer(timer_UpdatePlayerLevel[playerid]);
 
+    TextDrawHideForPlayer(playerid, DataC), TextDrawHideForPlayer(playerid, HoraC);
+
 	return 1;
 }
 
@@ -1728,6 +1330,8 @@ public OnPlayerSpawn(playerid)
 	}
 	else
 	{
+		TextDrawShowForPlayer(playerid, DataC), TextDrawShowForPlayer(playerid, HoraC);
+
 		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
 	    TogglePlayerSpectating(playerid, false);
 	    TogglePlayerControllable(playerid, true);
@@ -1855,58 +1459,38 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	return 1;
 }
-
-public ProcessGameTime(playerid)
+forward ProcessGameTime();
+public ProcessGameTime()
 {
-    //new newtext[206], name[MAX_PLAYER_NAME];
-    //GetPlayerName(playerid, name, MAX_PLAYER_NAME);
+	new string[128], string2[128];
+
     new Year, Month, Day, Hour, Minute;
     getdate(Year, Month, Day);
     gettime(Hour, Minute);
-    //format(newtext, sizeof(newtext), "Nome: %s ID: %d Score: %d Ping: %d Data: %d/%d/%d Hora: %d:%d", name, playerid , GetPlayerScore(playerid), GetPlayerPing(playerid), Day, Month, Year, Hour, Minute);
-    //TextDrawSetString(Rodape, newtext);
     SetWorldTime(Hour);
-}
 
-public MapIcon(playerid)
-{
-    SetPlayerMapIcon(playerid, 1, 1733.5028,-1912.0034,13.5620, 23, 0, MAPICON_LOCAL); //Agencia de empregos
-    SetPlayerMapIcon(playerid, 2, 1833.7811,-1842.6208,13.5781, 17, 0, MAPICON_LOCAL); //Mercados 24/7 (id: 0)
-    SetPlayerMapIcon(playerid, 3, 1519.1331,-1453.9199,14.2084, 36, 0, MAPICON_LOCAL); //Auto Escola (id: 0)
-    SetPlayerMapIcon(playerid, 4, 231.8930,1412.7786,10.5859, 51, 0, MAPICON_LOCAL); //Petroleiro
-    //PostosDeGasolina
-    for (new a = 0; a < sizeof(PostosDeGasolina); a++)
-	{
-		SetPlayerMapIcon(playerid, (4+a), PostosDeGasolina[a][0],PostosDeGasolina[a][1],PostosDeGasolina[a][2], 55, 0, MAPICON_LOCAL);	
-	}
-	// Empresas
-	for (new a = 0; a < sizeof(empresasPos); a++)
-	{
-		if(empresasPos[a][3] == 1.0) SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 10, 0, MAPICON_LOCAL);	
-		else if(empresasPos[a][3] == 2.0) SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 14, 0, MAPICON_LOCAL);	
-		else if(empresasPos[a][3] == 3.0) SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 17, 0, MAPICON_LOCAL);	
-		else if(empresasPos[a][3] == 4.0) SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 29, 0, MAPICON_LOCAL);	
-		else SetPlayerMapIcon(playerid, 21+a, empresasPos[a][0], empresasPos[a][1], empresasPos[a][2], 45, 0, MAPICON_LOCAL);	
-	}
-	// hospitais
-	for (new a = 0; a < sizeof(hospitaisPos); a++)
-	{
-		SetPlayerMapIcon(playerid, 66+a, hospitaisPos[a][0],hospitaisPos[a][1],hospitaisPos[a][2], 22, 0, MAPICON_LOCAL);
-	}
-	// Departamento de Polícia
-	for (new a = 0; a < sizeof(departamentoPoliciaPos); a++)
-	{	
-		SetPlayerMapIcon(playerid, 66+a, departamentoPoliciaPos[a][0],departamentoPoliciaPos[a][1],departamentoPoliciaPos[a][2], 30, 0, MAPICON_LOCAL);
-	}
-	// Casas
-	for (new a = 0; a < sizeof(CasasDados); a++)
-	{
-		if(CasasDados[a][venda] == true) SetPlayerMapIcon(playerid, 73+a, CasasDados[a][posX], CasasDados[a][posY], CasasDados[a][posZ], 31, 0, MAPICON_LOCAL);
-		else SetPlayerMapIcon(playerid, 73+a, CasasDados[a][posX], CasasDados[a][posY], CasasDados[a][posZ], 32, 0, MAPICON_LOCAL);
-	}
-	return 1;
-}
+    new convertermes[20];
+   
+    if(Month == 1) { convertermes = "Janeiro"; }
+    else if(Month == 2) { convertermes = "Fevereiro"; }
+    else if(Month == 3) { convertermes = "Marco"; }
+    else if(Month == 4) { convertermes = "Abril"; }
+    else if(Month == 5) { convertermes = "Maio"; }
+    else if(Month == 6) { convertermes = "Junho"; }
+    else if(Month == 7) { convertermes = "Julho"; }
+    else if(Month == 8) { convertermes = "Agosto"; }
+    else if(Month == 9) { convertermes = "Setembro"; }
+    else if(Month == 10) { convertermes = "Outubro"; }
+    else if(Month == 11) { convertermes = "Novembro"; }
+    else if(Month == 12) { convertermes = "Dezembro"; }
+ 
+    format(string, sizeof(string), "%d de %s de %d", Day, convertermes, Year);
+    TextDrawSetString(DataC, string);
+    format(string2, sizeof(string2), "%02d:%02d", Hour, Minute);
+    TextDrawSetString(HoraC, string2);
 
+    return 1;
+}
 public OnVehicleSpawn(vehicleid)
 {
 	return 1;
@@ -1919,12 +1503,33 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerText(playerid, text[])
 {
-    if(Logado{playerid} == true)
+	if(Logado{playerid} == true)
     {
-    	new string[128];
-    	format(string, sizeof(string),"%s[%d]: %s", getName(playerid), playerid, text);
-    	SendClientMessageToAll(GetPlayerProfissaoCor(playerid), string); 
-    }else
+    	if(PlayerDados[playerid][Admin] > 0)
+	    {
+	    	new string[128];
+	    	format(string, sizeof(string),"{8942f4}%s[%d][STAFF]: %s", getName(playerid), playerid, text);
+	    	SendClientMessageToAll(-1, string); 
+
+	    	return 0;
+	    }
+	    else if(PlayerDados[playerid][vip] == true)
+	    {
+	    	new string[128];
+	    	format(string, sizeof(string),"{ffff00}%s[%d][{00ff1d}VIP{ffff00}]: %s", getName(playerid), playerid, text);
+	    	SendClientMessageToAll(-1, string); 
+	    	return 0;
+	    }
+	    else
+	    {
+	    	new string[128];
+	    	format(string, sizeof(string),"%s[%d]: %s", getName(playerid), playerid, text);
+	    	SendClientMessageToAll(GetPlayerProfissaoCor(playerid), string); 
+
+	    	return 0;
+	    }
+    }
+    else
     {
     	SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não está logado!");
     }
@@ -1962,9 +1567,9 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
-    if(carroauto[playerid] == vehicleid)
+    if(carroauto[playerid] == vehicleid && InAutoEscola[playerid] == 1)
     {
-        SendClientMessage(playerid,COR_ERRO,"| AUTO ESCOLA | Reprovado! Você você saiu do veículo!");
+        SendClientMessage(playerid,COR_ERRO,"| AUTO ESCOLA | Reprovado! Você saiu do veículo!");
         
         DisablePlayerRaceCheckpoint(playerid);
 	    
@@ -3008,7 +2613,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 	{
 		if(!profissaoDescarregar[playerid]) return SendClientMessage(playerid, COR_WARNING, "| Pizzaria | Você entregou a encomenda muito rapido espere um pouco!");
 		else if(GetVehicleModel(GetPlayerVehicleID(playerid)) != 448) return SendClientMessage(playerid, COR_ERRO, "| Pizzaria | Você não está em um veículo da sua profissão!");
-		else if(profissaoCar[playerid] == 1 && profissaoCapapidate[playerid] > 0)
+		else if(profissaoCar[playerid] == 1 && profissaoCapapidate[playerid] > 1)
 		{
 			profissaoDescarregar[playerid] = false;
 			profissaoCapapidate[playerid] = profissaoCapapidate[playerid] -1;
@@ -3360,6 +2965,7 @@ public OnRconLoginAttempt(ip[], password[], success)
 public OnPlayerUpdate(playerid)
 {
 	if(IsPlayerInAnyVehicle(playerid)) {
+		CheckRadar(playerid);
 		TextDrawHideForPlayer(playerid,Logo);
 		new carro = GetPlayerVehicleID(playerid);
 		if(Motor[carro] == 1){
@@ -3553,6 +3159,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    	if(!strcmp(CasasDados[i][dono], getName(playerid), false))
 				    	{
 				    		CasasDados[i][donoID] = playerid;
+				    		printf("DONO Da Casa ID %d", CasasDados[i][donoID]);
+				    		printf("Casa ID %d", i);
 				    		
 				    		if(!PlayerDados[playerid][TaPreso])
 				    		{
@@ -3565,11 +3173,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
+				    		
+				    			format(Log, sizeof(Log), "O Jogador %s (%d) Logou No Servidor.", getName(playerid), playerid);
+								fileLog("Logins", Log);
+
+							    return SpawnPlayer(playerid);
 				    		}
 				    	}
 				    	else if(!strcmp(CasasDados[i][locador], getName(playerid), false))
 				    	{
 				    		CasasDados[i][locadorID] = playerid;
+				    		printf("Locador Da Casa ID %d", CasasDados[i][locadorID]);
 
 				    		if(!PlayerDados[playerid][TaPreso])
 				    		{
@@ -3582,6 +3196,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
+				    		
+				    			format(Log, sizeof(Log), "O Jogador %s (%d) Logou No Servidor.", getName(playerid), playerid);
+								fileLog("Logins", Log);
+
+							    return SpawnPlayer(playerid);
 				    		}
 				    	}
 				    }
@@ -3604,10 +3223,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SenhaErrada[playerid] ++;
 						new str[50];
 
+						new string[952], stringLogin[100];
+						strcat(string, "{FFFFFF}Bem-vindo(a) ao {FFA500}SKYLANDIA {26AB0C}RPG{FFFFFF}\n\n");
+						format(stringLogin, sizeof(stringLogin), "Conta: {4e42f4}%s{FFFFFF}\n", getName(playerid));
+						strcat(string, stringLogin);
+						strcat(string, "Status: {00FF00}Registrada\n");
+						format(stringLogin, sizeof(stringLogin), "{FFFFFF}\nÚltimo login: {f44542}%s{26AB0C}\n\n", DOF2_GetString( PegarConta( playerid ), "UltimoLogin"));
+						strcat(string, stringLogin);
+						strcat(string, "Versão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n");
+						strcat(string, "* Insira sua senha abaixo para logar: ");
+
 						format(str, sizeof(str), "Senha Incorreta [%d/3]: por favor digite uma senha para acessar", SenhaErrada[playerid]);
                         SendClientMessage(playerid, 0xFF0000AA, str);
             			
-            			return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", Str, "Logar", "Sair");
+            			return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", string, "Logar", "Sair");
 					}
 				}
 			}
@@ -4613,7 +4242,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
 		                
 		                point[playerid] = 1;
+		                InAutoEscola[playerid] = 1;
 		                InAutoEscolaType[playerid] = 1;
+
+		                InAutoEscolaTempo[playerid] = 120;
+		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -600);
 		                return 1;
@@ -4637,9 +4270,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                SendClientMessage(playerid, COR_WARNING,"| AUTO ESCOLA | Você iniciou a auto escola, siga as setas!");
 		                
 		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
-		                
+
 		                point[playerid] = 1;
+		                InAutoEscola[playerid] = 1;
 		                InAutoEscolaType[playerid] = 2;
+
+		                InAutoEscolaTempo[playerid] = 115;
+		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -1400);
 		                return 1;
@@ -4665,7 +4302,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsTerrestre[0][0], AutoPointsTerrestre[0][1], AutoPointsTerrestre[0][2],AutoPointsTerrestre[1][0], AutoPointsTerrestre[1][1], AutoPointsTerrestre[1][2], 10);
 		                
 		                point[playerid] = 1;
+		                InAutoEscola[playerid] = 1;
 		                InAutoEscolaType[playerid] = 3;
+
+		                InAutoEscolaTempo[playerid] = 180;
+		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -2400);
 		                return 1;
@@ -4691,7 +4332,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsMaritimo[0][0], AutoPointsMaritimo[0][1], AutoPointsMaritimo[0][2],AutoPointsMaritimo[1][0], AutoPointsMaritimo[1][1], AutoPointsMaritimo[1][2], 10);
 		                
 		                point[playerid] = 1;
+		                InAutoEscola[playerid] = 1;
 		                InAutoEscolaType[playerid] = 4;
+
+		                InAutoEscolaTempo[playerid] = 115;
+		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -3400);
 		                return 1;
@@ -4716,7 +4361,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                SetPlayerRaceCheckpoint(playerid, 0, AutoPointsAereo[0][0], AutoPointsAereo[0][1], AutoPointsAereo[0][2],AutoPointsAereo[1][0], AutoPointsAereo[1][1], AutoPointsAereo[1][2], 10);
 		                
 		                point[playerid] = 1;
+		                InAutoEscola[playerid] = 1;
 		                InAutoEscolaType[playerid] = 5;
+
+		                InAutoEscolaTempo[playerid] = 138;
+		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -5000);
 		                return 1;
@@ -6755,6 +6404,64 @@ public UpdateTextDraw(playerid, textid) {
 	PlayerTextDrawShow(playerid, textStatusBar[playerid][textid]);
     return 1;
 }
+forward CheckRadar(playerid);
+public CheckRadar(playerid)
+{
+	new lString[200];
+	for(new i = 0; i < sizeof(radarPos); i++)
+	{
+	    if(IsPlayerInRangeOfPoint(playerid, 8.0, radarPos[i][0], radarPos[i][1], radarPos[i][2]))
+		{
+			if(PlayerMultaTempo[playerid] == false)
+			{
+
+				PlayerMultaTempo[playerid] = true;
+				SetTimerEx("PlayerMultaVerifica", 3000, false, "i", playerid);
+				PlayerPlaySound(playerid, 1132, 0.0, 0.0, 0.0);
+
+				if(GetVehicleSpeed(GetPlayerVehicleID(playerid)) > floatround(radarPos[i][4], floatround_round))
+				{	
+					PlayerDados[playerid][multas] = PlayerDados[playerid][multas] +1;
+
+					format(lString, sizeof(lString),"{ffef14}| Radar | Você ultrapassou o limite de velocidade, o limite é {FFFFFF}%d KM/H{ffef14} e você passou a {FFFFFF}%d KM/H!",floatround(radarPos[i][4], floatround_round), GetVehicleSpeed(GetPlayerVehicleID(playerid)));
+
+					SendClientMessage(playerid, COR_WARNING, "{FFFFFF}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{ffef14} Radar {FFFFFF}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					SendClientMessage(playerid, COR_WARNING, lString);
+					SendClientMessage(playerid, COR_WARNING, "{ffef14}| RADAR   | Portanto, você foi multado em $300, Para pagar vá até DETRAN!");
+					format(lString, sizeof(lString),"| MULTAS | Você foi multado(a) %d vez!", PlayerDados[playerid][multas]);
+					SendClientMessage(playerid, COR_ERRO, lString);
+					SendClientMessage(playerid, COR_ERRO, "| MULTAS  | Ao completar 5 multas você perdera sua habilitaçao terrestre e pagará $10000!");
+					SendClientMessage(playerid, COR_WARNING, "{FFFFFF}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{ffef14} Radar {FFFFFF}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					
+					if( ( GetVehicleSpeed(GetPlayerVehicleID(playerid)) -10) > floatround(radarPos[i][4], floatround_round) )
+					{
+						SetPlayerWantedLevel(playerid, GetPlayerWantedLevel(playerid)+1);
+						UpdatePlayerStar(playerid);
+					}
+					
+					GameTextForPlayer(playerid, "~r~Multa", 5000, 5);
+					return 1;
+				}
+				else
+				{	
+	 				format(lString, sizeof(lString),"{ffef14}| Radar | Velocidade Registrada: {FFFFFF}%d KM/H", GetVehicleSpeed(GetPlayerVehicleID(playerid)));
+					SendClientMessage(playerid, COR_WARNING,lString);
+					return 1;
+				}
+			}
+		}
+	}
+	return 1;
+}
+forward PlayerMultaVerifica(playerid);
+public PlayerMultaVerifica(playerid){
+	if(IsPlayerConnected(playerid) && PlayerMultaTempo[playerid] == true)
+	{
+		PlayerMultaTempo[playerid] = false;
+	}
+
+	return 1;
+}
 forward GetPlayerProfissaoCor(playerid);
 public GetPlayerProfissaoCor(playerid) {
 
@@ -7149,6 +6856,47 @@ public loginAntiAFK(playerid)
 
 	return 1;
 }
+forward AutoEscolaTempo(playerid);
+public AutoEscolaTempo(playerid)
+{
+	new strTempo[100];
+	if(InAutoEscola[playerid] == 1 && InAutoEscolaTempo[playerid] > 15)
+	{
+		InAutoEscolaTempo[playerid] = InAutoEscolaTempo[playerid] -1;
+		format(strTempo, sizeof(strTempo), "~s~Tempo %d", InAutoEscolaTempo[playerid]);
+		GameTextForPlayer(playerid, strTempo, 1000, 6);
+		SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		return 1;
+	}
+	else if(InAutoEscola[playerid] == 1 && InAutoEscolaTempo[playerid] <= 15 && InAutoEscolaTempo[playerid] > 0)
+	{
+		InAutoEscolaTempo[playerid] = InAutoEscolaTempo[playerid] -1;
+		format(strTempo, sizeof(strTempo), "~r~Tempo %d", InAutoEscolaTempo[playerid]);
+		GameTextForPlayer(playerid, strTempo, 1000, 6);
+		SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		return 1;
+	}
+	else if(InAutoEscola[playerid] == 1)
+	{
+		SendClientMessage(playerid,COR_ERRO,"| AUTO ESCOLA | Reprovado! Você o tempo acabou!");
+        
+        DisablePlayerRaceCheckpoint(playerid);
+	    
+	    InAutoEscola[playerid] = 0;
+        
+        DestroyVehicle(GetPlayerVehicleID(playerid));
+        
+        SetPlayerInterior(playerid, 3);
+        SetPlayerPos(playerid, 1497.8567,1308.9484,1093.2891);
+        
+        if(IsPlayerInCheckpoint(playerid))
+        {
+            DisablePlayerCheckpoint(playerid);
+        }	
+	}
+
+	return 1;
+}
 forward profissaoDescarregarTempo(playerid);
 public profissaoDescarregarTempo(playerid)
 {
@@ -7279,7 +7027,17 @@ stock CriarAtores()
 
     return 1;
 }
-
+stock createRadar()
+{
+	new string[200];
+	for (new i = 0; i < sizeof(radarPos); i++)
+	{
+		CreateObject(18880, radarPos[i][0], radarPos[i][1], radarPos[i][2], 0.0, 0.0, radarPos[i][3]);
+		format(string, sizeof(string), "{ff3d11}Radar\n{FFFFFF}Limite de velocidade: {ff3d11}%d {FFFFFF}KM/H", floatround(radarPos[i][4], floatround_round));
+	    Create3DTextLabel(string,50, radarPos[i][0], radarPos[i][1], (radarPos[i][2]+4) , 200,0);
+	}
+	return 1;
+}
 stock loadCasas()
 {
 	for (new casaid = 0; casaid < sizeof(CasasDados); casaid++)
@@ -7360,9 +7118,506 @@ stock SalvaCasas()
 	}
 	return 1;
 }
+stock textosinformativos()
+{
+	/*              PICKUPS De lugares Publicos             */
+    AddStaticPickup(1318,23,1733.5103,-1912.0349,13.5620);// Entrada Da Agência de Empregos
+    AddStaticPickup(1318,23,390.7674,173.7650,1008.3828);// Saida Da Agência de Empregos
+    AddStaticPickup(1318,23,1519.1331,-1453.9199,14.2084);// Entrada Auto Escola (ID: 0)
+    AddStaticPickup(1318,23,1494.4420,1303.5804,1093.2891);// Saida Auto Escola (ID: 0)
+    // Empresas
+    AddStaticPickup(1318,23,-27.3571,-58.2683,1003.5469);// Saida Mercado 24/7 (ID: 0)
+    AddStaticPickup(1318,23,364.8353,-11.7157,1001.8516);// Cluckin' bell
+    AddStaticPickup(1318,23,362.9280,-75.2216,1001.5078);// Burger shot
+    AddStaticPickup(1318,23,161.4121,-97.1048,1001.8047);// Clothes
+    AddStaticPickup(1318,23,372.3253,-133.5240,1001.4922);// Well stacked pizza
+    // Departamento de Polícia
+    AddStaticPickup(1247,23, 246.7384,62.3266,1003.6406);
+    // Casas
+    AddStaticPickup(1318,23, 266.5007,304.9220,999.1484); // Level 0
+    AddStaticPickup(1318,23, 1260.6431,-785.2915,1091.9063); // Level 0
+    // Gari
+    AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
+    // PizzaBoy
+    AddStaticPickup(1210, 23, 2123.7219,-1786.7711,13.5547); // Pegar emprego
+    /*              3D TEXTS                               */
+    Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
+    Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
+    // Auto Escola
+    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1519.1331,-1453.9199,14.2084,15,0);// Entrada Mercado 24/7 (ID: 0)
+    Create3DTextLabel("{FFFFFF}Auto Escola\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,1494.4420,1303.5804,1093.2891,15,0);//Saida Mercado 24/7 (ID: All)
+    // Cluckin' bell
+    Create3DTextLabel("{30e551}Cluckin' bell\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,364.8353,-11.7157,1001.8516,15,0);
+    // Burger shot
+    Create3DTextLabel("{30e551}Burger shot\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,362.9280,-75.2216,1001.5078,15,0);
+    // Clothes
+    Create3DTextLabel("{30e551}Clothes\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,161.4121,-97.1048,1001.8047,15,0);
+    // Well stacked pizza
+    Create3DTextLabel("{30e551}Pizzaria\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,372.3253,-133.5240,1001.4922,15,0);
+    // 24/7
+    Create3DTextLabel("{FFFFFF}Mercado 24/7\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,-27.3571,-58.2683,1003.5469,15,0);//Saida Mercado 24/7
+    // Departamento de Polícia Saida
+    Create3DTextLabel("{4286f4}Departamento de Polícia\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,246.7384,62.3266,1003.6406,15,0);//Saida Departamento de Polícia
+    // Casas
+    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,266.5007,304.9220,999.1484,15,0);//Saida Casa Level 0
+    Create3DTextLabel("Casa\n{FFFFFF}Aperte {00FFFF}'F' {FFFFFF}Para Sair",50,1260.6431,-785.2915,1091.9063,15,28);//Saida Casa Level 0
+    // Petroleiro
+    Create3DTextLabel("{FF0000}Área de Carregamento -->",50,258.6384,1416.1042,10.1746,30,0);//Área de Carregamento - Petroleiro
+    Create3DTextLabel("{FF0000}<-- Área de Carregamento",50,269.8310,1484.4167,10.2540,30,0);//Área de Carregamento - Petroleiro
+    Create3DTextLabel("{FF0000}Entrada",50,293.1352,1416.2681,10.6482,30,0);//Entrada - Petroleiro
+    Create3DTextLabel("{FF0000}Saída",50,293.4501,1408.0776,10.6007,30,0);//Saída - Petroleiro
+    // Gari
+    Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
+    // PizzaBoy
+    Create3DTextLabel("{FFA500}PizzaBoy\n{FFFFFF}Digite /uniforme",0xFFA500AA,2123.7219,-1786.7711,13.5547,10.0,0);
+    // Lixos pela cidade 
+    for(new i = 0; i < sizeof(lixosLatasPos); i ++)
+	{
+		lixosLatasText[i] = Create3DTextLabel("{30e551}Lixeira 3/3:\n{FFFFFF}/coletarlixo",0x008080FF,lixosLatasPos[i][0],lixosLatasPos[i][1],lixosLatasPos[i][2],10.0,0);
+	}
+	return 1;
+}
+stock veiculosProfissao()
+{
+	// Veiculos de petoleiro
+    petroleiroCar[0] = AddStaticVehicleEx(514,321.0000000,1395.5996000,8.5000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[1] = AddStaticVehicleEx(514,319.1000100,1389.9000000,8.8000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[2] = AddStaticVehicleEx(514,317.3999900,1384.9000000,8.7000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[3] = AddStaticVehicleEx(514,315.0000000,1375.9000000,9.0000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[4] = AddStaticVehicleEx(514,312.5000000,1370.8000000,9.4000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[5] = AddStaticVehicleEx(514,311.0000000,1365.7000000,9.9000000,73.9980000,108,125,60); //Tanker
+	petroleiroCar[6] = AddStaticVehicleEx(514,308.7998000,1355.2002000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[7] = AddStaticVehicleEx(514,307.3999900,1349.9000000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[8] = AddStaticVehicleEx(514,305.3999900,1343.9000000,9.9000000,73.9930000,108,125,60); //Tanker
+	petroleiroCar[9] = AddStaticVehicleEx(514,331.5000000,1470.6000000,8.2000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[10] = AddStaticVehicleEx(514,334.0000000,1483.2002000,8.5000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[11] = AddStaticVehicleEx(514,333.2000100,1476.7000000,8.3000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[12] = AddStaticVehicleEx(514,330.6000100,1464.4000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[13] = AddStaticVehicleEx(514,329.7000100,1458.7000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[14] = AddStaticVehicleEx(514,327.9003900,1452.0000000,8.1000000,79.9910000,108,125,60); //Tanker
+	petroleiroCar[15] = AddStaticVehicleEx(514,304.3999900,1471.0000000,10.2000000,267.9900000,108,125,60); //Tanker
+	petroleiroCar[16] = AddStaticVehicleEx(514,306.2999900,1464.4000000,10.2000000,267.9900000,108,125,60); //Tanker
 
+    AddStaticVehicleEx(584,295.5000000,1440.4004000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,296.0996100,1446.0996000,11.6000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,296.0000000,1452.3000000,11.6000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,295.2000100,1458.6000000,10.8000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,295.7998000,1464.7002000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,294.7999900,1471.3000000,11.5000000,267.9950000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,330.5000000,1392.8000000,9.0000000,74.0000000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,329.0000000,1387.3000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,327.6000100,1382.1000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,324.8999900,1372.9000000,9.0000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,323.3999900,1367.8000000,9.6000000,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,321.5680500,1362.7539000,9.7997200,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,318.9580100,1352.2363000,10.4462500,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,317.3999900,1346.9000000,10.5000000,73.9980000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,314.2999900,1341.4000000,11.3000000,73.9930000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,344.2027900,1481.3641000,8.9986500,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,343.2000100,1475.0000000,9.0000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,341.7999900,1469.3000000,8.7000000,81.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,340.2999900,1462.7000000,8.7000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,339.5996100,1456.7002000,8.7000000,79.9910000,245,245,60); //Trailer 3
+    AddStaticVehicleEx(584,338.0000000,1450.4004000,8.7000000,79.9910000,245,245,60); //Trailer 3
+
+    // Taxi
+    taxiCar[0] = AddStaticVehicleEx(438,1802.4004000,-1908.0996000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[1] = AddStaticVehicleEx(420,1802.3000000,-1912.2000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[2] = AddStaticVehicleEx(420,1802.6000000,-1903.9000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[3] = AddStaticVehicleEx(438,1802.2002000,-1917.0000000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[4] = AddStaticVehicleEx(420,1802.0000000,-1922.3000000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[5] = AddStaticVehicleEx(438,1802.0000000,-1927.2998000,13.7169400,87.9950000,006,000,120); //Cabbie
+    taxiCar[6] = AddStaticVehicleEx(420,1802.0000000,-1932.2998000,13.3000000,87.9950000,006,000,120); //Taxi
+    taxiCar[7] = AddStaticVehicleEx(438,1779.2002000,-1932.2998000,13.7169400,267.9950000,006,000,120); //Cabbie
+    taxiCar[8] = AddStaticVehicleEx(420,1779.2000000,-1927.2000000,13.3000000,267.9950000,006,000,120); //Taxi
+    taxiCar[9] = AddStaticVehicleEx(438,1779.4004000,-1922.0996000,13.7169400,267.9950000,006,000,120); //Cabbie
+
+    // Moto Taxi
+    motoTaxiCar[0] = AddStaticVehicleEx(586,1775.9000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[1] = AddStaticVehicleEx(586,1777.5000000,-1886.4000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[2] = AddStaticVehicleEx(586,1779.4000000,-1886.3000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[3] = AddStaticVehicleEx(586,1781.5000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[4] = AddStaticVehicleEx(586,1783.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[5] = AddStaticVehicleEx(586,1785.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[6] = AddStaticVehicleEx(586,1787.6000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[7] = AddStaticVehicleEx(586,1789.9000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[8] = AddStaticVehicleEx(586,1792.1000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[9] = AddStaticVehicleEx(586,1794.3000000,-1886.1000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    motoTaxiCar[10] = AddStaticVehicleEx(586,1796.4000000,-1886.2000000,13.0000000,182.0000000,006,006,120); //Wayfarer
+    
+    // Entregador de mercadorias
+    entregadorCar[0] = AddStaticVehicleEx(414,1766.4000000,-1691.5000000,13.6000000,180.0000000,241,243,120); //Mule
+    entregadorCar[1] = AddStaticVehicleEx(414,1771.1000000,-1691.5000000,13.6000000,180.0000000,200,052,120); //Mule
+    entregadorCar[2] = AddStaticVehicleEx(414,1775.8000000,-1691.5000000,13.6000000,179.9950000,006,058,120); //Mule
+    entregadorCar[3] = AddStaticVehicleEx(414,1780.6000000,-1691.5000000,13.6000000,179.9950000,025,098,120); //Mule
+    entregadorCar[4] = AddStaticVehicleEx(414,1786.1000000,-1691.5000000,13.6000000,179.9950000,100,068,120); //Mule
+    entregadorCar[5] = AddStaticVehicleEx(414,1791.6000000,-1691.6000000,13.6000000,179.9950000,005,108,120); //Mule
+    entregadorCar[6] = AddStaticVehicleEx(414,1797.2000000,-1691.6000000,13.6000000,179.9950000,058,250,120); //Mule
+    entregadorCar[7] = AddStaticVehicleEx(414,1804.3000000,-1691.7000000,13.6000000,179.9950000,009,115,120); //Mule
+
+    pizzaBoyCar[0] = AddStaticVehicleEx(448,2122.8999000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[1] = AddStaticVehicleEx(448,2121.0000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[2] = AddStaticVehicleEx(448,2119.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[3] = AddStaticVehicleEx(448,2117.2000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[4] = AddStaticVehicleEx(448,2115.3000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[5] = AddStaticVehicleEx(448,2113.2000000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[6] = AddStaticVehicleEx(448,2111.1001000,-1784.5000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[7] = AddStaticVehicleEx(448,2108.8000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[8] = AddStaticVehicleEx(448,2106.7000000,-1784.4000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+    pizzaBoyCar[9] = AddStaticVehicleEx(448,2104.6001000,-1784.3000000,13.1000000,0.0000000,175,181,120); //Pizzaboy
+
+    
+    transportadorCar[0] = AddStaticVehicleEx(403,2672.0000000,-2486.1001000,14.4000000,180.0000000,006,159,120); //Linerunner
+    transportadorCar[1] = AddStaticVehicleEx(403,2671.8000000,-2466.8999000,14.3000000,180.0000000,058,139,120); //Linerunner
+    transportadorCar[2] = AddStaticVehicleEx(403,2667.4004000,-2507.3994000,14.4000000,270.0000000,069,128,120); //Linerunner
+    transportadorCar[3] = AddStaticVehicleEx(403,2647.8999000,-2507.2000000,14.4000000,270.0000000,098,058,120); //Linerunner
+    transportadorCar[4] = AddStaticVehicleEx(403,2626.8000000,-2507.2000000,14.4000000,270.0000000,036,069,120); //Linerunner
+    transportadorCar[5] = AddStaticVehicleEx(403,2605.6001000,-2507.3000000,14.4000000,270.0000000,024,123,120); //Linerunner
+    transportadorCar[6] = AddStaticVehicleEx(403,2584.6006000,-2507.2998000,14.4000000,270.0000000,015,048,120); //Linerunner
+
+    AddStaticVehicleEx(435,2672.0000000,-2476.7000000,14.3000000,180.0000000,058,158,60); //Trailer 1
+    AddStaticVehicleEx(435,2671.8000000,-2457.5000000,14.3000000,180.0000000,006,085,60); //Trailer 1
+    AddStaticVehicleEx(435,2658.5000000,-2507.3999000,14.1000000,269.9950000,045,125,60); //Trailer 1
+    AddStaticVehicleEx(435,2638.3999000,-2507.3000000,14.1000000,269.9950000,063,054,60); //Trailer 1
+    AddStaticVehicleEx(435,2617.4004000,-2507.2998000,14.1000000,270.0000000,058,026,60); //Trailer 1
+    AddStaticVehicleEx(435,2595.8999000,-2507.3999000,14.1000000,270.0000000,128,169,60); //Trailer 1
+    AddStaticVehicleEx(435,2575.1001000,-2507.2000000,14.1000000,270.0000000,068,052,60); //Trailer 1
+
+    pescaCar[0] = AddStaticVehicleEx(453,2640.3999000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[1] = AddStaticVehicleEx(453,2633.7000000,-2480.3000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[2] = AddStaticVehicleEx(453,2626.7000000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[3] = AddStaticVehicleEx(453,2619.8999000,-2480.2000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[4] = AddStaticVehicleEx(453,2613.0000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[5] = AddStaticVehicleEx(453,2606.5000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[6] = AddStaticVehicleEx(453,2600.3000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+    pescaCar[7] = AddStaticVehicleEx(453,2593.8000000,-2480.0000000,0.0000000,179.9950000,001,106,120); //Reefer
+
+    gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,120); //Trashmaster
+    gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,120); //Trashmaster
+    gariCar[2][0] = AddStaticVehicleEx(408,2152.7742,-1971.7693,14.0779,179.7092,026,026,120); //Trashmaster
+    gariCar[3][0] = AddStaticVehicleEx(408,2156.1392,-1971.6147,14.1863,179.0344,026,026,120); //Trashmaster
+
+    // Capacidade do carro de gari
+    for(new i = 0; i < sizeof(gariCar); i ++) gariCar[i][1] = 0;
+
+    carroForteCar[0] = AddStaticVehicleEx(428,612.5000000,-1305.6000000,14.9000000,8.0000000,006,006,120); //Securicar
+    carroForteCar[1] = AddStaticVehicleEx(428,607.7999900,-1306.1000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[2] = AddStaticVehicleEx(428,603.0999800,-1306.6000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[3] = AddStaticVehicleEx(428,598.7999900,-1306.9000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[4] = AddStaticVehicleEx(428,593.7999900,-1307.6000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[5] = AddStaticVehicleEx(428,587.9000200,-1308.5000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[6] = AddStaticVehicleEx(428,582.4000200,-1309.3000000,14.9000000,7.9980000,006,006,120); //Securicar
+    carroForteCar[7] = AddStaticVehicleEx(428,578.2000100,-1300.7000000,14.9000000,281.9980000,006,006,120); //Securicar
+    carroForteCar[8] = AddStaticVehicleEx(428,576.7999900,-1294.5000000,14.9000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[9] = AddStaticVehicleEx(428,575.5999800,-1288.3000000,15.6000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[10] = AddStaticVehicleEx(428,574.2999900,-1282.4000000,16.2000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[11] = AddStaticVehicleEx(428,573.0999800,-1276.8000000,16.5000000,281.9970000,006,006,120); //Securicar
+    carroForteCar[12] = AddStaticVehicleEx(428,572.0000000,-1271.4000000,16.7000000,281.9970000,006,006,120); //Securicar
+
+    mecanicoCar[0] = AddStaticVehicleEx(525,-77.0000000,-1106.5000000,1.1000000,160.0000000,001,086,120); //Tow Truck
+    mecanicoCar[1] = AddStaticVehicleEx(525,-72.3000000,-1108.3000000,1.1000000,159.9990000,001,086,120); //Tow Truck
+    mecanicoCar[2] = AddStaticVehicleEx(525,-67.6000000,-1110.1000000,1.1000000,159.9990000,001,086,120); //Tow Truck
+    mecanicoCar[3] = AddStaticVehicleEx(525,-66.3000000,-1120.4000000,1.1000000,67.9990000,001,086,120); //Tow Truck
+    mecanicoCar[4] = AddStaticVehicleEx(525,-61.5000000,-1130.1000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[5] = AddStaticVehicleEx(525,-53.2000000,-1133.0000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[6] = AddStaticVehicleEx(525,-45.1000000,-1136.3000000,1.1000000,67.9940000,001,086,120); //Tow Truck
+    mecanicoCar[7] = AddStaticVehicleEx(525,-41.3000000,-1155.8000000,1.1000000,333.9940000,001,086,120); //Tow Truck
+    mecanicoCar[8] = AddStaticVehicleEx(525,-45.7000000,-1153.7000000,1.1000000,333.9900000,001,086,120); //Tow Truck
+    mecanicoCar[9] = AddStaticVehicleEx(525,-50.8000000,-1151.1000000,1.1000000,333.9900000,001,086,120); //Tow Truck
+
+    /*=========================[  VEICULO PUBLICOS ]============================*/
+
+	VeiculoPublico[0] = AddStaticVehicle(533,1177.2534,-1339.2512,13.6410,270.2252,166,166); // veiculo publico hosp LS
+ 	VeiculoPublico[1] = AddStaticVehicle(533,1176.2803,-1308.2930,13.6276,268.5153,166,166); // veiculo publico 2 hops LS
+ 	VeiculoPublico[2] = AddStaticVehicleEx(400,1836.5000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
+ 	VeiculoPublico[3] = AddStaticVehicleEx(400,1840.0000000,-1853.3000000,13.5000000,0.0000000,32,32,15); //Landstalker
+	VeiculoPublico[4] = AddStaticVehicle(533,2001.0774,-1413.2158,16.7013,178.6218,166,166); // veiculo puclico hosp groove LS
+	VeiculoPublico[5] = AddStaticVehicle(533,2033.3418,-1447.0807,16.9472,87.6349,166,166); // veiculo publico hosp groove LS
+	VeiculoPublico[6] = AddStaticVehicle(533,1316.0635,-1372.9760,13.3378,129.7551,166,166); // veiculo publico banco LS
+    VeiculoPublico[7] = AddStaticVehicle(533,2287.7800,-1683.8911,13.5867,359.7079,166,166); // veiculo publico Groove Street
+	VeiculoPublico[8] = AddStaticVehicle(533,356.7217,-1809.6923,4.2307,0.5768,166,166); // veiculo publico praia LS
+	VeiculoPublico[9] = AddStaticVehicle(533,695.2949,-473.2573,16.0451,268.3583,166,166); //
+	VeiculoPublico[10] = AddStaticVehicle(533,219.0612,-170.7969,1.2872,90.6037,166,166); //
+	VeiculoPublico[11] = AddStaticVehicle(533,-305.6332,1036.3745,19.3028,269.9891,166,166); //
+	VeiculoPublico[12] = AddStaticVehicle(533,-305.5352,1031.9607,19.3028,269.7962,166,166); //
+	VeiculoPublico[13] = AddStaticVehicle(533,-2241.1777,2357.1633,4.6886,41.3484,166,166); //
+	VeiculoPublico[14] = AddStaticVehicle(533,-2589.9038,622.2837,14.1683,270.9962,166,166); //
+	VeiculoPublico[15] = AddStaticVehicle(533,-2589.6951,627.7159,14.1683,270.0329,166,166); //
+	VeiculoPublico[16] = AddStaticVehicle(533,1602.1212,1839.6050,10.5294,0.5195,166,166); //
+	VeiculoPublico[17] = AddStaticVehicle(533,1597.8785,1839.6631,10.5294,1.2302,166,166); //
+	VeiculoPublico[18] = AddStaticVehicle(533,-2142.6628,-2258.1833,30.3376,51.8007,166,166); //
+ 	VeiculoPublico[19] = AddStaticVehicle(533,-1525.2711,-2749.9724,48.2481,169.2007,166,166); //
+	VeiculoPublico[20] = AddStaticVehicle(533,-1530.1477,-2748.2825,48.2481,170.4409,166,166); //
+	VeiculoPublico[21] = AddStaticVehicle(533,-2093.9834,-84.1647,34.8732,1.0069,166,166); //
+	VeiculoPublico[22] = AddStaticVehicle(533,-1651.8678,1311.8181,6.7432,135.6502,166,166); //
+	VeiculoPublico[23] = AddStaticVehicle(533,-866.1396,1563.2594,24.2470,270.8895,166,166); //
+	VeiculoPublico[24] = AddStaticVehicle(533,-1525.4843,2525.2244,55.4696,0.9549,166,166); //
+	VeiculoPublico[25] = AddStaticVehicle(533,-225.8166,2594.8748,62.4122,0.3951,166,166); //
+	VeiculoPublico[26] = AddStaticVehicle(533,1422.3186,277.1342,19.2638,123.3392,166,166); //
+	VeiculoPublico[27] = AddStaticVehicle(533,2470.1538,-44.9585,26.1934,1.3549,166,166); //
+	VeiculoPublico[28] = AddStaticVehicle(533,1715.3514,1472.8787,10.4524,163.3114,166,166); //
+	VeiculoPublico[29] = AddStaticVehicle(533,1711.3990,1459.5245,10.4567,163.3424,166,166); //
+	VeiculoPublico[30] = AddStaticVehicle(533,2410.1479,2334.2329,10.5294,181.0676,166,166); //
+	VeiculoPublico[31] = AddStaticVehicle(533,2455.2422,1357.6515,10.5294,180.8293,166,166); //
+	VeiculoPublico[32] = AddStaticVehicle(533,1152.2407,1369.3727,10.3810,270.9418,166,166); //
+	VeiculoPublico[33] = AddStaticVehicle(533,-86.9006,1221.8394,19.4513,182.0488,166,166); //
+	VeiculoPublico[34] = AddStaticVehicle(533,-13.7728,-2519.3652,36.3645,30.2527,166,166); //
+	VeiculoPublico[35] = AddStaticVehicle(533,1536.0165,-1677.9349,13.0919,180.9664,166,166); //
+	VeiculoPublico[36] = AddStaticVehicle(562,2746.4739,-2459.2637,13.3080,271.7818,166,166); //
+
+	return 1;
+}
 stock loadTextos()
 {
+	//Texto da tela de login e registro
+    Logo = TextDrawCreate(160.000000, 310.000000, "SKYLANDIA CIDADE VIDA REAL");
+    TextDrawBackgroundColor(Logo, 255);
+    TextDrawFont(Logo, 3);
+    TextDrawLetterSize(Logo, 0.700000, 5.000000);
+    TextDrawColor(Logo, -5963521);
+    TextDrawSetOutline(Logo, 1);
+    TextDrawSetProportional(Logo, 1);
+    TextDrawSetSelectable(Logo, 0);
+
+    Versao = TextDrawCreate(290.000000, 363.000000, "v0.0.1");
+    TextDrawBackgroundColor(Versao, 255);
+    TextDrawFont(Versao, 2);
+    TextDrawLetterSize(Versao, 0.600000, 2.000000);
+    TextDrawColor(Versao, -172935425);
+    TextDrawSetOutline(Versao, 1);
+    TextDrawSetProportional(Versao, 1);
+    TextDrawSetSelectable(Versao, 0);
+
+    site = TextDrawCreate(177.000000, 389.000000, "heavyhost.com.br");
+    TextDrawBackgroundColor(site, 255);
+    TextDrawFont(site, 2);
+    TextDrawLetterSize(site, 0.600000, 2.000000);
+    TextDrawColor(site, -421075201);
+    TextDrawSetOutline(site, 1);
+    TextDrawSetProportional(site, 1);
+    TextDrawSetSelectable(site, 0);
+
+    Rodape = TextDrawCreate(3.000000, 429.000000, "Skylandia Cidade Vida Real v0.0.1");
+    TextDrawBackgroundColor(Rodape, 255);
+    TextDrawFont(Rodape, 1);
+    TextDrawLetterSize(Rodape, 0.450000, 1.699998);
+    TextDrawColor(Rodape, -2686721);
+    TextDrawSetOutline(Rodape, 1);
+    TextDrawSetProportional(Rodape, 1);
+    TextDrawUseBox(Rodape, 1);
+    TextDrawBoxColor(Rodape, 269554431);
+    TextDrawTextSize(Rodape, 637.000000, -129.000000);
+    TextDrawSetSelectable(Rodape, 0);
+
+    //Text Data
+    DataC = TextDrawCreate(500.000000, 9.000000, "");
+    TextDrawBackgroundColor(DataC, 255);
+    TextDrawFont(DataC, 3);
+    TextDrawLetterSize(DataC, 0.310000, 1.500000);
+    TextDrawColor(DataC, -1);
+    TextDrawSetOutline(DataC, 1);
+    TextDrawSetProportional(DataC, 1);
+    TextDrawSetSelectable(DataC, 0);
+    //Text Hora
+    HoraC = TextDrawCreate(546.000000, 24.000000, "");
+    TextDrawBackgroundColor(HoraC, 255);
+    TextDrawFont(HoraC, 3);
+    TextDrawLetterSize(HoraC, 0.389999, 2.000000);
+    TextDrawColor(HoraC, -1);
+    TextDrawSetOutline(HoraC, 1);
+    TextDrawSetProportional(HoraC, 1);
+    TextDrawSetSelectable(HoraC, 0);
+    // Status
+
+	textStatus[0] = TextDrawCreate(543.938537, 242.499938, "box");
+	TextDrawLetterSize(textStatus[0], 0.000000, 16.659065);
+	TextDrawTextSize(textStatus[0], 633.000000, 0.000000);
+	TextDrawAlignment(textStatus[0], 1);
+	TextDrawColor(textStatus[0], -1);
+	TextDrawUseBox(textStatus[0], 1);
+	TextDrawBoxColor(textStatus[0], 319555162);
+	TextDrawSetShadow(textStatus[0], 0);
+	TextDrawSetOutline(textStatus[0], 0);
+	TextDrawBackgroundColor(textStatus[0], -1378294017);
+	TextDrawFont(textStatus[0], 1);
+	TextDrawSetProportional(textStatus[0], 1);
+	TextDrawSetShadow(textStatus[0], 0);
+
+	textStatus[1] = TextDrawCreate(544.950195, 244.233551, "box");
+	TextDrawLetterSize(textStatus[1], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[1], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[1], 1);
+	TextDrawColor(textStatus[1], -1);
+	TextDrawUseBox(textStatus[1], 1);
+	TextDrawBoxColor(textStatus[1], 1246118721);
+	TextDrawSetShadow(textStatus[1], 0);
+	TextDrawSetOutline(textStatus[1], 0);
+	TextDrawBackgroundColor(textStatus[1], 255);
+	TextDrawFont(textStatus[1], 1);
+	TextDrawSetProportional(textStatus[1], 0);
+	TextDrawSetShadow(textStatus[1], 0);
+
+	textStatus[2] = TextDrawCreate(559.354797, 244.533126, "Status");
+	TextDrawLetterSize(textStatus[2], 0.400000, 1.600000);
+	TextDrawAlignment(textStatus[2], 1);
+	TextDrawColor(textStatus[2], -1);
+	TextDrawSetShadow(textStatus[2], 0);
+	TextDrawSetOutline(textStatus[2], 0);
+	TextDrawBackgroundColor(textStatus[2], 255);
+	TextDrawFont(textStatus[2], 2);
+	TextDrawSetProportional(textStatus[2], 1);
+	TextDrawSetShadow(textStatus[2], 0);
+
+	textStatus[3] = TextDrawCreate(544.950195, 269.835113, "box");
+	TextDrawLetterSize(textStatus[3], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[3], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[3], 1);
+	TextDrawColor(textStatus[3], -1);
+	TextDrawUseBox(textStatus[3], 1);
+	TextDrawBoxColor(textStatus[3], 1246118721);
+	TextDrawSetShadow(textStatus[3], 0);
+	TextDrawSetOutline(textStatus[3], 0);
+	TextDrawBackgroundColor(textStatus[3], 255);
+	TextDrawFont(textStatus[3], 1);
+	TextDrawSetProportional(textStatus[3], 0);
+	TextDrawSetShadow(textStatus[3], 0);
+
+	textStatus[4] = TextDrawCreate(544.950195, 293.336547, "box");
+	TextDrawLetterSize(textStatus[4], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[4], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[4], 1);
+	TextDrawColor(textStatus[4], -1);
+	TextDrawUseBox(textStatus[4], 1);
+	TextDrawBoxColor(textStatus[4], 1246118721);
+	TextDrawSetShadow(textStatus[4], 0);
+	TextDrawSetOutline(textStatus[4], 0);
+	TextDrawBackgroundColor(textStatus[4], 255);
+	TextDrawFont(textStatus[4], 1);
+	TextDrawSetProportional(textStatus[4], 0);
+	TextDrawSetShadow(textStatus[4], 0);
+
+	textStatus[5] = TextDrawCreate(544.950195, 317.138000, "box");
+	TextDrawLetterSize(textStatus[5], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[5], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[5], 1);
+	TextDrawColor(textStatus[5], -1);
+	TextDrawUseBox(textStatus[5], 1);
+	TextDrawBoxColor(textStatus[5], 1246118721);
+	TextDrawSetShadow(textStatus[5], 0);
+	TextDrawSetOutline(textStatus[5], 0);
+	TextDrawBackgroundColor(textStatus[5], 255);
+	TextDrawFont(textStatus[5], 1);
+	TextDrawSetProportional(textStatus[5], 0);
+	TextDrawSetShadow(textStatus[5], 0);
+
+	textStatus[6] = TextDrawCreate(544.950195, 341.139465, "box");
+	TextDrawLetterSize(textStatus[6], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[6], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[6], 1);
+	TextDrawColor(textStatus[6], -1);
+	TextDrawUseBox(textStatus[6], 1);
+	TextDrawBoxColor(textStatus[6], 1246118721);
+	TextDrawSetShadow(textStatus[6], 0);
+	TextDrawSetOutline(textStatus[6], 0);
+	TextDrawBackgroundColor(textStatus[6], 255);
+	TextDrawFont(textStatus[6], 1);
+	TextDrawSetProportional(textStatus[6], 0);
+	TextDrawSetShadow(textStatus[6], 0);
+
+	textStatus[7] = TextDrawCreate(544.950195, 364.840911, "box");
+	TextDrawLetterSize(textStatus[7], 0.000000, 1.886672);
+	TextDrawTextSize(textStatus[7], 631.745849, 0.000000);
+	TextDrawAlignment(textStatus[7], 1);
+	TextDrawColor(textStatus[7], -1);
+	TextDrawUseBox(textStatus[7], 1);
+	TextDrawBoxColor(textStatus[7], 1246118721);
+	TextDrawSetShadow(textStatus[7], 0);
+	TextDrawSetOutline(textStatus[7], 0);
+	TextDrawBackgroundColor(textStatus[7], 255);
+	TextDrawFont(textStatus[7], 1);
+	TextDrawSetProportional(textStatus[7], 0);
+	TextDrawSetShadow(textStatus[7], 0);
+
+	textStatus[8] = TextDrawCreate(593.058959, 384.866729, "Skylandia");
+	TextDrawLetterSize(textStatus[8], 0.259000, 0.899999);
+	TextDrawAlignment(textStatus[8], 2);
+	TextDrawColor(textStatus[8], -1);
+	TextDrawSetShadow(textStatus[8], 0);
+	TextDrawSetOutline(textStatus[8], 0);
+	TextDrawBackgroundColor(textStatus[8], 255);
+	TextDrawFont(textStatus[8], 2);
+	TextDrawSetProportional(textStatus[8], 1);
+	TextDrawSetShadow(textStatus[8], 0);
+
+	textStatus[9] = TextDrawCreate(533.472961, 256.816284, "");
+	TextDrawLetterSize(textStatus[9], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[9], 40.000000, 44.000000);
+	TextDrawAlignment(textStatus[9], 1);
+	TextDrawColor(textStatus[9], -1);
+	TextDrawSetShadow(textStatus[9], 0);
+	TextDrawSetOutline(textStatus[9], 0);
+	TextDrawBackgroundColor(textStatus[9], 0);
+	TextDrawFont(textStatus[9], 5);
+	TextDrawSetProportional(textStatus[9], 0);
+	TextDrawSetShadow(textStatus[9], 0);
+	TextDrawSetPreviewModel(textStatus[9], 19576);
+	TextDrawSetPreviewRot(textStatus[9], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[10] = TextDrawCreate(535.772399, 288.718231, "");
+	TextDrawLetterSize(textStatus[10], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[10], 37.000000, 27.000000);
+	TextDrawAlignment(textStatus[10], 1);
+	TextDrawColor(textStatus[10], -1);
+	TextDrawSetShadow(textStatus[10], 0);
+	TextDrawSetOutline(textStatus[10], 0);
+	TextDrawBackgroundColor(textStatus[10], 0);
+	TextDrawFont(textStatus[10], 5);
+	TextDrawSetProportional(textStatus[10], 0);
+	TextDrawSetShadow(textStatus[10], 0);
+	TextDrawSetPreviewModel(textStatus[10], 19570);
+	TextDrawSetPreviewRot(textStatus[10], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[11] = TextDrawCreate(539.671447, 306.319305, "");
+	TextDrawLetterSize(textStatus[11], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[11], 31.000000, 37.000000);
+	TextDrawAlignment(textStatus[11], 1);
+	TextDrawColor(textStatus[11], -1);
+	TextDrawSetShadow(textStatus[11], 0);
+	TextDrawSetOutline(textStatus[11], 0);
+	TextDrawBackgroundColor(textStatus[11], 0);
+	TextDrawFont(textStatus[11], 5);
+	TextDrawSetProportional(textStatus[11], 0);
+	TextDrawSetShadow(textStatus[11], 0);
+	TextDrawSetPreviewModel(textStatus[11], 11738);
+	TextDrawSetPreviewRot(textStatus[11], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[12] = TextDrawCreate(544.170349, 338.321258, "");
+	TextDrawLetterSize(textStatus[12], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[12], 24.000000, 23.000000);
+	TextDrawAlignment(textStatus[12], 1);
+	TextDrawColor(textStatus[12], -1);
+	TextDrawSetShadow(textStatus[12], 0);
+	TextDrawSetOutline(textStatus[12], 0);
+	TextDrawBackgroundColor(textStatus[12], 0);
+	TextDrawFont(textStatus[12], 5);
+	TextDrawSetProportional(textStatus[12], 0);
+	TextDrawSetShadow(textStatus[12], 0);
+	TextDrawSetPreviewModel(textStatus[12], 1247);
+	TextDrawSetPreviewRot(textStatus[12], 0.000000, 0.000000, 0.000000, 1.000000);
+
+	textStatus[13] = TextDrawCreate(545.470031, 363.222778, "");
+	TextDrawLetterSize(textStatus[13], 0.000000, 0.000000);
+	TextDrawTextSize(textStatus[13], 24.000000, 23.000000);
+	TextDrawAlignment(textStatus[13], 1);
+	TextDrawColor(textStatus[13], -1);
+	TextDrawSetShadow(textStatus[13], 0);
+	TextDrawSetOutline(textStatus[13], 0);
+	TextDrawBackgroundColor(textStatus[13], 0);
+	TextDrawFont(textStatus[13], 5);
+	TextDrawSetProportional(textStatus[13], 0);
+	TextDrawSetShadow(textStatus[13], 0);
+	TextDrawSetPreviewModel(textStatus[13], 1277);
+	TextDrawSetPreviewRot(textStatus[13], 0.000000, 0.000000, 30.000000, 1.000000);
 	// Empresas
 	new empresaInfo[100];
 	for (new a = 0; a < sizeof(empresasPos); a++)
@@ -7894,6 +8149,7 @@ CMD:voltar(playerid)
 	// Casa Level 0
 	if(PlayerVoltaLocal[playerid])
 	{ 
+		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
 		SetPlayerPos(playerid, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"));
 		PlayerVoltaLocal[playerid] = false;
@@ -9059,25 +9315,39 @@ CMD:soltar (playerid, params[])
 	
 	return 1;
 }
+/*=========================[ Kick ]========================*/
 
-CMD:criarcasa(playerid, params[])
+CMD:kick (playerid, params[])
 {
-	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
+	new PlayerIDKickado, Motivo[50], Mensagem[256], Dialog[256];
+
+	if(IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 1)
 	{
-        new Float:X, Float:Y, Float:Z;
-        GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+		if(sscanf(params, "us[30]", PlayerIDKickado, Motivo))
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Kick [ ID ][ Motivo ]");
+		} 
+		else if(PlayerIDKickado == INVALID_PLAYER_ID) 
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+		}
+        else
+        {
+        	format(Mensagem, sizeof(Mensagem), "{ff0000}| INFO-KICK | O(A) Administrador(a) %s Kickou %s (Motivo: %s)",getName(playerid), getName(PlayerIDKickado), Motivo);
+			SendClientMessageToAll(-1, Mensagem);
+			format(Dialog, sizeof(Dialog), "{FF0000}Você Foi Kickado Pelo Adminstrador: %s\nMotivo: %s\n\nCaso Ache Que O Kick Foi Abuso De Comando,\nInforme Um Responsavel Ou Dono!",getName(playerid), Motivo);
+			ShowPlayerDialog(PlayerIDKickado, DialogKick, DIALOG_STYLE_MSGBOX, "{FF0000}Kickado!", Dialog, "OK", "");
 
-        Create3DTextLabel("{f44242}Casa", 0x008080FF, X, Y, Z, 40.0, 0, 0);
+			Kick(PlayerIDKickado);	
 
-        new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
-		GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+			format(Log, sizeof(Log), "O Administrador %s Kickou %s ( Motivo: %s )", getName(playerid), getName(PlayerIDKickado), Motivo);
+			fileLog("Kick", Log);
 
-        format(Log, sizeof(Log), "{%f, %f, %f}, // %s Local: %s", X, Y, Z, getName(playerid), Zona);
-		fileLog("Casas", Log);
-
-		return 1;
-    }
+			return 1;
+        }
+	}
 	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+
 	return 1;
 }
 
