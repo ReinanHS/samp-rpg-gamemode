@@ -45,6 +45,10 @@
 #define 	DialogVendaProdutos			(28)	// Venda de produtos
 #define 	DialogImobiliaria			(29)	// Imobiliaria
 #define 	DialogKick					(30)	// Kick Info
+#define 	DialogPesca					(31)	// Pesca
+#define 	DialogPescaIscas			(32)	// Pesca Iscas
+#define 	DialogHospital				(33)	// Hospital
+#define  	DialogProcurados			(34)	// Procurados
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -560,6 +564,8 @@ enum mInfo
 	GalaoDeCombustivel,
 	TravaEletica,
 	CreditoSMS,
+	iscas,
+	bool:redePesca,
 	bool:RelogioUP,
     bool:Celular,
     bool:PedagioSemPagar,
@@ -582,6 +588,7 @@ new PlayerInCasaID[MAX_PLAYERS];
 new bool:PlayerVoltaLocal[MAX_PLAYERS];
 new profissaoTempo[MAX_PLAYERS];
 new bool:PlayerMultaTempo[MAX_PLAYERS];
+new bool:TaPescando[MAX_PLAYERS];
 
 new MercadoInfo[MAX_PLAYERS][mInfo];
 
@@ -591,6 +598,9 @@ new bool:Logado[MAX_PLAYERS char];
 new SenhaErrada[MAX_PLAYERS];
 new Str[500];
 new bool:PlayerMorreu[MAX_PLAYERS];
+new bool:PodeSerAlgemado[MAX_PLAYERS];
+new bool:Algemado[MAX_PLAYERS];
+new bool:TaVozPrisao[MAX_PLAYERS];
 
 enum cDados
 {
@@ -739,6 +749,7 @@ new CheckCluckin;
 new CheckBurgerShot;
 new CheckDidier;
 new CheckUtilitarios;
+new CheckPescar;
 
 // Profissão Veiculos
 new
@@ -747,7 +758,7 @@ new
     mecanicoCar[10],
 	carroForteCar[13],
 	gariCar[4][2],
-	pescaCar[12],
+	pescaCar[8],
 	viatura[21],
 	transportadorCar[7],
 	pizzaBoyCar[10],
@@ -764,7 +775,7 @@ new bool:profissaoDescarregar[MAX_PLAYERS] = false;
 new profissaoCapapidate[MAX_PLAYERS];
 new respawntrailer;
 // Atores
-new Atores[6];
+new Atores[7];
 //new Aviso[MAX_PLAYERS];
 new Log[256];
 new Text:DataC, Text:HoraC;
@@ -813,8 +824,6 @@ public OnGameModeInit()
 {
 	// Atores
 	CriarAtores();
-	// Tempo
-	ProcessGameTime();
     // Basic Config
     new Password[256],Gamemode[256],Language[256];
     format(Gamemode, sizeof(Gamemode), "%s", SERVER_GAMEMODE);
@@ -864,10 +873,7 @@ public OnGameModeInit()
 	CheckBurgerShot = CPS_AddCheckpoint(376.4791,-68.1216,1001.5151,1.0,50);// Burger shot
 	CheckDidier = CPS_AddCheckpoint(162.8003,-84.0606,1001.8047,1.0,50);// Didier
 	CheckUtilitarios = CPS_AddCheckpoint(-22.1867,-55.6953,1003.5469,1.0,50);// Loja de utilitários
-
-    //SetTimer("ServerInit", 1000, false);
-    SetTimer("ProcessGameTime", 60000, true);
-    SetTimer("UpdateLixeira", 900000, true);
+	CheckPescar = CPS_AddCheckpoint(-2186.2739,2416.8271,5.1798,1.0,10);// Pescar
 
     CreateDynamicMapIcon(1733.5028, -1912.0034, 13.5620, 23, -1, -1, -1, -1, 400.0); //Agencia de empregos
     CreateDynamicMapIcon(1833.7811, -1842.6208, 13.5781, 17, -1, -1, -1, -1, 400.0); //Mercados 24/7 (id: 0)
@@ -908,7 +914,12 @@ public OnGameModeInit()
 	{
 		CreateDynamicMapIcon(radarPos[a][0], radarPos[a][1], radarPos[a][2], 34, -1, -1, -1, -1, 400.0);
 	}
-
+	// Tempo
+	ProcessGameTime();
+	SetTimer("ServerInit", 1000, false);
+    SetTimer("ProcessGameTime", 60000, true);
+    SetTimer("UpdateLixeira", 900000, true);
+	
     return 1;
 }
 
@@ -979,7 +990,7 @@ public OnPlayerRequestClass(playerid, classid)
 			format(stringLogin, sizeof(stringLogin), "Conta: {4e42f4}%s{FFFFFF}\n", getName(playerid));
 			strcat(string, stringLogin);
 			strcat(string, "Status: {00FF00}Registrada\n");
-			format(stringLogin, sizeof(stringLogin), "{FFFFFF}\nÚltimo login: {f44542}%s{26AB0C}\n\n", DOF2_GetString( PegarConta( playerid ), "UltimoLogin"));
+			format(stringLogin, sizeof(stringLogin), "{FFFFFF}\nÚltimo login: {f44542}%s{26AB0C}\n\n", DOF2_GetString( PegarConta( playerid ), "UltimoLogin", "Login-Info"));
 			strcat(string, stringLogin);
 			strcat(string, "Versão 0.1 {FFFFFF}- Não há notícias, fique atento ao fórum!\n");
 			strcat(string, "* Insira sua senha abaixo para logar: ");
@@ -1279,12 +1290,23 @@ public OnPlayerDisconnect(playerid, reason)
     if(Logado{playerid} == true) {
     	GetPlayerPos(playerid, pPosX[playerid], pPosY[playerid], pPosZ[playerid]);
 
-    	if(profissaoUniforme[playerid]){
-    		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+    	if(profissaoUniforme[playerid])
+    	{
+    		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"));
     		profissaoUniforme[playerid] = false;
     	}
 
+    	if(Algemado[playerid])
+    	{
+    		Algemado[playerid] = false;
+    		new strInfo[100];
+    		format(strInfo, sizeof(strInfo), "| INFO | %s Foi preso por 40 minutos por desconectar em uma perseguição!", getName(playerid));
+    		SendClientMessageToAll(COR_ERRO, strInfo);
+    		PrenderPlayer(playerid, 39, 59);
+    	}
+
     	SalvarDados(playerid);
+    	Algemado[playerid] = false;
     	Logado{playerid} = false;
     	profissaoCar[playerid] = false;
     	profissaoCarregandoOJG[playerid] = false;
@@ -1334,7 +1356,7 @@ public OnPlayerSpawn(playerid)
 	{
 		TextDrawShowForPlayer(playerid, DataC), TextDrawShowForPlayer(playerid, HoraC);
 
-		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual"));
+		SetPlayerSkin(playerid, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"));
 	    TogglePlayerSpectating(playerid, false);
 	    TogglePlayerControllable(playerid, true);
 
@@ -1744,13 +1766,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
 				}
-				else if(!profissaoUniforme[playerid])
-				{
-					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de Policial, e não pode dirigir esse veiculo..");
-					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
-					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
-					return 1;
-				}
 			}
 		}
 		// PM
@@ -1761,6 +1776,13 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		    	if(PlayerDados[playerid][Profissao] < 25  && PlayerDados[playerid][Profissao] > 32 )
 		    	{
 					SendClientMessage(playerid, COR_ERRO, "[Erro] Você não é um Policial, e não pode dirigir esse veiculo..");
+					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
+					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
+					return 1;
+				}
+				else if(!profissaoUniforme[playerid])
+				{
+					SendClientMessage(playerid, COR_ERRO, "[Erro] Você tem que está utilizando o uniforme de Policial, e não pode dirigir esse veiculo..");
 					RemovePlayerFromVehicle(playerid);//irá removelo do carro e mandar a mensagem.
 					PlayerPlaySound(playerid,1147,0.0,0.0,0.0);
 					return 1;
@@ -1985,6 +2007,11 @@ public OnPlayerEnterCheckpoint(playerid)
 		strcat(string, "Crédito para SMS\t{f44542}»»\n");
 		strcat(string, "Venda de produtos\t{f44542}»»");
     	return ShowPlayerDialog(playerid, DialogMercado, DIALOG_STYLE_TABLIST_HEADERS, "Loja » Utilitários", string, "Selecionar", "Voltar");
+    }
+    // Pescar
+    else if(Checkpoint == CheckPescar)
+    {
+    	return ShowPlayerDialog(playerid, DialogPesca, DIALOG_STYLE_TABLIST_HEADERS, "Pescaria » Utilitários", "Opções\t{008000}Preço\nRede de Pesca\t{008000}R$ 800\nIscas\t{008000}R$ 5", "Selecionar", "Voltar");
     }
     else if(profissaoCarregandoOJG[playerid])
     {
@@ -2740,6 +2767,24 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			return SendClientMessage(playerid, COR_ERRO, "| Central | Volte para o seu HQ para pegar novas encomendas!");			
 		}
 	}
+	else if(PlayerDados[playerid][Profissao] >= 25 && PlayerDados[playerid][Profissao] <= 32)
+	{
+		if(TaVozPrisao[profissaoCapapidate[playerid]])
+		{
+			SendClientMessage(playerid, COR_SUCCESS, "| INFO | Parabéns você levou o detento em segurança até a delegacia!");
+			PrenderPlayer(profissaoCapapidate[playerid], 14, 59);
+
+			SetPlayerSpecialAction(profissaoCapapidate[playerid], SPECIAL_ACTION_NONE);
+			TogglePlayerControllable(profissaoCapapidate[playerid], 1);
+
+			Algemado[profissaoCapapidate[playerid]] = false;
+			PodeSerAlgemado[profissaoCapapidate[playerid]] = true;
+
+			PrenderPlayer(profissaoCapapidate[playerid], 14, 59);
+			DisablePlayerRaceCheckpoint(playerid);
+			return 1;
+		}
+	}
 	return 1;
 }
 
@@ -2808,7 +2853,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
     /*              Ao Apertar "F" Ir para o local informado              */
     if ((newkeys==KEY_SECONDARY_ATTACK))
     {
-    //sistema de entrada e saida
+    	//sistema de entrada e saida
         if(IsPlayerInRangeOfPoint(playerid, 2.0, 1733.5103,-1912.0349,13.5620))
         {
             //Agencia de Enpregos Entrada
@@ -3000,6 +3045,14 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		        	SetPlayerInterior(playerid, 6);
 		        	SetPlayerPos(playerid, 246.7384,62.3266,1003.6406);
 					return 1;	
+		        }
+			}
+			// Hospitais Menu
+			for (new a = 0; a < sizeof(hospitaisPos); a++)
+			{
+				if(IsPlayerInRangeOfPoint(playerid, 2.0, hospitaisPos[a][0], hospitaisPos[a][1], hospitaisPos[a][2]))
+				{
+					return ShowPlayerDialog(playerid, DialogHospital, DIALOG_STYLE_TABLIST_HEADERS, "Hospital » Opções", "Opções\t{008000}Preço\nKit Médico\t{008000}R$ 800\nTratamento da doença\t{008000}R$ 100", "Selecionar", "Voltar");	
 		        }
 			}
 			// Casas 
@@ -3224,12 +3277,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                return ShowPlayerDialog(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "{FFD700}Login", string, "Logar", "Sair");
 				}
 
-				else if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha"), inputtext))
+				else if(!strcmp(DOF2_GetString(PegarConta(playerid),"Senha", "Dados-Pessoais"), inputtext))
 				{
 				    CarregarDados(playerid);
                     
-                    SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
-				    SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"), 269.15, 0, 0, 0, 0, 0, 0);
+                    SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI", "Coordenadas"));
+				    SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"), DOF2_GetFloat(PegarConta(playerid), "PosX", "Coordenadas"), DOF2_GetFloat(PegarConta(playerid), "PosY", "Coordenadas"), DOF2_GetFloat(PegarConta(playerid), "PosZ", "Coordenadas"), 269.15, 0, 0, 0, 0, 0, 0);
 	  				
 	  				StopAudioStreamForPlayer(playerid);
 				    
@@ -3271,7 +3324,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    			SetPlayerInterior(playerid, CasasDados[i][interiorID]);
 				    			SetPlayerVirtualWorld(playerid, i);
 				    			SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
-				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
+				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
 				    		
@@ -3294,7 +3347,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    			SetPlayerInterior(playerid, CasasDados[i][interiorID]);
 				    			SetPlayerVirtualWorld(playerid, i);
 				    			SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
-				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
+				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
 				    		
@@ -5220,6 +5273,117 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             }    
             return 1;
         }
+        case DialogPesca:
+        {
+            if(response)
+            {
+                if(PlayerDados[playerid][Profissao] != Pescador) return SendClientMessage(playerid, COR_ERRO, "| ERROR | Você não é um Pescador!");
+                else{
+                	if(listitem == 0){
+	                    if(GetPlayerMoney(playerid) < 800) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+	                    else if(!MercadoInfo[playerid][redePesca])
+	                    {
+	                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou uma rede de pesca no valor de R$ 800!");
+	                        GivePlayerMoney(playerid, -800);
+	                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+	                        MercadoInfo[playerid][redePesca] = true;
+
+	                        return 1;
+	                    }
+	                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Você já tem esse produto!");
+	                }
+	                else if(listitem == 1)
+	                {
+	                    return ShowPlayerDialog(playerid, DialogPescaIscas, DIALOG_STYLE_INPUT, "Pescaria » Iscas", "{008000}Preço da Iscas R$ 5{FFFFFF}", "Abastecer", "Cancelar");
+	                }
+                }
+            }    
+            return 1;
+        }
+        case DialogPescaIscas:{
+            if(response)
+    	    {
+    			if(strlen(inputtext) < 0 || strlen(inputtext) > 3 || !IsNumeric(inputtext))
+	            {
+                    SendClientMessage(playerid, COR_ERRO, "| ERROR | Informe um valor válido!");
+                    return 1;
+				}else{
+                    new iValue = strval(inputtext);
+                    new fValue = (iValue * 5);
+					if(iValue > 0 && iValue <= 100){
+						if(GetPlayerMoney(playerid) >= fValue)
+	    	            {
+	    	            	if(MercadoInfo[playerid][iscas] < 100){
+
+	    	            		new bValue = ( (MercadoInfo[playerid][iscas] + iValue) - 100);
+	    	            		if(bValue > 0){
+	    	            			iValue -= bValue;
+	    	            			fValue = (iValue * 3);
+	    	            		}
+
+	    	            		new str[256];
+								format(str, sizeof(str), "| INFO | Você Pagou R$ %d por %d iscas", fValue, iValue);
+								SendClientMessage(playerid, COR_SUCCESS, str);
+
+								MercadoInfo[playerid][iscas] += iValue;
+						        GivePlayerMoney(playerid, fValue*-1);
+
+		    			    }else{
+		    			        SendClientMessage(playerid, COR_ERRO, "| ERRO | Você já tem muitas iscas!");
+		    				}
+	    			    }
+		    			else
+		    			{
+		    				SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não tem dinheiro suficiente!");
+		    			}
+					}else{
+						SendClientMessage(playerid, COR_ERRO, "| ERRO | O limite de iscas é 100");
+					}
+				}
+
+				return 1;        
+    		}
+        }
+        case DialogHospital:
+        {
+            if(response)
+            {
+            	if(listitem == 0)
+            	{
+            		new Float:healthInfo;
+            		GetPlayerHealth(playerid, healthInfo);
+                    if(GetPlayerMoney(playerid) < 800) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(healthInfo < 100.0)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou um Kit médico no valor de R$ 800!");
+                        GivePlayerMoney(playerid, -800);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                        SetPlayerHealth(playerid, 1000.0);
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Sua vida já está cheia!");
+                }
+                else if(listitem == 1)
+                {
+                    if(GetPlayerMoney(playerid) < 100) return SendClientMessage(playerid, COR_ERRO,"| ERROR | Você não possui dinheiro suficiente para comprar esse produto!");
+                    else if(PlayerDados[playerid][saude] < 100)
+                    {
+                        SendClientMessage(playerid, COR_SUCCESS ,"| INFO | Você comprou o Tratamento do HIV no valor de R$ 100!");
+                        GivePlayerMoney(playerid, -100);
+                        PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+                     	PlayerDados[playerid][saude] = 100;
+
+                     	PlayerTextDrawTextSize(playerid, textStatusBar[playerid][3], ( 566.607299 + ( (64.90 * PlayerDados[playerid][saude] ) / 100 ) ), 0.000000);
+						UpdateTextDraw(playerid, 3);   
+
+                        return 1;
+                    }
+                    else return SendClientMessage(playerid, COR_ERRO ,"|  ERROR | Sua vida já está cheia!");
+                }
+            }    
+            return 1;
+        }
         case DialogPizza:
         {
             if(response){
@@ -6117,74 +6281,75 @@ stock SalvarDados(playerid)
 {
 	// Vida
 	GetPlayerHealth(playerid,PlayerDados[playerid][vida]);
-	DOF2_SetFloat(PegarConta(playerid), "Vida", PlayerDados[playerid][vida]);
+	DOF2_SetFloat(PegarConta(playerid), "Vida", PlayerDados[playerid][vida], "Informações");
 
-    DOF2_SetInt(PegarConta(playerid), "Level", GetPlayerScore(playerid));
-    DOF2_SetInt(PegarConta(playerid), "Dinheiro", GetPlayerMoney(playerid));
-    DOF2_SetInt(PegarConta(playerid), "LevelProcurado", GetPlayerWantedLevel(playerid));
-    DOF2_SetInt(PegarConta(playerid), "SkinAtual", GetPlayerSkin(playerid));
-    DOF2_SetInt(PegarConta(playerid), "AdminLevel", PlayerDados[playerid][Admin]);
+    DOF2_SetInt(PegarConta(playerid), "Level", GetPlayerScore(playerid), "Informações");
+    DOF2_SetInt(PegarConta(playerid), "Dinheiro", GetPlayerMoney(playerid), "Informações");
+    DOF2_SetInt(PegarConta(playerid), "LevelProcurado", GetPlayerWantedLevel(playerid), "Informações");
+    DOF2_SetInt(PegarConta(playerid), "SkinAtual", GetPlayerSkin(playerid), "Informações");
+    DOF2_SetBool(PegarConta(playerid), "Vip", PlayerDados[playerid][vip], "Informações");
+    DOF2_SetInt(PegarConta(playerid), "Exp", PlayerDados[playerid][exp], "Informações");
 
-    DOF2_SetInt(PegarConta(playerid), "Profissao", PlayerDados[playerid][Profissao]);
-    DOF2_SetBool(PegarConta(playerid), "Trabalhando", PlayerDados[playerid][trabalhando]);
+    DOF2_SetInt(PegarConta(playerid), "AdminLevel", PlayerDados[playerid][Admin], "Staff");
 
-    DOF2_SetBool(PegarConta(playerid), "Vip", PlayerDados[playerid][vip]);
-    DOF2_SetInt(PegarConta(playerid), "Exp", PlayerDados[playerid][exp]);
+    DOF2_SetInt(PegarConta(playerid), "Profissao", PlayerDados[playerid][Profissao], "Profissão");
+    DOF2_SetBool(PegarConta(playerid), "Trabalhando", PlayerDados[playerid][trabalhando], "Profissão");
 
-	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", PlayerDados[playerid][ultimoLogin]);
-	DOF2_SetString( PegarConta( playerid ), "IP", PlayerDados[playerid][playerIP]);    
+	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", PlayerDados[playerid][ultimoLogin], "Login-Info");
+	DOF2_SetString( PegarConta( playerid ), "IP", PlayerDados[playerid][playerIP], "Login-Info");    
 
-    DOF2_SetInt(PegarConta(playerid), "Multas", PlayerDados[playerid][multas]);
+    DOF2_SetInt(PegarConta(playerid), "Multas", PlayerDados[playerid][multas], "Habilitação");
+    DOF2_SetBool(PegarConta(playerid), "HabN", PlayerDados[playerid][HabN], "Habilitação");
+    DOF2_SetBool(PegarConta(playerid), "HabA", PlayerDados[playerid][HabA], "Habilitação");
+    DOF2_SetBool(PegarConta(playerid), "HabT_1", PlayerDados[playerid][HabT_1], "Habilitação");
+    DOF2_SetBool(PegarConta(playerid), "HabT_2", PlayerDados[playerid][HabT_2], "Habilitação");
+    DOF2_SetBool(PegarConta(playerid), "HabT_3", PlayerDados[playerid][HabT_3], "Habilitação");
 
-    DOF2_SetBool(PegarConta(playerid), "HabN", PlayerDados[playerid][HabN]);
-    DOF2_SetBool(PegarConta(playerid), "HabA", PlayerDados[playerid][HabA]);
+    DOF2_SetBool(PegarConta(playerid), "TaPreso", PlayerDados[playerid][TaPreso], "Cadeia-Info");
+    DOF2_SetInt(PegarConta(playerid), "MinPreso", PlayerDados[playerid][MinPreso], "Cadeia-Info");
+    DOF2_SetInt(PegarConta(playerid), "SegPreso", PlayerDados[playerid][SegPreso], "Cadeia-Info");
 
-    DOF2_SetBool(PegarConta(playerid), "HabT_1", PlayerDados[playerid][HabT_1]);
-    DOF2_SetBool(PegarConta(playerid), "HabT_2", PlayerDados[playerid][HabT_2]);
-    DOF2_SetBool(PegarConta(playerid), "HabT_3", PlayerDados[playerid][HabT_3]);
+    DOF2_SetInt(PegarConta(playerid), "SegundoUP", PlayerDados[playerid][segundoUP], "Level-UP");
+    DOF2_SetInt(PegarConta(playerid), "MinutoUP", PlayerDados[playerid][minutoUP], "Level-UP");
 
-    DOF2_SetBool(PegarConta(playerid), "TaPreso", PlayerDados[playerid][TaPreso]);
-    DOF2_SetInt(PegarConta(playerid), "MinPreso", PlayerDados[playerid][MinPreso]);
-    DOF2_SetInt(PegarConta(playerid), "SegPreso", PlayerDados[playerid][SegPreso]);
+    DOF2_SetInt(PegarConta(playerid), "Saude", PlayerDados[playerid][saude], "Status");
+    DOF2_SetInt(PegarConta(playerid), "Sono", PlayerDados[playerid][sono], "Status");
+    DOF2_SetInt(PegarConta(playerid), "Sede", PlayerDados[playerid][sede], "Status");
+    DOF2_SetInt(PegarConta(playerid), "Fome", PlayerDados[playerid][fome], "Status");
 
-    DOF2_SetInt(PegarConta(playerid), "SegundoUP", PlayerDados[playerid][segundoUP]);
-    DOF2_SetInt(PegarConta(playerid), "MinutoUP", PlayerDados[playerid][minutoUP]);
+    DOF2_SetInt(PegarConta(playerid), "Gasolina", PlayerDados[playerid][gasolina], "Combustível");
+    DOF2_SetInt(PegarConta(playerid), "Etanol", PlayerDados[playerid][etanol], "Combustível");
+    DOF2_SetInt(PegarConta(playerid), "GNV", PlayerDados[playerid][gnv], "Combustível");
+    DOF2_SetInt(PegarConta(playerid), "Diesel", PlayerDados[playerid][diesel], "Combustível");
 
-    DOF2_SetInt(PegarConta(playerid), "Saude", PlayerDados[playerid][saude]);
-    DOF2_SetInt(PegarConta(playerid), "Sono", PlayerDados[playerid][sono]);
-    DOF2_SetInt(PegarConta(playerid), "Sede", PlayerDados[playerid][sede]);
-    DOF2_SetInt(PegarConta(playerid), "Fome", PlayerDados[playerid][fome]);
-
-    DOF2_SetInt(PegarConta(playerid), "Gasolina", PlayerDados[playerid][gasolina]);
-    DOF2_SetInt(PegarConta(playerid), "Etanol", PlayerDados[playerid][etanol]);
-    DOF2_SetInt(PegarConta(playerid), "GNV", PlayerDados[playerid][gnv]);
-    DOF2_SetInt(PegarConta(playerid), "Diesel", PlayerDados[playerid][diesel]);
-
-    DOF2_SetInt(PegarConta(playerid), "pPosI", GetPlayerInterior(playerid));
-    DOF2_SetFloat(PegarConta(playerid), "PosX", pPosX[playerid]);
-    DOF2_SetFloat(PegarConta(playerid), "PosY", pPosY[playerid]);
-    DOF2_SetFloat(PegarConta(playerid), "PosZ", pPosZ[playerid]);
-    DOF2_SetFloat(PegarConta(playerid), "lPosX", iPosX[playerid]);
-    DOF2_SetFloat(PegarConta(playerid), "lPosY", iPosY[playerid]);
-    DOF2_SetFloat(PegarConta(playerid), "lPosZ", iPosZ[playerid]);
+    DOF2_SetInt(PegarConta(playerid), "pPosI", GetPlayerInterior(playerid), "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "PosX", pPosX[playerid], "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "PosY", pPosY[playerid], "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "PosZ", pPosZ[playerid], "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "lPosX", iPosX[playerid], "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "lPosY", iPosY[playerid], "Coordenadas");
+    DOF2_SetFloat(PegarConta(playerid), "lPosZ", iPosZ[playerid], "Coordenadas");
     // Mercado
-    DOF2_SetBool(PegarConta(playerid), "Celular", MercadoInfo[playerid][Celular]);
-    DOF2_SetBool(PegarConta(playerid), "Pedagio", MercadoInfo[playerid][PedagioSemPagar]);
-    DOF2_SetBool(PegarConta(playerid), "GPS", MercadoInfo[playerid][GPS]);
-    DOF2_SetBool(PegarConta(playerid), "Capacete", MercadoInfo[playerid][Capacete]);
-    DOF2_SetBool(PegarConta(playerid), "Oculos", MercadoInfo[playerid][Oculos]);
-    DOF2_SetBool(PegarConta(playerid), "Bone", MercadoInfo[playerid][Bone]);
-    DOF2_SetBool(PegarConta(playerid), "Gorro", MercadoInfo[playerid][Gorro]);
-    DOF2_SetBool(PegarConta(playerid), "Arara", MercadoInfo[playerid][Arara]);
-    DOF2_SetBool(PegarConta(playerid), "RelogioUP", MercadoInfo[playerid][RelogioUP]);
-    DOF2_SetInt(PegarConta(playerid), "KitReparo", MercadoInfo[playerid][KitReparo]);
-    DOF2_SetInt(PegarConta(playerid), "GalaoDeCombustivel", MercadoInfo[playerid][GalaoDeCombustivel]);
-    DOF2_SetInt(PegarConta(playerid), "TravaEletica", MercadoInfo[playerid][TravaEletica]);
-    DOF2_SetInt(PegarConta(playerid), "CreditoSMS", MercadoInfo[playerid][CreditoSMS]);
+    DOF2_SetBool(PegarConta(playerid), "Celular", MercadoInfo[playerid][Celular], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Pedagio", MercadoInfo[playerid][PedagioSemPagar], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "GPS", MercadoInfo[playerid][GPS], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Capacete", MercadoInfo[playerid][Capacete], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Oculos", MercadoInfo[playerid][Oculos], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Bone", MercadoInfo[playerid][Bone], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Gorro", MercadoInfo[playerid][Gorro], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "Arara", MercadoInfo[playerid][Arara], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "RelogioUP", MercadoInfo[playerid][RelogioUP], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "KitReparo", MercadoInfo[playerid][KitReparo], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "GalaoDeCombustivel", MercadoInfo[playerid][GalaoDeCombustivel], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "TravaEletica", MercadoInfo[playerid][TravaEletica], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "CreditoSMS", MercadoInfo[playerid][CreditoSMS], "Utilitários");
 
-    DOF2_SetInt(PegarConta(playerid), "Peixes", MercadoInfo[playerid][Peixes]);
-    DOF2_SetInt(PegarConta(playerid), "Fotos", MercadoInfo[playerid][Fotos]);
-    DOF2_SetInt(PegarConta(playerid), "Frutas", MercadoInfo[playerid][Frutas]);
+    DOF2_SetInt(PegarConta(playerid), "Peixes", MercadoInfo[playerid][Peixes], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "Fotos", MercadoInfo[playerid][Fotos], "Utilitários");
+    DOF2_SetInt(PegarConta(playerid), "Frutas", MercadoInfo[playerid][Frutas], "Utilitários");
+
+    DOF2_SetInt(PegarConta(playerid), "Iscas", MercadoInfo[playerid][iscas], "Utilitários");
+    DOF2_SetBool(PegarConta(playerid), "RedePesca", MercadoInfo[playerid][redePesca], "Utilitários");
 
     DOF2_SaveFile();
 
@@ -6195,67 +6360,68 @@ stock CarregarDados(playerid)
     if(DOF2_FileExists (PegarConta(playerid)))
     {
         // Info do Player
-        SetPlayerHealth(playerid, DOF2_GetFloat(PegarConta(playerid), "Vida"));
-        SetPlayerScore(playerid, DOF2_GetInt(PegarConta(playerid), "Level"));
-        GivePlayerMoney(playerid, DOF2_GetInt(PegarConta(playerid), "Dinheiro"));
-        SetPlayerWantedLevel(playerid, DOF2_GetInt(PegarConta(playerid), "LevelProcurado"));
+        SetPlayerHealth(playerid, DOF2_GetFloat(PegarConta(playerid), "Vida", "Informações"));
+        SetPlayerScore(playerid, DOF2_GetInt(PegarConta(playerid), "Level", "Informações"));
+        GivePlayerMoney(playerid, DOF2_GetInt(PegarConta(playerid), "Dinheiro", "Informações"));
+        SetPlayerWantedLevel(playerid, DOF2_GetInt(PegarConta(playerid), "LevelProcurado", "Informações"));
+        PlayerDados[playerid][vip] = DOF2_GetBool(PegarConta(playerid), "Vip", "Informações");
+        PlayerDados[playerid][exp] = DOF2_GetInt(PegarConta(playerid), "Exp", "Informações");
+        PlayerDados[playerid][skin] = DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações");
 
-        PlayerDados[playerid][Admin] = DOF2_GetInt(PegarConta(playerid), "AdminLevel");
+        PlayerDados[playerid][Admin] = DOF2_GetInt(PegarConta(playerid), "AdminLevel", "Staff");
 
-        PlayerDados[playerid][Profissao] = DOF2_GetInt(PegarConta(playerid), "Profissao");
-        PlayerDados[playerid][trabalhando] = DOF2_GetBool(PegarConta(playerid), "Trabalhando");
+        PlayerDados[playerid][Profissao] = DOF2_GetInt(PegarConta(playerid), "Profissao", "Profissão");
+        PlayerDados[playerid][trabalhando] = DOF2_GetBool(PegarConta(playerid), "Trabalhando", "Profissão");
 
-        PlayerDados[playerid][vip] = DOF2_GetBool(PegarConta(playerid), "Vip");
-        PlayerDados[playerid][exp] = DOF2_GetInt(PegarConta(playerid), "Exp");
-        PlayerDados[playerid][skin] = DOF2_GetInt(PegarConta(playerid), "SkinAtual");
+        PlayerDados[playerid][multas] = DOF2_GetBool(PegarConta(playerid), "Multas", "Habilitação");
+		PlayerDados[playerid][HabN] = DOF2_GetBool(PegarConta(playerid), "HabN", "Habilitação");
+		PlayerDados[playerid][HabA] = DOF2_GetBool(PegarConta(playerid), "HabA", "Habilitação");
+		PlayerDados[playerid][HabT_1] = DOF2_GetBool(PegarConta(playerid), "HabT_1", "Habilitação");
+		PlayerDados[playerid][HabT_2] = DOF2_GetBool(PegarConta(playerid), "HabT_2", "Habilitação");
+		PlayerDados[playerid][HabT_3] = DOF2_GetBool(PegarConta(playerid), "HabT_3", "Habilitação");
 
+		PlayerDados[playerid][TaPreso] = DOF2_GetBool(PegarConta(playerid), "TaPreso", "Cadeia-Info");
+		PlayerDados[playerid][MinPreso] = DOF2_GetInt(PegarConta(playerid), "MinPreso", "Cadeia-Info");
+		PlayerDados[playerid][SegPreso] = DOF2_GetInt(PegarConta(playerid), "SegPreso", "Cadeia-Info");
 
-        PlayerDados[playerid][multas] = DOF2_GetBool(PegarConta(playerid), "Multas");
-		PlayerDados[playerid][HabN] = DOF2_GetBool(PegarConta(playerid), "HabN");
-		PlayerDados[playerid][HabA] = DOF2_GetBool(PegarConta(playerid), "HabA");
-		PlayerDados[playerid][HabT_1] = DOF2_GetBool(PegarConta(playerid), "HabT_1");
-		PlayerDados[playerid][HabT_2] = DOF2_GetBool(PegarConta(playerid), "HabT_2");
-		PlayerDados[playerid][HabT_3] = DOF2_GetBool(PegarConta(playerid), "HabT_3");
+		PlayerDados[playerid][segundoUP] = DOF2_GetInt(PegarConta(playerid), "SegundoUP", "Level-UP");
+		PlayerDados[playerid][minutoUP] = DOF2_GetInt(PegarConta(playerid), "MinutoUP", "Level-UP");
 
-		PlayerDados[playerid][TaPreso] = DOF2_GetBool(PegarConta(playerid), "TaPreso");
-		PlayerDados[playerid][MinPreso] = DOF2_GetInt(PegarConta(playerid), "MinPreso");
-		PlayerDados[playerid][SegPreso] = DOF2_GetInt(PegarConta(playerid), "SegPreso");
+		PlayerDados[playerid][saude] = DOF2_GetInt(PegarConta(playerid), "Saude", "Status");
+		PlayerDados[playerid][sono] = DOF2_GetInt(PegarConta(playerid), "Sono", "Status");
+		PlayerDados[playerid][sede] = DOF2_GetInt(PegarConta(playerid), "Sede", "Status");
+		PlayerDados[playerid][fome] = DOF2_GetInt(PegarConta(playerid), "Fome", "Status");
 
-		PlayerDados[playerid][segundoUP] = DOF2_GetInt(PegarConta(playerid), "SegundoUP");
-		PlayerDados[playerid][minutoUP] = DOF2_GetInt(PegarConta(playerid), "MinutoUP");
-		PlayerDados[playerid][saude] = DOF2_GetInt(PegarConta(playerid), "Saude");
-		PlayerDados[playerid][sono] = DOF2_GetInt(PegarConta(playerid), "Sono");
-		PlayerDados[playerid][sede] = DOF2_GetInt(PegarConta(playerid), "Sede");
-		PlayerDados[playerid][fome] = DOF2_GetInt(PegarConta(playerid), "Fome");
-
-        PlayerDados[playerid][gasolina] = DOF2_GetInt(PegarConta(playerid), "Gasolina");
-        PlayerDados[playerid][etanol] = DOF2_GetInt(PegarConta(playerid), "Etanol");
-        PlayerDados[playerid][gnv] = DOF2_GetInt(PegarConta(playerid), "GNV");
-        PlayerDados[playerid][diesel] = DOF2_GetInt(PegarConta(playerid), "Diesel");
-
+        PlayerDados[playerid][gasolina] = DOF2_GetInt(PegarConta(playerid), "Gasolina", "Combustível");
+        PlayerDados[playerid][etanol] = DOF2_GetInt(PegarConta(playerid), "Etanol", "Combustível");
+        PlayerDados[playerid][gnv] = DOF2_GetInt(PegarConta(playerid), "GNV", "Combustível");
+        PlayerDados[playerid][diesel] = DOF2_GetInt(PegarConta(playerid), "Diesel", "Combustível");
 
         // Mercado
-        MercadoInfo[playerid][Celular] = DOF2_GetBool(PegarConta(playerid), "Celular");
-        MercadoInfo[playerid][PedagioSemPagar] = DOF2_GetBool(PegarConta(playerid), "Pedagio");
-        MercadoInfo[playerid][GPS] = DOF2_GetBool(PegarConta(playerid), "GPS");
-        MercadoInfo[playerid][Capacete] = DOF2_GetBool(PegarConta(playerid), "Capacete");
-        MercadoInfo[playerid][Oculos] = DOF2_GetBool(PegarConta(playerid), "Oculos");
-        MercadoInfo[playerid][Bone] = DOF2_GetBool(PegarConta(playerid), "Bone");
-        MercadoInfo[playerid][Gorro] = DOF2_GetBool(PegarConta(playerid), "Gorro");
-        MercadoInfo[playerid][Arara] = DOF2_GetBool(PegarConta(playerid), "Arara");
-        MercadoInfo[playerid][RelogioUP] = DOF2_GetBool(PegarConta(playerid), "RelogioUP");
-        MercadoInfo[playerid][KitReparo] = DOF2_GetInt(PegarConta(playerid), "KitReparo");
-        MercadoInfo[playerid][GalaoDeCombustivel] = DOF2_GetInt(PegarConta(playerid), "GalaoDeCombustivel");
-        MercadoInfo[playerid][TravaEletica] = DOF2_GetInt(PegarConta(playerid), "TravaEletica");
-        MercadoInfo[playerid][CreditoSMS] = DOF2_GetInt(PegarConta(playerid), "CreditoSMS");
+        MercadoInfo[playerid][Celular] = DOF2_GetBool(PegarConta(playerid), "Celular", "Utilitários");
+        MercadoInfo[playerid][PedagioSemPagar] = DOF2_GetBool(PegarConta(playerid), "Pedagio", "Utilitários");
+        MercadoInfo[playerid][GPS] = DOF2_GetBool(PegarConta(playerid), "GPS", "Utilitários");
+        MercadoInfo[playerid][Capacete] = DOF2_GetBool(PegarConta(playerid), "Capacete", "Utilitários");
+        MercadoInfo[playerid][Oculos] = DOF2_GetBool(PegarConta(playerid), "Oculos", "Utilitários");
+        MercadoInfo[playerid][Bone] = DOF2_GetBool(PegarConta(playerid), "Bone", "Utilitários");
+        MercadoInfo[playerid][Gorro] = DOF2_GetBool(PegarConta(playerid), "Gorro", "Utilitários");
+        MercadoInfo[playerid][Arara] = DOF2_GetBool(PegarConta(playerid), "Arara", "Utilitários");
+        MercadoInfo[playerid][RelogioUP] = DOF2_GetBool(PegarConta(playerid), "RelogioUP", "Utilitários");
+        MercadoInfo[playerid][KitReparo] = DOF2_GetInt(PegarConta(playerid), "KitReparo", "Utilitários");
+        MercadoInfo[playerid][GalaoDeCombustivel] = DOF2_GetInt(PegarConta(playerid), "GalaoDeCombustivel", "Utilitários");
+        MercadoInfo[playerid][TravaEletica] = DOF2_GetInt(PegarConta(playerid), "TravaEletica", "Utilitários");
+        MercadoInfo[playerid][CreditoSMS] = DOF2_GetInt(PegarConta(playerid), "CreditoSMS", "Utilitários");
 
-        MercadoInfo[playerid][Peixes] = DOF2_GetInt(PegarConta(playerid), "Peixes");
-        MercadoInfo[playerid][Fotos] = DOF2_GetInt(PegarConta(playerid), "Fotos");
-        MercadoInfo[playerid][Frutas] = DOF2_GetInt(PegarConta(playerid), "Frutas");
+        MercadoInfo[playerid][Peixes] = DOF2_GetInt(PegarConta(playerid), "Peixes", "Utilitários");
+        MercadoInfo[playerid][Fotos] = DOF2_GetInt(PegarConta(playerid), "Fotos", "Utilitários");
+        MercadoInfo[playerid][Frutas] = DOF2_GetInt(PegarConta(playerid), "Frutas", "Utilitários");
+
+        MercadoInfo[playerid][iscas] = DOF2_GetInt(PegarConta(playerid), "Iscas", "Utilitários");
+        MercadoInfo[playerid][redePesca] = DOF2_GetBool(PegarConta(playerid), "RedePesca", "Utilitários");
         // Posição do jogador
-        iPosX[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosX");
-        iPosY[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosY");
-        iPosZ[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosZ");
+        iPosX[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosX", "Coordenadas");
+        iPosY[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosY", "Coordenadas");
+        iPosZ[playerid] = DOF2_GetFloat(PegarConta(playerid), "lPosZ", "Coordenadas");
 
         new Dia, Mes, Ano, Hora, Minuto, Segundo;
 		gettime(Hora, Minuto, Segundo);
@@ -6752,6 +6918,37 @@ public ProfissaoCarExit(playerid)
 				}
 			}
 		}
+		else if(PlayerDados[playerid][Profissao] == PMilitar)
+		{
+			if(profissaoCapapidate[playerid])
+			{
+				if(profissaoTempo[playerid] > 0 && !PlayerDados[profissaoCapapidate[playerid]][TaPreso])
+				{
+					format(strTempo, sizeof(strTempo), "~r~Tempo: %d", profissaoTempo[playerid]);
+					profissaoTempo[playerid] = profissaoTempo[playerid]-1;
+					GameTextForPlayer(playerid, strTempo, 1000, 5);
+					GameTextForPlayer(profissaoCapapidate[playerid], strTempo, 1000, 5);
+
+					SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+
+					return 1;
+				}else
+				{
+					SetPlayerSpecialAction(profissaoCapapidate[playerid], SPECIAL_ACTION_NONE);
+					TogglePlayerControllable(profissaoCapapidate[playerid], 1);
+
+					Algemado[profissaoCapapidate[playerid]] = false;
+					PodeSerAlgemado[profissaoCapapidate[playerid]] = true;
+
+					SetPlayerHealth(profissaoCapapidate[playerid], 0);
+					SendClientMessage(profissaoCapapidate[playerid], COR_SUCCESS, "| Info | Os traficantes salvaram você fuja que a polícia já está procurando você");
+					
+					profissaoCapapidate[playerid] = 2;
+					DisablePlayerRaceCheckpoint(playerid);
+					return SendClientMessage(playerid, COR_ERRO, "| INFO | O suspeito fugiu");
+				}
+			}
+		}
 	}
 	return 1;
 }
@@ -7016,10 +7213,57 @@ public PlayerCompletarEntrega(playerid)
 	TogglePlayerControllable(playerid, true);
 	return 1;
 }
+forward FugirAbordado(playerid);
+public FugirAbordado(playerid)
+{
+	if(IsPlayerConnected(playerid) && GetPlayerWantedLevel(playerid) > 0)
+	{
+		SendClientMessage(playerid, COR_ERRO, "| AVISO | Você Está Fugindo! E Poderá Ser Algemado Sem Render-se!");
+		PodeSerAlgemado[playerid] = true;
+	}
+	return 1;
+}
+forward TempoPesca(playerid);
+public TempoPesca(playerid)
+{
+	if(IsPlayerConnected(playerid) && TaPescando[playerid] && PlayerDados[playerid][Profissao] == Pescador)
+	{
+		if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 453)
+    	{
+    		MercadoInfo[playerid][iscas] = MercadoInfo[playerid][iscas] -1; 
+			TaPescando[playerid] = false;
+
+			new texto[256], randomPeixe = random(10);
+			
+			format(texto, sizeof(texto), "| PESCA | Sua Pesca Terminou! Peixe: %d, Você Poderá Vender em uma Loja de Utilitários!", randomPeixe);
+			SendClientMessage(playerid, COR_SUCCESS, texto);
+			
+			MercadoInfo[playerid][Peixes] += randomPeixe;
+		    PlayerPlaySound(playerid, 1057, 0, 0, 0);
+
+		    return 1;
+    	}
+    	else
+    	{
+    		MercadoInfo[playerid][iscas] = MercadoInfo[playerid][iscas] -1; 
+			TaPescando[playerid] = false;
+
+    		return SendClientMessage(playerid, COR_ERRO, "| Pescador | Você Não Está Em Um Barco Da Profissão!");
+    	}
+	}
+
+	return 1;
+}
 forward DelayedKick(playerid);
 public DelayedKick(playerid)
 {
     Kick(playerid);
+    return 1;
+}
+forward DelayedBan(playerid);
+public DelayedBan(playerid)
+{
+    Ban(playerid);
     return 1;
 }
 stock ShowPlayerVelocimetro(playerid) {
@@ -7064,20 +7308,20 @@ stock criarConta(playerid)
 	StopAudioStreamForPlayer(playerid);
 
 	DOF2_CreateFile(PegarConta(playerid));
-	DOF2_SetString(PegarConta(playerid),"Senha",PlayerRegister[playerid][pSenha]);
-	DOF2_SetString(PegarConta(playerid),"Email",PlayerRegister[playerid][email]);
+	DOF2_SetString(PegarConta(playerid),"Senha",PlayerRegister[playerid][pSenha], "Dados-Pessoais");
+	DOF2_SetString(PegarConta(playerid),"Email",PlayerRegister[playerid][email], "Dados-Pessoais");
 
 	if(PlayerRegister[playerid][sexo] == 1)
 	{
 	 	SetSpawnInfo(playerid, 0, 45, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-	 	DOF2_SetString(PegarConta(playerid),"Sexo","Masculino");
-	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 45);
+	 	DOF2_SetString(PegarConta(playerid),"Sexo","Masculino", "Dados-Pessoais");
+	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 45, "Informações");
 	}
 	else
 	{
 		SetSpawnInfo(playerid, 0, 90, 1722.5123, -1912.7931, 13.5647, 269.15, 0, 0, 0, 0, 0, 0);
-		DOF2_SetString(PegarConta(playerid),"Sexo","Feminino");
-	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 90);
+		DOF2_SetString(PegarConta(playerid),"Sexo","Feminino", "Dados-Pessoais");
+	 	DOF2_SetInt(PegarConta(playerid), "SkinAtual", 90, "Informações");
 	}
 
 	new Dia, Mes, Ano, Hora, Minuto, Segundo, pIP[30], Registro[100];
@@ -7086,9 +7330,9 @@ stock criarConta(playerid)
 	GetPlayerIp(playerid, pIP, sizeof(pIP));
 	format(Registro, sizeof(Registro), "%02d/%02d/%02d - %02d:%02d:%02d", Dia, Mes, Ano, Hora, Minuto, Segundo);
 
-	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", Registro);
-	DOF2_SetString( PegarConta( playerid ), "Registrado", Registro);
-	DOF2_SetString( PegarConta( playerid ), "IP", pIP); 
+	DOF2_SetString( PegarConta( playerid ), "UltimoLogin", Registro, "Login-Info");
+	DOF2_SetString( PegarConta( playerid ), "Registrado", Registro, "Login-Info");
+	DOF2_SetString( PegarConta( playerid ), "IP", pIP, "Login-Info"); 
 
 	DOF2_SaveFile();
 
@@ -7117,6 +7361,7 @@ stock CriarAtores()
 	Atores[3] = CreateActor(205, 376.4423,-65.8463,1001.5078,183.8009); // Burger shot
 	Atores[4] = CreateActor(155, 376.6889,-117.2670,1001.4922,176.4589); // Well stacked pizza
 	Atores[5] = CreateActor(192, 162.7293,-81.1873,1001.8047,182.0424); // Zip
+	Atores[6] = CreateActor(160, -2186.1372,2417.5842,5.1883,169.9767); // Pescador
 
 
 	ApplyActorAnimation(Atores[0], "DEALER", "shop_pay", 4.1, 0, 0, 0, 0, 0); // Pay anim
@@ -7132,6 +7377,7 @@ stock CriarAtores()
 	SetActorInvulnerable(Atores[3], true);
 	SetActorInvulnerable(Atores[4], true);
 	SetActorInvulnerable(Atores[5], true);
+	SetActorInvulnerable(Atores[6], true);
 
     return 1;
 }
@@ -7252,6 +7498,8 @@ stock textosinformativos()
     AddStaticPickup(1210, 23, 2176.1892,-1976.0012,13.5547); // Pegar emprego
     // PizzaBoy
     AddStaticPickup(1210, 23, 2123.7219,-1786.7711,13.5547); // Pegar emprego
+    // Polícia militar
+    AddStaticPickup(1210, 23, 234.2587,77.4519,1005.0391); // Pegar emprego
     /*              3D TEXTS                               */
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Entrar",50,1733.5103,-1912.0349,13.5620,15,0);// Entrada Da Agência de Empregos
     Create3DTextLabel("{FFFFFF}Agência de Empregos\nAperte {00FFFF}'F' {FFFFFF}Para Sair",50,390.7674,173.7650,1008.3828,15,0);// Saida Da Agência de Empregos
@@ -7282,6 +7530,8 @@ stock textosinformativos()
     Create3DTextLabel("{FFA500}Emprego Gari\n{FFFFFF}Digite /uniforme",0xFFA500AA,2176.1892,-1976.0012,13.5547,10.0,0);
     // PizzaBoy
     Create3DTextLabel("{FFA500}PizzaBoy\n{FFFFFF}Digite /uniforme",0xFFA500AA,2123.7219,-1786.7711,13.5547,10.0,0);
+    // Polícia militar
+    Create3DTextLabel("{FFA500}Polícia Militar\n{FFFFFF}Digite /uniforme",0xFFA500AA,234.2587,77.4519,1005.0391,10.0,0);
     // Lixos pela cidade 
     for(new i = 0; i < sizeof(lixosLatasPos); i ++)
 	{
@@ -7415,10 +7665,6 @@ stock veiculosProfissao()
 	pescaCar[5] = AddStaticVehicleEx(453,-2229.4580,2445.6484,-0.3800,227.1140,1,1, 120); // Barco pescador 6
 	pescaCar[6] = AddStaticVehicleEx(453,-2250.3552,2425.8960,-0.3987,222.1967,1,1, 120); // Barco pescador 7
 	pescaCar[7] = AddStaticVehicleEx(453,-2227.8508,2403.4043,-0.2836,46.5740,1,1, 120); // Barco pescador 8
-	pescaCar[8] = AddStaticVehicleEx(422,-2256.5710,2389.2595,4.9562,312.9273,148,148, 120); // Bobcat pescador 9
-	pescaCar[9] = AddStaticVehicleEx(422,-2260.7410,2394.0042,4.9553,312.4781,148,148, 120); // Bobcat pescador 10
-	pescaCar[10] = AddStaticVehicleEx(422,-2264.4448,2398.0110,4.9432,313.2853,148,148, 120); // Bobcat pescador 11
-	pescaCar[11] = AddStaticVehicleEx(422,-2268.8757,2402.6802,4.9349,314.0073,148,148, 120); // Bobcat pescador 12
 
     gariCar[0][0] = AddStaticVehicleEx(408,2163.4500,-1971.7676,14.0909,180.5521,026,026,300); //Trashmaster
     gariCar[1][0] = AddStaticVehicleEx(408,2159.6819,-1971.6329,14.1798,178.5353,026,026,300); //Trashmaster
@@ -7881,6 +8127,15 @@ stock IsNumeric(const string[])
 	}
     return 1;
 }
+stock GetDistanceBetweenPlayers(playerid,playerid2)
+{
+    new Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2;
+    new Float:dis;
+    GetPlayerPos(playerid,x1,y1,z1);
+    GetPlayerPos(playerid2,x2,y2,z2);
+    dis = floatsqroot(floatpower(floatabs(floatsub(x2,x1)),2)+floatpower(floatabs(floatsub(y2,y1)),2)+floatpower(floatabs(floatsub(z2,z1)),2));
+    return floatround(dis);
+}
 stock fileLog(file[], string[]) // Creditos "im" do forum samp.
 {
     new time[6], timestr[32], data[256], File:hFile, thefile[32];
@@ -7940,6 +8195,14 @@ CMD:hq(playerid)
         else if(PlayerDados[playerid][Profissao] == Petroleiro)
         {
             SetPlayerMapIcon(playerid, GPS_ID, 312.1143,1477.8135,8.8824, GPS_ICON, 0, MAPICON_GLOBAL);
+            SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
+
+            PlayerPlaySound(playerid, 1057, 0 ,0, 0);
+            HQ[playerid] = true;
+        }
+        else if(PlayerDados[playerid][Profissao] >= 25 || PlayerDados[playerid][Profissao] <= 32)
+        {
+            SetPlayerMapIcon(playerid, GPS_ID, 1552.7336,-1675.6451,16.1953, GPS_ICON, 0, MAPICON_GLOBAL);
             SendClientMessage(playerid, COR_SUCCESS, "INFO | Foi marcado em seu radar o local de sua HQ / Profissão!");
 
             PlayerPlaySound(playerid, 1057, 0 ,0, 0);
@@ -8026,8 +8289,318 @@ CMD:profissao (playerid)
 	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
 		return 1;
 	}
+
+	else if(PlayerDados[playerid][Profissao] == PMilitar)
+	{
+	    new str[1280];
+	    strcat(str, "{9ACD32}Polícia militar\n\n");
+	    strcat(str, "{c0c0c0}Seu objetivo como {9ACD32}Polícia militar {c0c0c0}é trabalha prendendo Criminosos em San Andreas!\n");
+	    strcat(str, "{c0c0c0}Pegue Uma Viatura Na DP Mais Próxima E Vá Prender Os Criminosos!\n");
+	    strcat(str, "{c0c0c0}Quando você der voz de prisão para um jogador, Você terá 4 minutos para levar ele até a Departamento de Policia mais próxima!\n\n");
+	    strcat(str, "{ffffff}/Procurados{c0c0c0} - Para Ver Os Procurados Online!\n");
+	    strcat(str, "{ffffff}/Abordar{c0c0c0} - Aborda Um Jogador ( Aborde-o Antes De Algema-lo )!\n");
+	    strcat(str, "{ffffff}/Algemar{c0c0c0} - Para Algemar Um Procurado!\n");
+	    strcat(str, "{ffffff}/VozDePrisao{c0c0c0} - Para Dar Voz De Prisão No Criminoso Algemado!\n");
+	    strcat(str, "{ffffff}/HQ{c0c0c0} - Marca no seu mini mapa a posição do seu HQ!\n");
+	    strcat(str, "{ffffff}/CP{c0c0c0} - Chat Profissão!\n");
+	    ShowPlayerDialog(playerid, DialogProfissao, DIALOG_STYLE_MSGBOX, "{FF0000}Profissão", str, "OK", "");
+		return 1;
+	}
 	return 1;
 }
+/*================[ Procurados ]==============*/
+
+CMD:procurados (playerid)
+{
+
+	if(PlayerDados[playerid][Profissao] < 25 || PlayerDados[playerid][Profissao] > 32) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para a Polícia!");
+    else
+    {
+    	if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+    	else if(profissaoUniforme[playerid])
+    	{
+    		new Proc[650],ProcDialog[810],ProcCount;
+			for(new i,a = GetMaxPlayers(); i < a; i++)
+			{
+				if(IsPlayerConnected(i))
+			    {
+			    	if(GetPlayerWantedLevel(i) > 0)
+			        {
+			            format(Proc, sizeof(Proc), "%s\n{FFFFFF}%s {FFFFFF}(%i) - Crimes: {FF0000}%d", Proc, getName(i),i , GetPlayerWantedLevel(i));
+			            ProcCount++;
+			        }
+			    }
+			}
+
+			if(ProcCount > 0)  format(ProcDialog, sizeof(ProcDialog), "{FFFFFF}Total De Procurados Online: {FFFF00}%i{FFFFFF}{09D19B}\n%s\n", ProcCount,Proc);
+			else format(ProcDialog, sizeof(ProcDialog), "{FF0000}Nenhum Procurado Está Online!\n", ProcCount, Proc);
+			
+			return ShowPlayerDialog(playerid, DialogProcurados, DIALOG_STYLE_MSGBOX,"{FFFFFF}Procurados Online:",ProcDialog,"Ok","");
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Departamento de Polícia | Você tem que está utilizando o uniforme de Polícia!");
+    }
+}
+/*================[ Abordar ]==============*/
+CMD:abordar (playerid, params[])
+{
+
+	if(PlayerDados[playerid][Profissao] < 25 || PlayerDados[playerid][Profissao] > 32) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para a Polícia!");
+    else
+    {
+    	if(profissaoUniforme[playerid])
+    	{
+    		new pID, texto[256], str[256];
+    		if(sscanf(params, "u", pID)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Abordar [ ID ]");
+    		else if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+    		else if(pID == playerid) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Se Abordar!");
+    		else if(pID == INVALID_PLAYER_ID) return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+    		else if(!Logado{pID}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Ainda Não Está Logado!");
+    		else if( GetDistanceBetweenPlayers(playerid, pID) > 8.5 ) return SendClientMessage(playerid, COR_ERRO, "| ERRO | O Jogador está Longe de você! Chegue Mais Perto!");
+    		else
+    		{
+    			format(texto, sizeof(texto), "| INFO | O Policial %s Abordou Você! Digite /R Para Se Render!", getName(playerid));
+				SendClientMessage(pID, COR_WARNING, texto);
+				SendClientMessage(pID, COR_WARNING, "| AVISO | Se Você Estiver Procurado(a), E não Se Render Em 15 Segundos Poderá Ser Algemado!");
+				format(str, sizeof(str), "| INFO | Você Abordou %s , Poderá Algema-lo(a) Direto Se Estiver Fugindo!", getName(pID));
+				SendClientMessage(playerid, COR_SUCCESS, str);
+				GameTextForPlayer(pID, "~r~Abordado!", 2000, 3);
+				SetTimerEx("FugirAbordado", 15000, false, "i", playerid);
+				return 1;
+    		}
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Departamento de Polícia | Você tem que está utilizando o uniforme de Polícia!");
+    }
+}
+/*==========[ Algemar ]==========*/
+CMD:algemar (playerid, params[])
+{
+
+	if(PlayerDados[playerid][Profissao] < 25 || PlayerDados[playerid][Profissao] > 32) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para a Polícia!");
+    else
+    {
+    	if(profissaoUniforme[playerid])
+    	{
+    		new pID, texto[256], str[256], Motivo[128];
+    		if(sscanf(params, "us[128]", pID, Motivo)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Algemar [ ID ] [ Motivo ]");
+    		else if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+    		else if(pID == playerid) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Se Algemar!");
+    		else if(pID == INVALID_PLAYER_ID) return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+    		else if(!Logado{pID}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Ainda Não Está Logado!");
+    		else if( GetDistanceBetweenPlayers(playerid, pID) > 8.5 ) return SendClientMessage(playerid, COR_ERRO, "| ERRO | O Jogador está Longe de você! Chegue Mais Perto!");
+    		else if(Algemado[pID]) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Já Está Algemado!");
+    		else if(IsPlayerInVehicle(playerid, GetPlayerVehicleID(playerid))) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não pode algemar uma pessoa dentro do veiculo!");
+    		else if(IsPlayerInVehicle(pID, GetPlayerVehicleID(playerid))) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não pode voz de prisão esse jogador porque ele está em um veículo!");
+    		else
+    		{
+    			format(texto, sizeof(texto), "| INFO | Você Algemou %s ( Motivo: %s )", getName(pID), Motivo);
+				SendClientMessage(playerid, COR_ERRO, texto);
+
+				format(str, sizeof(str), "| INFO | %s Algemou Você! ( Motivo: %s )", getName(playerid), Motivo);
+				SendClientMessage(pID, COR_ERRO, str);
+
+				SetPlayerSpecialAction(pID, SPECIAL_ACTION_CUFFED);
+				TogglePlayerControllable(pID,0);
+
+				GameTextForPlayer(pID, "~r~Algemado!", 2000, 3);
+
+				Algemado[pID] = true;
+				PodeSerAlgemado[pID] = false;
+
+				format(Log, sizeof(Log), "O Policial %s Algemou %s ( Motivo: %s )", getName(playerid), getName(pID), Motivo);
+				fileLog("Algemar", Log);
+
+				return 1;
+    		}
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Departamento de Polícia | Você tem que está utilizando o uniforme de Polícia!");
+    }
+}
+
+/*==========[ Desalgemar ]========*/
+CMD:desalgemar (playerid, params[])
+{
+
+	if(PlayerDados[playerid][Profissao] < 25 || PlayerDados[playerid][Profissao] > 32) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para a Polícia!");
+    else
+    {
+    	if(profissaoUniforme[playerid])
+    	{
+    		new pID, texto[256], str[256];
+    		if(sscanf(params, "u", pID)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Desalgemar [ ID ]");
+    		else if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+    		else if(pID == playerid) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Se Algemar!");
+    		else if(pID == INVALID_PLAYER_ID) return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+    		else if(!Logado{pID}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Ainda Não Está Logado!");
+    		else if( GetDistanceBetweenPlayers(playerid, pID) > 8.5 ) return SendClientMessage(playerid, COR_ERRO, "| ERRO | O Jogador está Longe de você! Chegue Mais Perto!");
+    		else if(!Algemado[pID]) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Não Está Algemado!");
+    		else
+    		{
+    			format(texto, sizeof(texto), "| INFO | Você Desalgemou %s", getName(pID));
+				SendClientMessage(playerid, COR_ERRO, texto);
+
+				format(str, sizeof(str), "| INFO | %s Desalgemou Você!", getName(playerid));
+				SendClientMessage(pID, COR_ERRO, str);
+
+				SetPlayerSpecialAction(pID, SPECIAL_ACTION_NONE);
+				TogglePlayerControllable(pID, 1);
+
+				GameTextForPlayer(pID, "~b~Desalgemado!", 2000, 3);
+
+				Algemado[pID] = false;
+				PodeSerAlgemado[pID] = true;
+
+				format(Log, sizeof(Log), "O Policial %s Desalgemou %s", getName(playerid), getName(pID));
+				fileLog("Desalgemar", Log);
+
+				return 1;
+    		}
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Departamento de Polícia | Você tem que está utilizando o uniforme de Polícia!");
+    }
+}
+/*==========[ Voz De Prisão ]===========*/
+CMD:vozdeprisao (playerid, params[])
+{
+
+	if(PlayerDados[playerid][Profissao] < 25 || PlayerDados[playerid][Profissao] > 32) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para a Polícia!");
+    else
+    {
+    	if(profissaoUniforme[playerid])
+    	{
+    		new pID, texto[256], str[256];
+    		if(sscanf(params, "u", pID)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /VozDePrisao [ ID ]");
+    		else if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+    		else if(pID == playerid) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Dar Voz de Prisão Em Você Mesmo!");
+    		else if(pID == INVALID_PLAYER_ID) return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+    		else if(!Logado{pID}) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Ainda Não Está Logado!");
+    		else if( GetDistanceBetweenPlayers(playerid, pID) > 8.5 ) return SendClientMessage(playerid, COR_ERRO, "| ERRO | O Jogador está Longe de você! Chegue Mais Perto!");
+    		else if(!Algemado[pID]) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Este Jogador Não Está Algemado!");
+    		else if(GetPlayerInterior(pID) != 0 || GetVehicleModel(GetPlayerVehicleID(playerid)) == 523)
+    		{
+    			format(texto, sizeof(texto), "| INFO | Você Deu Voz De Prisão Em %s", getName(pID));
+				SendClientMessage(playerid, COR_ERRO, texto);
+
+				format(str, sizeof(str), "| INFO | %s Deu Voz De Prisão Em Você!", getName(playerid));
+				SendClientMessage(pID, COR_ERRO, str);
+
+				GameTextForPlayer(pID, "~r~Voz de prisao!", 2000, 3);
+
+				PrenderPlayer(pID, 14, 59);
+
+				SetPlayerSpecialAction(pID, SPECIAL_ACTION_NONE);
+				TogglePlayerControllable(pID, 1);
+
+				Algemado[pID] = false;
+				PodeSerAlgemado[pID] = true;
+
+				return 1;
+    		}
+    		else if(!IsPlayerInVehicle(playerid, GetPlayerVehicleID(playerid))) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Está Em Uma Viatura!");
+    		else if(IsPlayerInVehicle(pID, GetPlayerVehicleID(playerid))) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não pode voz de prisão esse jogador porque ele está em um veículo!");
+    		else
+    		{
+
+    			for(new i = 0; i < sizeof(viatura); i ++)
+				{
+					if(GetPlayerVehicleID(playerid) == viatura[i])
+					{
+						format(texto, sizeof(texto), "| INFO | Você Deu Voz De Prisão Em %s", getName(pID));
+						SendClientMessage(playerid, COR_ERRO, texto);
+
+						format(str, sizeof(str), "| INFO | %s Deu Voz De Prisão Em Você!", getName(playerid));
+						SendClientMessage(pID, COR_ERRO, str);
+
+						GameTextForPlayer(pID, "~r~Voz de prisao!", 2000, 3);
+
+						TaVozPrisao[pID] = true;
+						profissaoCapapidate[playerid] = pID;
+
+						PutPlayerInVehicle(pID, viatura[i], 2);
+
+						format(Log, sizeof(Log), "O(A) Policial %s Deu Voz De Prisão Em %s", getName(playerid), getName(pID));
+						fileLog("VozDePrisao", Log);
+
+						profissaoTempo[playerid] = 240;
+    					SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+
+						// Pershing Square
+						if(PlayerToPoint(playerid, 1000.0, 1555.500122, -1675.565673, 16.195312))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, 1555.500122, -1675.565673, 16.195312, 1555.500122, -1675.565673, 16.195312, 50);
+				        	return 1;
+						}
+						// Dillimore
+						else if(PlayerToPoint(playerid, 1000.0, 626.965209, -571.652954, 17.920680))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, 626.965209, -571.652954, 17.920680, 626.965209, -571.652954, 17.920680, 50);
+				        	return 1;
+						}
+						// Fort Carson
+						else if(PlayerToPoint(playerid, 1000.0, -217.843124, 979.190307, 19.504125))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, -217.843124, 979.190307, 19.504125, -217.843124, 979.190307, 19.504125, 50);
+				        	return 1;
+						}
+						// Roca Escalante
+						else if(PlayerToPoint(playerid, 1000.0, 2287.153808, 2432.367919, 10.820312))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, 2287.153808, 2432.367919, 10.820312, 2287.153808, 2432.367919, 10.820312, 50);
+				        	return 1;
+						}
+						// El Quebrados
+						else if(PlayerToPoint(playerid, 900.0, -1392.028198, 2646.041748, 55.978725))
+						{
+							DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, -1392.028198, 2646.041748, 55.978725, -1392.028198, 2646.041748, 55.978725, 50);
+				        	return 1;
+						}
+						// Downtown
+						else if(PlayerToPoint(playerid, 1000.0, -1605.574462, 710.279846, 13.867187))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, -1605.574462, 710.279846, 13.867187, -1605.574462, 710.279846, 13.867187, 50);
+				        	return 1;
+						}
+						// Angel Pine
+						else if(PlayerToPoint(playerid, 1000.0, -2161.425781, -2384.718994, 30.895843))
+						{
+				        	DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, -2161.425781, -2384.718994, 30.895843, -2161.425781, -2384.718994, 30.895843, 50);
+				        	return 1;
+						}
+						else
+						{
+							DisablePlayerRaceCheckpoint(playerid);
+		    				SetPlayerRaceCheckpoint(playerid, 0, 1555.500122, -1675.565673, 16.195312, 1555.500122, -1675.565673, 16.195312, 50);
+						}
+
+				    	return 1;
+					}
+				}
+
+				return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Está Em Uma Viatura!");
+    		}
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Departamento de Polícia | Você tem que está utilizando o uniforme de Polícia!");
+    }
+}
+
+/*==============[ Render ]=============*/
+
+CMD:r (playerid, params[])
+{
+    SetPlayerSpecialAction(playerid,SPECIAL_ACTION_HANDSUP);
+	if(GetPlayerWantedLevel(playerid) > 0)
+	{
+	    PodeSerAlgemado[playerid] = true;
+	}
+    return 1;
+}
+
 CMD:uniforme(playerid)
 {
     if(PlayerDados[playerid][Profissao] == Gari)
@@ -8067,6 +8640,32 @@ CMD:uniforme(playerid)
             	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de PizzaBoy!");
             	profissaoUniforme[playerid] = false;
             	SetPlayerSkin(playerid, PlayerDados[playerid][skin]);	
+            	return 1;
+         	}
+         }
+         else return SendClientMessage(playerid, COR_ERRO, "ERRO | Você não está na área adequada para vestir o seu uniforme!");
+    }
+    else if(PlayerDados[playerid][Profissao] == PMilitar)
+    {
+    	if(GetPlayerWantedLevel(playerid) > 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você é um procurado da Polícia e não pode usar esse comando!");
+        else if(PlayerToPoint(playerid, 2.0, 234.2587,77.4519,1005.0391))
+        {
+            if(!profissaoUniforme[playerid])
+            {
+                SendClientMessage(playerid, COR_SUCCESS, "| INFO | Parabéns, vocé está utilizando o uniforme de Polícial militar! Use /profissao para ver seus comandos");
+            	profissaoUniforme[playerid] = true;
+            	SetPlayerSkin(playerid, 281);
+            	GivePlayerWeapon(playerid, 3, 1);
+            	GivePlayerWeapon(playerid, 22, 100);
+            	GivePlayerWeapon(playerid, 25, 50);	
+            	return 1;
+            }
+            else 
+            {
+            	SendClientMessage(playerid, COR_ERRO, "| ERRO | Você removeu o uniforme de Polícial militar!");
+            	profissaoUniforme[playerid] = false;
+            	SetPlayerSkin(playerid, PlayerDados[playerid][skin]);
+            	ResetPlayerWeapons(playerid); 	
             	return 1;
          	}
          }
@@ -8347,8 +8946,8 @@ CMD:voltar(playerid)
 	if(PlayerVoltaLocal[playerid])
 	{ 
 		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI"));
-		SetPlayerPos(playerid, DOF2_GetFloat(PegarConta(playerid), "PosX"), DOF2_GetFloat(PegarConta(playerid), "PosY"), DOF2_GetFloat(PegarConta(playerid), "PosZ"));
+		SetPlayerInterior(playerid, DOF2_GetInt(PegarConta(playerid), "pPosI", "Coordenadas"));
+		SetPlayerPos(playerid, DOF2_GetFloat(PegarConta(playerid), "PosX", "Coordenadas"), DOF2_GetFloat(PegarConta(playerid), "PosY", "Coordenadas"), DOF2_GetFloat(PegarConta(playerid), "PosZ", "Coordenadas"));
 		PlayerVoltaLocal[playerid] = false;
 
 		return 1;
@@ -8400,7 +8999,32 @@ CMD:pegarentrega(playerid)
     }
     else
     {
-    	SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para entregadores de pizza!");	 
+    	SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para MotoBoy!");	 
+    }
+    return 1;
+}
+CMD:pescar(playerid)
+{
+    if(PlayerDados[playerid][Profissao] == Pescador)
+    {
+    	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Está Em Um Barco!");
+    	else if(!MercadoInfo[playerid][redePesca]) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Tem Rede de Pescas!");
+    	else if(MercadoInfo[playerid][Peixes] >= 300) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Já Tem Muitos Peixes! Venda-os Primeiro!");
+    	else if(MercadoInfo[playerid][iscas] <= 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Tem Mais Iscas!");
+    	else if(TaPescando[playerid] == true) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Já Está Pescando! Tenha Calma!");
+    	else if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 453)
+    	{
+    		TaPescando[playerid] = true;
+	    	SendClientMessage(playerid, COR_SUCCESS, "| INFO | Rede Lançada, Aguarde Um Pouco, Até Sua Rede Voltar!");
+			SetTimerEx("TempoPesca", 25000, false, "i", playerid);
+			GameTextForPlayer(playerid, "~s~Pescando", 25000, 6);
+	        return 1;
+    	}
+    	else return SendClientMessage(playerid, COR_ERRO, "| Pescador | Você Não Está Em Um Barco Da Profissão!");
+    }
+    else
+    {
+    	SendClientMessage(playerid, COR_ERRO, "| ERRO | Esse comando é exclusivo para Pescador!");	 
     }
     return 1;
 }
@@ -9569,6 +10193,70 @@ CMD:kick (playerid, params[])
 	}
 	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 
+	return 1;
+}
+
+CMD:ban (playerid, params[])
+{
+	new PlayerIDBan, Motivo[50], Mensagem[256], Dialog[256];
+
+	if(IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 2)
+	{
+		if(sscanf(params, "us[30]", PlayerIDBan, Motivo))
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /ban [ ID ][ Motivo ]");
+		} 
+		else if(PlayerIDBan == INVALID_PLAYER_ID) 
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| ERRO | ID Inválido!");
+		}
+		else if(PlayerDados[PlayerIDBan][Admin] > 3) 
+		{
+			return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você não pode banir um membro da diretoria!");
+		}
+        else
+        {
+        	format(Mensagem, sizeof(Mensagem), "{ff0000}| INFO-KICK | O(A) Administrador(a) %s Baniu permanentemente %s (Motivo: %s)",getName(playerid), getName(PlayerIDBan), Motivo);
+			SendClientMessageToAll(-1, Mensagem);
+			format(Dialog, sizeof(Dialog), "{FF0000}Você Foi Baniu permanentemente Pelo Adminstrador: %s\nMotivo: %s\n\nCaso Ache Que O Kick Foi Abuso De Comando,\nInforme Um Responsavel Ou Dono!",getName(playerid), Motivo);
+			ShowPlayerDialog(PlayerIDBan, DialogKick, DIALOG_STYLE_MSGBOX, "{FF0000}Banido!", Dialog, "OK", "");
+	
+			SetTimerEx("DelayedBan", 1000, false, "i", PlayerIDBan);
+
+			format(Log, sizeof(Log), "O Administrador %s Baniu permanentemente %s ( Motivo: %s )", getName(playerid), getName(PlayerIDBan), Motivo);
+			fileLog("Ban", Log);
+
+			return 1;
+        }
+	}
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
+
+	return 1;
+}
+
+/*============[ Chat Admin ]===========*/
+
+CMD:ca (playerid, params[])
+{
+	new texto[128], msg[128];
+	if(PlayerDados[playerid][Admin] <= 0) return SendClientMessage(playerid, COR_ERRO, "| ERRO | Você Não Pode Usar Este Comando!");
+	else if(sscanf(params, "s[128]", msg)) return SendClientMessage(playerid, COR_ERRO, "| COMANDO | Use: /Ca [ Texto ]");
+	else
+	{
+		format(texto, sizeof(texto), "{4286f4}| Chat Admin | %s[%d]: %s", getName(playerid), playerid, msg);
+		for(new i; i < GetMaxPlayers(); i++)
+		{
+		    if(IsPlayerConnected(i))
+		    {
+				if(PlayerDados[i][Admin] > 0)
+				{
+				    SendClientMessage(i, COR_SUCCESS, texto);
+				}
+			}
+		}
+		format(Log, sizeof(Log), "O Admin %s Diz: %s", getName(playerid), msg);
+		fileLog("ChatAdmin", Log);
+	}
 	return 1;
 }
 
