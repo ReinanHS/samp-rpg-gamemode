@@ -49,6 +49,12 @@
 #define 	DialogPescaIscas			(32)	// Pesca Iscas
 #define 	DialogHospital				(33)	// Hospital
 #define  	DialogProcurados			(34)	// Procurados
+#define 	DialogBanco        			(35)	// Banco                                                 
+#define 	DialogBancoSaldo            (36)    // Banco                                   
+#define 	DialogBancoSaque            (37)    // Banco
+#define 	DialogBancoDeposito  		(38)    // Banco
+#define 	DialogBancoLogin  			(39)    // Banco
+#define 	DialogBancoRegister			(40)    // Banco
 
 
 //------------------------- { - DEFINIÇÕES - COR} ---------------------------------
@@ -555,6 +561,13 @@ enum pDados
         bool: vip 
 
 }
+
+enum bInfo
+{
+	saldo,
+	senha[100]
+}
+
 enum mInfo
 {
 	Peixes,
@@ -591,6 +604,7 @@ new bool:PlayerMultaTempo[MAX_PLAYERS];
 new bool:TaPescando[MAX_PLAYERS];
 
 new MercadoInfo[MAX_PLAYERS][mInfo];
+new BancoInfo[MAX_PLAYERS][bInfo];
 
 new PlayerDados[MAX_PLAYERS][pDados];
 
@@ -643,6 +657,15 @@ new Text3D:casasText[44];
 
 new Text3D:hospitalText[8];
 
+enum pPick {
+    PickUpBANCOENTRADA,
+    PickUpBANCOSAIDA,
+};
+
+new Pickup[pPick];
+new AFKCode[MAX_PLAYERS];
+new bool:isPlayerAFK[MAX_PLAYERS];
+
 new Float:hospitaisPos[8][3] =
 {
 	{2034.108520, -1401.669921, 17.294197}, // MakeABigLove Local: Jefferson
@@ -687,6 +710,15 @@ new timer_StatusFome[MAX_PLAYERS];
 new timer_StatusSede[MAX_PLAYERS];
 new timer_StatusSaude[MAX_PLAYERS];
 new timer_UpdatePlayerLevel[MAX_PLAYERS];
+
+new ProfissaoCarExitTempo[MAX_PLAYERS];
+new PlayerAutoEscolaTempo[MAX_PLAYERS];
+new AtualizarPresoTempo[MAX_PLAYERS];
+new FugirAbordadoTempo[MAX_PLAYERS];
+new PlayerProfissaoTempo[MAX_PLAYERS];
+new PlayerTempoPesca[MAX_PLAYERS];
+new PlayerTempoAFK[MAX_PLAYERS];
+new PlayerVoltaLocalStatusTempo[MAX_PLAYERS];
 
 // (Vendo o velocimetro ou não}
 new bool:PlayerVelocimetro[MAX_PLAYERS];
@@ -848,6 +880,9 @@ public OnGameModeInit()
     if(fexist("/Logs/")) print("A pasta Logs foi encontrada!"), print("Sistema De Logs carregado com sucesso!");
     else print("A pasta Logs não foi encontrada!"), SendRconCommand("exit");
 
+    if(fexist("/Banco/")) print("A pasta Banco foi encontrada!"), print("Sistema De Bancos carregado com sucesso!");
+    else print("A pasta Banco não foi encontrada!"), SendRconCommand("exit");
+
     // Carregar Casas
     loadCasas();
     // Textos Informativos
@@ -879,6 +914,7 @@ public OnGameModeInit()
     CreateDynamicMapIcon(1833.7811, -1842.6208, 13.5781, 17, -1, -1, -1, -1, 400.0); //Mercados 24/7 (id: 0)
     CreateDynamicMapIcon(1519.1331, -1453.9199, 14.2084, 36, -1, -1, -1, -1, 400.0); //Auto Escola (id: 0)
     CreateDynamicMapIcon(231.8930, 1412.7786, 10.5859, 51, -1, -1, -1, -1, 400.0); //Petroleiro
+    CreateDynamicMapIcon(592.8407,-1248.2235,18.1530, 52, -1, -1, -1, -1, 400.0); //Banco
     //PostosDeGasolina
     for (new a = 0; a < sizeof(PostosDeGasolina); a++)
 	{
@@ -914,6 +950,56 @@ public OnGameModeInit()
 	{
 		CreateDynamicMapIcon(radarPos[a][0], radarPos[a][1], radarPos[a][2], 34, -1, -1, -1, -1, 400.0);
 	}
+	// Banco
+	Pickup[PickUpBANCOENTRADA] = CreatePickup(1274, 1, 592.8407,-1248.2235,18.1530, -1); //Entrada Banco
+    Pickup[PickUpBANCOSAIDA] = CreatePickup(1239, 1, 2305.5181,-16.1052,26.7496, -1); //Saida Banco
+
+    CreatePickup(1274, 1, 2310.6931,-8.3859,26.7422, -1); //Menu Banco
+    CreatePickup(1274, 1, 1929.4681,-1785.3741,13.5469, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 2123.1787,897.4747,11.1797, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 2188.4717,2464.3057,11.2422, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 2156.4546,2734.6196,11.1763, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 1590.4004,2217.2566,11.0692, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 59.8137,1212.8947,18.8400, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, -2032.1680,151.0729,29.0461, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, -2419.2571,959.3170,45.2969, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, -2233.2070,-2560.2319,31.9219, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, -1572.9586,-2725.5581,48.7435, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, -80.2851,-1171.9331,2.1556, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 1009.5620,-930.2037,42.3281, -1); //Caixas Eletronicos
+    CreatePickup(1274, 1, 1389.1398,461.9337,20.2020, -1); //Caixas Eletronicos
+
+    Create3DTextLabel("Banco de Los Santos", -1, 592.8407,-1248.2235,18.1530, 40.0, 0, 0); //Entrada Banco
+    Create3DTextLabel("Agência de Empregos", -1, 1153.9910,-1771.7023,16.5992, 40.0, 0, 0); //Entrada Agência de Empregos
+    Create3DTextLabel("{2fcc38}Banco\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 2310.6931,-8.3859,26.7422, 40.0, 0, 0); //Menu Banco
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 1929.4681,-1785.3741,13.5469, 40.0, 0, 0); //Caixas Eletrônicos
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 2123.1787,897.4747,11.1797, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 2188.4717,2464.3057,11.2422, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 2156.4546,2734.6196,11.1763, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 1590.4004,2217.2566,11.0692, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 59.8137,1212.8947,18.8400, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, -2032.1680,151.0729,29.0461, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, -2419.2571,959.3170,45.2969, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, -2233.2070,-2560.2319,31.9219, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, -1572.9586,-2725.5581,48.7435, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, -80.2851,-1171.9331,2.1556, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 1009.5620,-930.2037,42.3281, 40.0, 0, 0);
+    Create3DTextLabel("{2fcc38}Caixa Eletrônico\n{FFFFFF}Aperte a letra '{2fcc38}Y{FFFFFF}' para utiliza-lo", -1, 1389.1398,461.9337,20.2020, 40.0, 0, 0); //Fim Caixas Eletrônicos
+ 
+    CreateObject(2942,1928.6000000,-1785.4000000,13.0000000,0.0000000,0.0000000,88.0000000); /*-- OBJETOS DOS CAIXAS ELETRONICOS --*/
+    CreateObject(2942,2123.2000000,896.7999900,10.8000000,0.0000000,0.0000000,182.0000000);
+    CreateObject(2942,2187.8000000,2464.2000000,10.9000000,0.0000000,0.0000000,94.0000000);
+    CreateObject(2942,2156.5000000,2733.8999000,10.8000000,0.0000000,0.0000000,184.0000000);
+    CreateObject(2942,1590.4000000,2218.0000000,10.7000000,0.0000000,0.0000000,0.0000000);
+    CreateObject(2942,58.9000000,1212.9000000,18.5000000,0.0000000,0.0000000,90.0000000);
+    CreateObject(2942,-2032.9000000,151.0000000,28.7000000,0.0000000,0.0000000,92.0000000);
+    CreateObject(2942,-2420.1001000,959.2999900,44.9000000,0.0000000,0.0000000,92.0000000);
+    CreateObject(2942,-2232.6001000,-2560.5000000,31.6000000,0.0000000,0.0000000,244.0000000);
+    CreateObject(2942,-1572.6000000,-2725.0000000,48.4000000,0.0000000,0.0000000,326.0000000);
+    CreateObject(2942,-79.5000000,-1172.3000000,1.8000000,0.0000000,0.0000000,246.0000000);
+    CreateObject(2942,1009.5000000,-929.5000000,42.0000000,0.0000000,0.0000000,6.0000000);
+    CreateObject(2942,1389.4000000,462.7999900,19.8000000,0.0000000,0.0000000,340.0000000); /*-- FIM DOS OBJETOS DOS CAIXAS ELETRONICOS --*/
+	
 	// Tempo
 	ProcessGameTime();
 	SetTimer("ServerInit", 1000, false);
@@ -1020,6 +1106,7 @@ public OnPlayerConnect(playerid)
     PlayerMultaTempo[playerid] = false;
 
     SetTimerEx("loginAntiAFK", 120000, false, "i", playerid);
+    PlayerTempoAFK[playerid] = SetTimerEx("AntiPlayerAFK", 1800000, false, "i", playerid);
     
     TextDrawShowForPlayer(playerid,Logo);
     TextDrawShowForPlayer(playerid,Versao);
@@ -1326,6 +1413,14 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(timer_StatusSede[playerid]);
     KillTimer(timer_StatusSaude[playerid]);
     KillTimer(timer_UpdatePlayerLevel[playerid]);
+    KillTimer(ProfissaoCarExitTempo[playerid]);
+	KillTimer(PlayerAutoEscolaTempo[playerid]);
+	KillTimer(AtualizarPresoTempo[playerid]);
+	KillTimer(FugirAbordadoTempo[playerid]);
+	KillTimer(PlayerProfissaoTempo[playerid]);
+	KillTimer(PlayerTempoPesca[playerid]);
+	KillTimer(PlayerVoltaLocalStatusTempo[playerid]);
+	KillTimer(PlayerTempoAFK[playerid]);
 
     TextDrawHideForPlayer(playerid, DataC), TextDrawHideForPlayer(playerid, HoraC);
 
@@ -1640,7 +1735,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
     		SendClientMessage(playerid, COR_ERRO, "| INFO | Você saiu do veículo da sua profissão durante o seu trabalho agora você tem 60 segundos para entrar no veículo novamente!");
     		profissaoTempo[playerid] = 60;
     		profissaoCar[playerid] = 0;
-    		SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+    		ProfissaoCarExitTempo[playerid] = SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
     		return 1;
     	}
     }
@@ -1652,7 +1747,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
     		SendClientMessage(playerid, COR_ERRO, "| INFO | Você saiu do veículo da sua profissão durante o seu trabalho agora você tem 60 segundos para entrar no veículo novamente!");
     		profissaoTempo[playerid] = 60;
     		profissaoCar[playerid] = 0;
-    		SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+    		ProfissaoCarExitTempo[playerid] = SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
     		return 1;
     	}
     }
@@ -2727,7 +2822,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			TogglePlayerControllable(playerid, false);
 			GameTextForPlayer(playerid, "~s~Entregando!", 5000, 5);
 			SetTimerEx("PlayerCompletarEntrega", 3000, false, "i", playerid);
-			SetTimerEx("profissaoDescarregarTempo", 10000, false, "i", playerid);
+			PlayerProfissaoTempo[playerid] = SetTimerEx("profissaoDescarregarTempo", 10000, false, "i", playerid);
 			return 1;
 		}
 		else
@@ -2759,7 +2854,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			TogglePlayerControllable(playerid, false);
 			GameTextForPlayer(playerid, "~s~Entregando!", 5000, 5);
 			SetTimerEx("PlayerCompletarEntrega", 3000, false, "i", playerid);
-			SetTimerEx("profissaoDescarregarTempo", 10000, false, "i", playerid);
+			PlayerProfissaoTempo[playerid] = SetTimerEx("profissaoDescarregarTempo", 10000, false, "i", playerid);
 			return 1;
 		}
 		else
@@ -2815,6 +2910,12 @@ public OnPlayerObjectMoved(playerid, objectid)
 
 public OnPlayerPickUpPickup(playerid, pickupid)
 {
+	if(pickupid == Pickup[PickUpBANCOENTRADA]) {
+        SendClientMessage(playerid, -1, "| INFO | Para entrar no Banco digite '{b6b6b6}/Entrar{FFFFFF}' ou pressione a tecla '{b6b6b6}F{FFFFFF}'");
+    }
+    else if(pickupid == Pickup[PickUpBANCOSAIDA]) {
+        SendClientMessage(playerid, -1, "| INFO | Para sair do Banco digite '{b6b6b6}/Sair{FFFFFF}' ou pressione a tecla '{b6b6b6}F{FFFFFF}'");
+    }
 	return 1;
 }
 
@@ -2863,7 +2964,21 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
             return 1;
         }
+        //Entrada Banco
+        else if(IsPlayerInRangeOfPoint(playerid, 3.0, 592.8407,-1248.2235,18.1530)) {
+            SetPlayerInterior(playerid, 0);
+            GetPlayerPos(playerid, iPosX[playerid], iPosY[playerid], iPosZ[playerid]);
+            SetPlayerPos(playerid, 2311.2605,-15.6037,26.7422);
 
+           	return 1;
+        }
+        //Saida Banco
+        else if(IsPlayerInRangeOfPoint(playerid, 3.0, 2305.5181,-16.1052,26.7496)) {
+            SetPlayerInterior(playerid, 0);
+            SetPlayerPos(playerid, iPosX[playerid],iPosY[playerid],iPosZ[playerid]);
+
+            return 1;
+        }
         else if(IsPlayerInRangeOfPoint(playerid, 2.0, 390.7674,173.7650,1008.3828))
         {
             //Agencia de Empregos Saida
@@ -3101,10 +3216,54 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
     if (newkeys==KEY_YES )
 	{
-	   if(IsPlayerInAnyVehicle(playerid) && PlayerDados[playerid][gasolina] > 0)
-	   {
-	   motorcarro(playerid);
-	   }
+
+	   	if(IsPlayerInAnyVehicle(playerid) && PlayerDados[playerid][gasolina] > 0)
+	   	{
+	   		motorcarro(playerid);
+	   	}
+	   	//Menu Banco
+	   	else if(IsPlayerInRangeOfPoint(playerid, 3.0, 2310.6931,-8.3859,26.7422)) 
+	   	{
+            if(!DOF2_FileExists ( PegarBanco (playerid) ))
+			{
+				new string[200];
+				format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n{FFFFFF}Olá %s você ainda não tem uma conta no banco para criar uma informe uma senha!", getName(playerid));
+			    return ShowPlayerDialog(playerid, DialogBancoRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Cadastrar", "");
+			}
+			else
+			{
+				return ShowPlayerDialog(playerid, DialogBancoLogin, DIALOG_STYLE_PASSWORD, "Login", "Banco {0fbefe}Skylandia\n{FFFFFF}Informe sua senha!", "Login", "");
+			}
+        }
+        //Menu Caixa Eletronico
+        else if(IsPlayerInRangeOfPoint(playerid, 3.0, 1929.4681,-1785.3741,13.5469) || IsPlayerInRangeOfPoint(playerid, 3.0, 2123.1787,897.4747,11.1797) || IsPlayerInRangeOfPoint(playerid, 3.0, 2188.4717,2464.3057,11.2422)
+        || IsPlayerInRangeOfPoint(playerid, 3.0, 2156.4546,2734.6196,11.1763) || IsPlayerInRangeOfPoint(playerid, 3.0, 1590.4004,2217.2566,11.0692) || IsPlayerInRangeOfPoint(playerid, 3.0, 59.8137,1212.8947,18.8400) || IsPlayerInRangeOfPoint(playerid, 3.0, -2032.1680,151.0729,29.0461))
+        {
+            if(!DOF2_FileExists ( PegarBanco (playerid) ))
+			{
+				new string[200];
+				format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n{FFFFFF}Olá %s você ainda não tem uma conta no banco para criar uma informe uma senha!", getName(playerid));
+			    return ShowPlayerDialog(playerid, DialogBancoRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Cadastrar", "");
+			}
+			else
+			{
+				return ShowPlayerDialog(playerid, DialogBancoLogin, DIALOG_STYLE_PASSWORD, "Login", "Banco {0fbefe}Skylandia\n{FFFFFF}Informe sua senha!", "Login", "");
+			}
+        }
+        //Menu Caixa Eletronico
+        else if(IsPlayerInRangeOfPoint(playerid, 3.0, -2419.2571,959.3170,45.2969) || IsPlayerInRangeOfPoint(playerid, 3.0, -2233.2070,-2560.2319,31.9219) || IsPlayerInRangeOfPoint(playerid, 3.0, -1572.9586,-2725.5581,48.7435) || IsPlayerInRangeOfPoint(playerid, 3.0, -80.2851,-1171.9331,2.1556) || IsPlayerInRangeOfPoint(playerid, 3.0, 1009.5620,-930.2037,42.3281) || IsPlayerInRangeOfPoint(playerid, 3.0, 1389.1398,461.9337,20.2020)) 
+        {
+            if(!DOF2_FileExists ( PegarBanco (playerid) ))
+			{
+				new string[200];
+				format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n{FFFFFF}Olá %s você ainda não tem uma conta no banco para criar uma informe uma senha!", getName(playerid));
+			    return ShowPlayerDialog(playerid, DialogBancoRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Cadastrar", "");
+			}
+			else
+			{
+				return ShowPlayerDialog(playerid, DialogBancoLogin, DIALOG_STYLE_PASSWORD, "Login", "Banco {0fbefe}Skylandia\n{FFFFFF}Informe sua senha!", "Login", "");
+			}
+        }
 	}
 
 	return 1;
@@ -3118,9 +3277,15 @@ public OnRconLoginAttempt(ip[], password[], success)
 public OnPlayerUpdate(playerid)
 {
 	if(IsPlayerInAnyVehicle(playerid)) {
-		CheckRadar(playerid);
+
+		if(GetPlayerState(playerid)==PLAYER_STATE_DRIVER)
+		{
+			CheckRadar(playerid);
+		}
+
 		TextDrawHideForPlayer(playerid,Logo);
 		new carro = GetPlayerVehicleID(playerid);
+
 		if(Motor[carro] == 1){
 			if(PlayerDados[playerid][gasolina] == 0 && Avisado[playerid] == false) 
 			{
@@ -3304,7 +3469,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    if(PlayerDados[playerid][TaPreso] == true)
 				    {
 				    	for (new i = 0; i < 5; i++) PlayerTextDrawShow(playerid, textPreso[playerid][i]);
-				    	SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+				    	AtualizarPresoTempo[playerid] = SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
 				    }
 
 				    // Casas
@@ -3323,7 +3488,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    			
 				    			SetPlayerInterior(playerid, CasasDados[i][interiorID]);
 				    			SetPlayerVirtualWorld(playerid, i);
-				    			SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
+				    			PlayerVoltaLocalStatusTempo[playerid] = SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
 				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
@@ -3346,7 +3511,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 				    			SetPlayerInterior(playerid, CasasDados[i][interiorID]);
 				    			SetPlayerVirtualWorld(playerid, i);
-				    			SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
+				    			PlayerVoltaLocalStatusTempo[playerid] = SetTimerEx("PlayerVoltaLocalStatus", 10000, false, "i", playerid);
 				    			SetSpawnInfo(playerid, 0, DOF2_GetInt(PegarConta(playerid), "SkinAtual", "Informações"), CasasDados[i][intX], CasasDados[i][intY], CasasDados[i][intZ], 269.15, 0, 0, 0, 0, 0, 0);
 				    		
 				    			SendClientMessage(playerid, COR_SUCCESS, "| CASA | Você tem 10 segundos para usar o comando {b7b7b7}/voltar");
@@ -4401,7 +4566,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                InAutoEscolaType[playerid] = 1;
 
 		                InAutoEscolaTempo[playerid] = 120;
-		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		                PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -600);
 		                return 1;
@@ -4431,7 +4596,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                InAutoEscolaType[playerid] = 2;
 
 		                InAutoEscolaTempo[playerid] = 115;
-		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		                PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -1400);
 		                return 1;
@@ -4461,7 +4626,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                InAutoEscolaType[playerid] = 3;
 
 		                InAutoEscolaTempo[playerid] = 180;
-		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		                PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -2400);
 		                return 1;
@@ -4491,7 +4656,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                InAutoEscolaType[playerid] = 4;
 
 		                InAutoEscolaTempo[playerid] = 115;
-		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		                PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -3400);
 		                return 1;
@@ -4520,7 +4685,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                InAutoEscolaType[playerid] = 5;
 
 		                InAutoEscolaTempo[playerid] = 138;
-		                SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		                PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		                
 		                GivePlayerMoney(playerid, -5000);
 		                return 1;
@@ -6239,6 +6404,134 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             }
             return 1;
         }
+        case DialogBanco:
+        {
+        	if(response)
+        	{
+				// Saldo
+	        	if(listitem == 0)
+	        	{
+	        		new string[200], Hora, Minuto, Segundo, Dia, Mes, Ano;
+
+	                gettime(Hora, Minuto, Segundo);
+	                getdate(Ano, Mes, Dia);
+
+	                format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n\n\n{FFFFFF}Saldo em Conta {2fcc38}$%d \n\n{FFFFFF}Hora: {8de990}%02d:%02d:%02d \n\n{FFFFFF}Data: {8de990}%02d/%02d/%d", BancoInfo[playerid][saldo], Hora, Minuto, Segundo, Dia, Mes, Ano);
+	                ShowPlayerDialog(playerid, DialogBancoSaldo, DIALOG_STYLE_MSGBOX, "{FFFFFF}Extrato", string, "Sair", "");
+	                return 1;
+	        	}
+	        	//Saque
+	        	else if(listitem == 1)
+	        	{
+	                return ShowPlayerDialog(playerid, DialogBancoSaque, DIALOG_STYLE_INPUT, "{2fca38}Saque", "{FFFFFF}Digite a quantia em que você quer sacar", "Sacar", "Cancelar");
+	        	}
+	        	// Deposito
+	        	else if(listitem == 2)
+	        	{
+	                return ShowPlayerDialog(playerid, DialogBancoDeposito, DIALOG_STYLE_INPUT, "{2fca38}Deposito", "{FFFFFF}Digite a quantia em que você quer depositar", "Depositar", "Cancelar");
+	        	}	
+        	}
+
+            return 1;
+        }
+        case DialogBancoRegister:
+        {
+        	if(response)
+        	{
+        		if(strlen(inputtext) < 5 || strlen(inputtext) > 100)
+	            {
+	            	new string[200];
+                    SendClientMessage(playerid, 0xFF0000AA, "| INFO | Sua senha deve conter entre 5 e 100 Caracteres");
+	                
+    				format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n{FFFFFF}Olá %s você ainda não tem uma conta no banco para criar uma informe uma senha!", getName(playerid));
+                	return ShowPlayerDialog(playerid, DialogBancoRegister, DIALOG_STYLE_PASSWORD, "{FFFFFF}Extrato", string, "Cadastrar", "");
+				}
+				else
+				{
+                	DOF2_CreateFile(PegarBanco (playerid));
+
+	        		format(BancoInfo[playerid][senha], 100, "%s", inputtext );
+
+	        		BancoInfo[playerid][saldo] = 0;
+
+	        		DOF2_SetInt( PegarBanco(playerid), "Saldo", BancoInfo[playerid][saldo] ,"Informações");
+	        		DOF2_SetString( PegarBanco(playerid), "Senha", BancoInfo[playerid][senha] ,"Informações");
+
+					new Dia, Mes, Ano, Hora, Minuto, Segundo, pIP[30], Registro[100];
+					gettime(Hora, Minuto, Segundo);
+					getdate(Ano, Mes, Dia);
+					GetPlayerIp(playerid, pIP, sizeof(pIP));
+					format(Registro, sizeof(Registro), "%02d/%02d/%02d - %02d:%02d:%02d", Dia, Mes, Ano, Hora, Minuto, Segundo);
+
+					DOF2_SetString( PegarBanco( playerid ), "Registrado", Registro, "Register-Info");
+					DOF2_SetString( PegarBanco( playerid ), "IP", pIP, "Register-Info"); 
+
+					DOF2_SaveFile();
+
+					SendClientMessage(playerid, COR_SUCCESS, "| INFO | Sua conta foi cadastrada com sucesso!");
+					PlayerPlaySound(playerid,1057,0.0,0.0,0.0);
+
+					return ShowPlayerDialog(playerid, DialogBanco, DIALOG_STYLE_LIST, "{2fcc38}Banco", "Saldo\nSacar\nDepositar\n", "Selecionar", "Cancelar");	
+				}
+        	}
+
+            return 1;
+        }
+        case DialogBancoLogin:
+        {
+        	if(response)
+        	{
+        		if(!strcmp(DOF2_GetString( PegarBanco(playerid), "Senha", "Informações"), inputtext))
+        		{
+        			SendClientMessage(playerid, COR_SUCCESS, "| INFO | Login realizado com sucesso!");
+        			return ShowPlayerDialog(playerid, DialogBanco, DIALOG_STYLE_LIST, "{2fcc38}Banco", "Saldo\nSacar\nDepositar\n", "Selecionar", "Cancelar");
+        		}else
+        		{
+					return SendClientMessage(playerid, COR_SUCCESS, "| INFO | Senha incorreta!");        			
+        		}
+        	}
+
+            return 1;
+        }
+        case DialogBancoSaque:
+        {
+        	// Saldo
+        	if(response)
+        	{
+        		new string[250], Hora, Minuto, Segundo, Dia, Mes, Ano;
+            	gettime(Hora, Minuto, Segundo);
+            	getdate(Ano, Mes, Dia);
+            	if(strval(inputtext) == 0) return SendClientMessage(playerid, COR_SUCCESS, "[x] {FF0000}Você tentou sacar 0 R$ de sua conta!");
+            	if(strval(inputtext) > BancoInfo[playerid][saldo]) return SendClientMessage(playerid, COR_ERRO, "[x] {FF0000}Você não possui saldo suficiente para saque desta quantia!");
+            	
+            	GivePlayerMoney(playerid, strval(inputtext));
+            	BancoInfo[playerid][saldo] = BancoInfo[playerid][saldo] - strval(inputtext);
+
+            	format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n\n\n{FFFFFF}Você sacou {2fcc38}$%d \n\n{FFFFFF}Saldo em Conta {2fcc38}$%d \n\n{FFFFFF}Hora: {8de990}%02d:%02d:%02d \n\n{FFFFFF}Data: {8de990}%02d/%02d/%d", strval(inputtext), BancoInfo[playerid][saldo], Hora, Minuto, Segundo, Dia, Mes, Ano);
+            	ShowPlayerDialog(playerid, DialogBancoSaldo, DIALOG_STYLE_MSGBOX, "{FFFFFF}Saque", string, "Sair", "");
+            	return 1;
+        	}
+        }
+        case DialogBancoDeposito:
+        {
+        	// Saldo
+        	if(response)
+        	{
+        		new string[250], Hora, Minuto, Segundo, Dia, Mes, Ano;
+	            gettime(Hora, Minuto, Segundo);
+	            getdate(Ano, Mes, Dia);
+	            
+	            if(strval(inputtext) == 0) return SendClientMessage(playerid, COR_SUCCESS, "[x] {FF0000}Você tentou depositar 0 R$ em sua conta!");
+	            if(strval(inputtext) > GetPlayerMoney(playerid)) return SendClientMessage(playerid, COR_ERRO, "[x] {FF0000}Você não possui está quantia em mãos para depositar!");
+	            
+	            GivePlayerMoney(playerid, -strval(inputtext));
+	            BancoInfo[playerid][saldo] = BancoInfo[playerid][saldo] + strval(inputtext);
+	            
+	            format(string, sizeof(string), "{FFFFFF}Banco {0fbefe}Skylandia\n\n\n{FFFFFF}Você depositou {2fcc38}$%d \n\n{FFFFFF}Saldo em Conta {2fcc38}$%d \n\n{FFFFFF}Hora: {8de990}%02d:%02d:%02d \n\n{FFFFFF}Data: {8de990}%02d/%02d/%d", strval(inputtext), BancoInfo[playerid][saldo], Hora, Minuto, Segundo, Dia, Mes, Ano);
+	            ShowPlayerDialog(playerid, DialogBancoSaldo, DIALOG_STYLE_MSGBOX, "{FFFFFF}Deposito", string, "Sair", "");
+	            return 1;
+        	}
+        }
   
     }
     return 1;
@@ -6276,6 +6569,10 @@ stock PegarConta(playerid)
 stock PegarCasa(casaid)
 {
         static Arquivo[33]; format(Arquivo, sizeof(Arquivo), "Casas/%d.ini", casaid); return Arquivo;
+}
+stock PegarBanco(playerid)
+{
+        static Arquivo[33]; format(Arquivo, sizeof(Arquivo), "Banco/%s.ini", getName(playerid)); return Arquivo;
 }
 stock SalvarDados(playerid)
 {
@@ -6350,6 +6647,12 @@ stock SalvarDados(playerid)
 
     DOF2_SetInt(PegarConta(playerid), "Iscas", MercadoInfo[playerid][iscas], "Utilitários");
     DOF2_SetBool(PegarConta(playerid), "RedePesca", MercadoInfo[playerid][redePesca], "Utilitários");
+
+    if(DOF2_FileExists (PegarBanco(playerid) ) ) 
+    {
+    	DOF2_SetInt(PegarBanco(playerid), "Saldo", BancoInfo[playerid][saldo] ,"Informações");
+        DOF2_SetString(PegarBanco(playerid), "Senha", BancoInfo[playerid][senha],"Informações");
+    }
 
     DOF2_SaveFile();
 
@@ -6429,6 +6732,12 @@ stock CarregarDados(playerid)
 
 		GetPlayerIp(playerid, PlayerDados[playerid][playerIP], 100);
 		format(PlayerDados[playerid][ultimoLogin], 100, "%02d/%02d/%02d - %02d:%02d:%02d", Dia, Mes, Ano, Hora, Minuto, Segundo);
+    }
+
+    if(DOF2_FileExists (PegarBanco(playerid) ) ) 
+    {
+    	BancoInfo[playerid][saldo] = DOF2_GetInt(PegarBanco(playerid), "Saldo", "Informações");
+    	format(BancoInfo[playerid][senha], 100, "%s", DOF2_GetString(PegarBanco(playerid), "Senha", "Informações") );
     }
 
     return 1;
@@ -6610,51 +6919,84 @@ public UpdatePlayerStar(playerid) {
 }
 forward UpdatePlayerLevel(playerid);
 public UpdatePlayerLevel(playerid) {
-	if(IsPlayerConnected(playerid)){
+	if(IsPlayerConnected(playerid) && Logado{playerid} ){
 
-		PlayerDados[playerid][segundoUP] -= 1;
+		if(!isPlayerAFK[playerid])
+		{
+			PlayerDados[playerid][segundoUP] -= 1;
 
-		if(PlayerDados[playerid][segundoUP] <= 0){
-			if(PlayerDados[playerid][minutoUP] > 0){
-				PlayerDados[playerid][minutoUP] -= 1;
-				PlayerDados[playerid][segundoUP] = 59;		
-			}else{
-				new str[255];
+			if(PlayerDados[playerid][segundoUP] <= 0){
+				if(PlayerDados[playerid][minutoUP] > 0){
+					PlayerDados[playerid][minutoUP] -= 1;
+					PlayerDados[playerid][segundoUP] = 59;		
+				}else{
+					new str[255];
 
-				PlayerDados[playerid][minutoUP] = 9;
-				PlayerDados[playerid][segundoUP] = 59;
+					PlayerDados[playerid][minutoUP] = 9;
+					PlayerDados[playerid][segundoUP] = 59;
 
-				PlayerDados[playerid][exp]	+= 1;
+					PlayerDados[playerid][exp]	+= 1;
 
-				if(PlayerDados[playerid][exp] == 6){
-					PlayerDados[playerid][exp] = 0;
-					SetPlayerScore(playerid, (GetPlayerScore(playerid)+1) );
+					if(PlayerDados[playerid][exp] == 6){
+						PlayerDados[playerid][exp] = 0;
+						SetPlayerScore(playerid, (GetPlayerScore(playerid)+1) );
 
-					format(str, sizeof(str), "| UP | Parabéns %s você passou de level ( %d )", getName(playerid), GetPlayerScore(playerid));
+						format(str, sizeof(str), "| UP | Parabéns %s você passou de level ( %d )", getName(playerid), GetPlayerScore(playerid));
+						SendClientMessage(playerid, COR_SUCCESS, str);
+					}
+
+					format(str, sizeof(str), "| UP | Você ganhou +1 de Experiência ( %d/6 )", PlayerDados[playerid][exp]);
 					SendClientMessage(playerid, COR_SUCCESS, str);
+					GameTextForPlayer(playerid, "~s~UP!", 5000, 6);
+					PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
+					
 				}
-
-				format(str, sizeof(str), "| UP | Você ganhou +1 de Experiência ( %d/6 )", PlayerDados[playerid][exp]);
-				SendClientMessage(playerid, COR_SUCCESS, str);
-				GameTextForPlayer(playerid, "~s~UP!", 5000, 6);
-				PlayerPlaySound(playerid,1058,0.0,0.0,0.0);
-				
 			}
-		}
 
-		new string_velo[15];
- 
-        format(string_velo, sizeof (string_velo), "%d:%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
-        if(PlayerDados[playerid][segundoUP] < 10){
-        	format(string_velo, sizeof (string_velo), "%d:0%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
-        }
-        PlayerTextDrawSetString(playerid, textStatusBar[0][playerid], string_velo);
+			new string_velo[15];
+	 
+	        format(string_velo, sizeof (string_velo), "%d:%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
+	        if(PlayerDados[playerid][segundoUP] < 10){
+	        	format(string_velo, sizeof (string_velo), "%d:0%d", PlayerDados[playerid][minutoUP], PlayerDados[playerid][segundoUP]);
+	        }
+
+	        PlayerTextDrawSetString(playerid, textStatusBar[0][playerid], string_velo);
+		}
+		else
+		{
+			PlayerTextDrawSetString(playerid, textStatusBar[0][playerid], "AFK");
+		}
 
 		UpdateTextDraw(playerid, 0);
 
 		timer_UpdatePlayerLevel[playerid] = SetTimerEx("UpdatePlayerLevel", 1000, false, "i", playerid);
 	}
 	return 1;
+}
+forward AntiPlayerAFK(playerid);
+public AntiPlayerAFK(playerid) {
+	if(IsPlayerConnected(playerid))
+	{
+		TogglePlayerControllable(playerid, false);
+		AFKCode[playerid] = 100 + random(200) + random(100);
+		isPlayerAFK[playerid] = true;
+
+		new str[60];
+    	format(str, sizeof(str), "~h~~r~Use: ~w~~h~/sairafk %d", AFKCode[playerid]);
+    	GameTextForPlayer(playerid, str, 1200000, 5);
+
+    	PlayerTempoAFK[playerid] = SetTimerEx("AntiPlayerAFK", 1800000, false, "i", playerid);
+    	SetTimerEx("AntiPlayerAFKKick", 60000, false, "i", playerid);
+	}
+    return 1;
+}
+forward AntiPlayerAFKKick(playerid);
+public AntiPlayerAFKKick(playerid) {
+	if(IsPlayerConnected(playerid) && isPlayerAFK[playerid])
+	{
+		return Kick(playerid);
+	}
+    return 1;
 }
 forward UpdateLixeira();
 public UpdateLixeira() {
@@ -6907,7 +7249,7 @@ public ProfissaoCarExit(playerid)
 					profissaoTempo[playerid] = profissaoTempo[playerid]-1;
 					GameTextForPlayer(playerid, strTempo, 1000, 5);
 
-					SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+					ProfissaoCarExitTempo[playerid] = SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
 
 					return 1;
 				}else
@@ -6929,7 +7271,7 @@ public ProfissaoCarExit(playerid)
 					GameTextForPlayer(playerid, strTempo, 1000, 5);
 					GameTextForPlayer(profissaoCapapidate[playerid], strTempo, 1000, 5);
 
-					SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+					ProfissaoCarExitTempo[playerid] = SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
 
 					return 1;
 				}else
@@ -6992,7 +7334,7 @@ public AtualizarPreso(playerid) {
 			PlayerTextDrawHide(playerid, textPreso[playerid][2]);
 			PlayerTextDrawShow(playerid, textPreso[playerid][2]);
 
-			SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+			AtualizarPresoTempo[playerid] = SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
 		}
 		else
 		{
@@ -7070,7 +7412,7 @@ public PrenderPlayer(playerid, minutos, segundos) {
 	    PlayerDados[playerid][TaPreso] = true;
 	    PlayerDados[playerid][exp] = 0;
 
-	    SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
+	    AtualizarPresoTempo[playerid] = SetTimerEx("AtualizarPreso", 1000, false, "i", playerid);
 
 	    GameTextForPlayer(playerid, "~r~Preso!", 2000, 3);
 		ResetPlayerWeapons(playerid);
@@ -7164,7 +7506,7 @@ public AutoEscolaTempo(playerid)
 		InAutoEscolaTempo[playerid] = InAutoEscolaTempo[playerid] -1;
 		format(strTempo, sizeof(strTempo), "~s~Tempo %d", InAutoEscolaTempo[playerid]);
 		GameTextForPlayer(playerid, strTempo, 1000, 6);
-		SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		return 1;
 	}
 	else if(InAutoEscola[playerid] == 1 && InAutoEscolaTempo[playerid] <= 15 && InAutoEscolaTempo[playerid] > 0)
@@ -7172,7 +7514,7 @@ public AutoEscolaTempo(playerid)
 		InAutoEscolaTempo[playerid] = InAutoEscolaTempo[playerid] -1;
 		format(strTempo, sizeof(strTempo), "~r~Tempo %d", InAutoEscolaTempo[playerid]);
 		GameTextForPlayer(playerid, strTempo, 1000, 6);
-		SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
+		PlayerAutoEscolaTempo[playerid] = SetTimerEx("AutoEscolaTempo", 1000, false, "i", playerid);
 		return 1;
 	}
 	else if(InAutoEscola[playerid] == 1)
@@ -8364,7 +8706,7 @@ CMD:abordar (playerid, params[])
 				format(str, sizeof(str), "| INFO | Você Abordou %s , Poderá Algema-lo(a) Direto Se Estiver Fugindo!", getName(pID));
 				SendClientMessage(playerid, COR_SUCCESS, str);
 				GameTextForPlayer(pID, "~r~Abordado!", 2000, 3);
-				SetTimerEx("FugirAbordado", 15000, false, "i", playerid);
+				FugirAbordadoTempo[pID] = SetTimerEx("FugirAbordado", 15000, false, "i", pID);
 				return 1;
     		}
     	}
@@ -8521,7 +8863,7 @@ CMD:vozdeprisao (playerid, params[])
 						fileLog("VozDePrisao", Log);
 
 						profissaoTempo[playerid] = 240;
-    					SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
+    					ProfissaoCarExitTempo[playerid] = SetTimerEx("ProfissaoCarExit", 1000, false, "i", playerid);
 
 						// Pershing Square
 						if(PlayerToPoint(playerid, 1000.0, 1555.500122, -1675.565673, 16.195312))
@@ -8966,7 +9308,7 @@ CMD:pegarpizza(playerid)
 			profissaoCar[playerid] = 1;
 		   	SendClientMessage(playerid, -1, "{f4ce42}| Pizzaria | Você pegou pizzas, siga o checkpoint para entregar!");
 		    profissaoCapapidate[playerid] = 10;
-		    SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
+		    PlayerProfissaoTempo[playerid] = SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
 		    DisablePlayerRaceCheckpoint(playerid);
 		    SetPlayerRaceCheckpoint(playerid, 0, CasasDados[valor][posX], CasasDados[valor][posY], CasasDados[valor][posZ],CasasDados[valor][posX], CasasDados[valor][posY], CasasDados[valor][posZ], 10);
 	        return 1;
@@ -8990,7 +9332,7 @@ CMD:pegarentrega(playerid)
 			profissaoCar[playerid] = 1;
 		   	SendClientMessage(playerid, -1, "{f4ce42}| Central | Você pegou pizzas, siga o checkpoint para entregar!");
 		    profissaoCapapidate[playerid] = 10;
-		    SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
+		    PlayerProfissaoTempo[playerid] = SetTimerEx("profissaoDescarregarTempo", 20000, false, "i", playerid);
 		    DisablePlayerRaceCheckpoint(playerid);
 		    SetPlayerRaceCheckpoint(playerid, 0, empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], empresasPos[valor][0], empresasPos[valor][1], empresasPos[valor][2], 10);
 	        return 1;
@@ -9016,7 +9358,7 @@ CMD:pescar(playerid)
     	{
     		TaPescando[playerid] = true;
 	    	SendClientMessage(playerid, COR_SUCCESS, "| INFO | Rede Lançada, Aguarde Um Pouco, Até Sua Rede Voltar!");
-			SetTimerEx("TempoPesca", 25000, false, "i", playerid);
+			PlayerTempoPesca[playerid] = SetTimerEx("TempoPesca", 25000, false, "i", playerid);
 			GameTextForPlayer(playerid, "~s~Pescando", 25000, 6);
 	        return 1;
     	}
@@ -9455,6 +9797,27 @@ CMD:sms(playerid, params[])
 	    	
 	    }
 	}
+    return 1;
+}
+/*===================[ Sair AFK ]================*/
+CMD:sairafk(playerid, params[]) 
+{
+    if(strval(params) == AFKCode[playerid] && AFKCode[playerid] != 0) 
+    {
+        SendClientMessage(playerid, 0x00FF00FF, "Código correto, você saiu do modo AFK");
+        AFKCode[playerid] = 0;
+        isPlayerAFK[playerid] = false;
+        GameTextForPlayer(playerid, "~h~~w~Voce esta ~h~~g~Online ~h~~w~Novamente!", 3000, 5);
+        TogglePlayerControllable(playerid, true);
+
+        PlayerTempoAFK[playerid] = SetTimerEx("AntiPlayerAFK", 1800000, false, "i", playerid);
+
+        return 1;
+    } 
+    else 
+    {
+    	SendClientMessage(playerid, 0xFF0000FF, "Código incorreto ou inválido");
+    }
     return 1;
 }
 /*===================[ Admins ]================*/
@@ -10257,6 +10620,29 @@ CMD:ca (playerid, params[])
 		format(Log, sizeof(Log), "O Admin %s Diz: %s", getName(playerid), msg);
 		fileLog("ChatAdmin", Log);
 	}
+	return 1;
+}
+
+CMD:correios (playerid, params[])
+{
+	if (IsPlayerAdmin(playerid) || PlayerDados[playerid][Admin] > 0)
+	{
+        new Float:X, Float:Y, Float:Z;
+        GetPlayerPos(playerid, Float:X, Float:Y, Float:Z);
+
+        Create3DTextLabel("{f44242}Correios", 0x008080FF, X, Y, Z, 40.0, 0, 0);
+
+        new Zona[MAX_PLAYER_NAME];//aqui ele vai checar a zona.
+		GetPlayer2DZone(playerid, Zona, MAX_ZONE_NAME);//ele procura a zona que vc esta e te da!
+
+        format(Log, sizeof(Log), "{%f, %f, %f}, // %s Local: %s", X, Y, Z, getName(playerid), Zona);
+		fileLog("Correios", Log);
+
+		SendClientMessage(playerid, COR_SUCCESS, Log);
+
+		return 1;
+    }
+	else SendClientMessage(playerid, COR_ERRO, "Você não tem permissão para usar esse comando!");
 	return 1;
 }
 
